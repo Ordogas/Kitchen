@@ -24,6 +24,8 @@
   --red-light:   #F8EAE7;
   --amber:       #A8722A;
   --amber-light: #FBF0E2;
+  --blue:        #3A6080;
+  --blue-light:  #E5EFF6;
   --nav-h:       64px;
   --safe-b:      env(safe-area-inset-bottom, 0px);
   --header-h:    54px;
@@ -31,9 +33,7 @@
   --r-sm:        8px;
   --r-xs:        6px;
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
 html, body {
   height: 100%;
   font-family: 'DM Sans', sans-serif;
@@ -44,507 +44,218 @@ html, body {
   overscroll-behavior: none;
   -webkit-font-smoothing: antialiased;
 }
+#app { display: flex; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; }
 
-#app {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* ── HEADER ─────────────────────────────── */
+/* HEADER */
 .app-header {
-  height: var(--header-h);
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 18px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  height: var(--header-h); background: var(--bg);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 18px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; position: sticky; top: 0; z-index: 10;
 }
-
-.app-header h1 {
-  font-family: 'Instrument Serif', serif;
-  font-size: 22px;
-  font-weight: 400;
-  letter-spacing: -0.2px;
-  color: var(--text);
-}
-
+.app-header h1 { font-family: 'Instrument Serif', serif; font-size: 22px; font-weight: 400; letter-spacing: -0.2px; }
 .header-btn {
-  width: 34px; height: 34px;
-  border-radius: 50%;
-  background: var(--green);
-  color: white;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background .15s, transform .1s;
-  flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 50%; background: var(--green); color: white;
+  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .15s, transform .1s; flex-shrink: 0;
 }
 .header-btn:active { background: var(--green-dim); transform: scale(.95); }
 .header-btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; }
 
-/* ── MAIN ───────────────────────────────── */
-main {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(var(--nav-h) + var(--safe-b) + 24px);
-}
+/* MAIN */
+main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--nav-h) + var(--safe-b) + 24px); }
 
-/* ── BOTTOM NAV ─────────────────────────── */
+/* BOTTOM NAV */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 600px;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  display: flex;
-  z-index: 20;
-  padding-bottom: var(--safe-b);
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 600px; background: var(--surface);
+  border-top: 1px solid var(--border); display: flex; z-index: 20; padding-bottom: var(--safe-b);
 }
-
 .nav-tab {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0 8px;
-  gap: 3px;
-  cursor: pointer;
-  border: none;
-  background: none;
-  color: var(--text-3);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 9.5px;
-  font-weight: 400;
-  letter-spacing: 0.1px;
-  transition: color .15s;
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 10px 0 8px; gap: 3px; cursor: pointer; border: none; background: none;
+  color: var(--text-3); font-family: 'DM Sans', sans-serif; font-size: 9.5px; font-weight: 400;
+  letter-spacing: 0.1px; transition: color .15s;
 }
 .nav-tab.active { color: var(--green); }
 .nav-tab svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .nav-tab.active svg { stroke-width: 2.2; }
 
-/* ── SECTIONS ───────────────────────────── */
+/* SECTIONS */
 .section { display: none; }
 .section.active { display: block; }
 
-/* ── SEARCH ─────────────────────────────── */
-.search-wrap {
-  padding: 12px 16px 4px;
-  position: relative;
-}
+/* SEARCH */
+.search-wrap { padding: 12px 16px 4px; position: relative; }
 .search-wrap input {
-  width: 100%;
-  padding: 10px 14px 10px 38px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  color: var(--text);
-  outline: none;
-  transition: border-color .15s;
+  width: 100%; padding: 10px 14px 10px 38px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text);
+  outline: none; transition: border-color .15s;
 }
 .search-wrap input:focus { border-color: var(--green); }
 .search-wrap input::placeholder { color: var(--text-3); }
-.search-icon {
-  position: absolute;
-  left: 28px; top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
+.search-icon { position: absolute; left: 28px; top: 50%; transform: translateY(-50%); pointer-events: none; }
 .search-icon svg { width: 15px; height: 15px; stroke: var(--text-3); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ── CHIPS ──────────────────────────────── */
-.chip-row {
-  display: flex;
-  gap: 6px;
-  padding: 8px 16px 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
+/* CHIPS */
+.chip-row { display: flex; gap: 6px; padding: 8px 16px 4px; overflow-x: auto; scrollbar-width: none; }
 .chip-row::-webkit-scrollbar { display: none; }
 .chip {
-  flex-shrink: 0;
-  padding: 5px 13px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12.5px;
-  color: var(--text-2);
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all .15s;
+  flex-shrink: 0; padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 12.5px;
+  color: var(--text-2); cursor: pointer; white-space: nowrap; transition: all .15s;
 }
 .chip.active { background: var(--green); border-color: var(--green); color: white; }
 
-/* ── ROW LABEL ──────────────────────────── */
-.row-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 18px 6px;
-}
+/* ROW LABEL */
+.row-label { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px 6px; }
 .row-label-text { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; font-weight: 500; color: var(--text-3); }
 .row-label-count { font-size: 12px; color: var(--text-3); }
 
-/* ── LIST ───────────────────────────────── */
+/* LIST + CARD */
 .list { display: flex; flex-direction: column; gap: 7px; padding: 0 16px; }
-
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 13px 15px;
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  cursor: pointer;
-  transition: border-color .15s, transform .1s;
-  user-select: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 13px 15px; display: flex; align-items: center; gap: 11px;
+  cursor: pointer; transition: border-color .15s, transform .1s; user-select: none;
 }
 .card:active { transform: scale(.99); border-color: var(--green); }
-
 .card-main { flex: 1; min-width: 0; }
 .card-name { font-weight: 500; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-meta { font-size: 12px; color: var(--text-2); margin-top: 2px; }
 .card-aside { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
 
-/* ── INNER TABS ─────────────────────────── */
-.inner-tabs {
-  display: flex;
-  margin: 12px 16px 10px;
-  background: var(--surface-2);
-  border-radius: var(--r-sm);
-  padding: 3px;
-}
+/* INNER TABS */
+.inner-tabs { display: flex; margin: 12px 16px 10px; background: var(--surface-2); border-radius: var(--r-sm); padding: 3px; }
 .inner-tab {
-  flex: 1;
-  padding: 7px;
-  border-radius: 6px;
-  border: none;
-  background: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  color: var(--text-2);
-  cursor: pointer;
-  transition: all .15s;
+  flex: 1; padding: 7px; border-radius: 6px; border: none; background: none;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-2);
+  cursor: pointer; transition: all .15s;
 }
 .inner-tab.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
 
-/* ── EMPTY ──────────────────────────────── */
-.empty {
-  padding: 52px 24px;
-  text-align: center;
-  color: var(--text-3);
-}
+/* EMPTY */
+.empty { padding: 52px 24px; text-align: center; color: var(--text-3); }
 .empty-icon { font-size: 36px; margin-bottom: 10px; }
 .empty p { font-size: 13.5px; line-height: 1.7; }
 
-/* ── BADGE ──────────────────────────────── */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 500;
-}
-.badge-green  { background: var(--green-light);  color: var(--green); }
-.badge-red    { background: var(--red-light);    color: var(--red); }
-.badge-amber  { background: var(--amber-light);  color: var(--amber); }
+/* BADGE */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.badge-green   { background: var(--green-light); color: var(--green); }
+.badge-blue    { background: var(--blue-light);  color: var(--blue); }
+.badge-amber   { background: var(--amber-light); color: var(--amber); }
 .badge-neutral { background: var(--surface-2);   color: var(--text-2); }
 
-/* ── PRICE ──────────────────────────────── */
+/* PRICE */
 .price { font-family: 'Instrument Serif', serif; font-size: 15px; font-weight: 400; }
 
-/* ── STATUS DOT ─────────────────────────── */
+/* STATUS DOT */
 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dot-ok    { background: var(--green); }
-.dot-low   { background: var(--amber); }
-.dot-out   { background: var(--red); }
+.dot-ok  { background: var(--green); }
+.dot-low { background: var(--amber); }
+.dot-out { background: var(--red); }
 
-/* ── STOCK BAR ──────────────────────────── */
+/* STOCK BAR */
 .stock-bar { width: 44px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
 .stock-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width .3s; }
 .stock-fill.low { background: var(--amber); }
 .stock-fill.out { background: var(--red); }
 
-/* ── MINI BTNS ──────────────────────────── */
+/* MINI BTNS */
 .mini-btn {
-  width: 28px; height: 28px;
-  border-radius: var(--r-xs);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text);
-  transition: background .1s;
+  width: 28px; height: 28px; border-radius: var(--r-xs); border: 1px solid var(--border);
+  background: var(--surface); cursor: pointer; font-size: 16px; display: flex;
+  align-items: center; justify-content: center; color: var(--text); transition: background .1s;
 }
 .mini-btn:active { background: var(--surface-2); }
 .mini-btn-green { border: none; background: var(--green); color: white; }
 .mini-btn-green:active { background: var(--green-dim); }
 
-/* ── WEEK NAV ───────────────────────────── */
-.week-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px 8px;
-}
+/* WEEK NAV */
+.week-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 8px; }
 .week-nav-label { font-family: 'Instrument Serif', serif; font-size: 18px; }
 .week-nav-btn {
-  width: 32px; height: 32px;
-  border-radius: var(--r-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-2);
-  transition: border-color .15s;
+  width: 32px; height: 32px; border-radius: var(--r-sm); border: 1px solid var(--border);
+  background: var(--surface); cursor: pointer; display: flex; align-items: center;
+  justify-content: center; color: var(--text-2); transition: border-color .15s;
 }
 .week-nav-btn:active { border-color: var(--green); }
 .week-nav-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-/* ── DAY BLOCK ──────────────────────────── */
+/* DAY BLOCK */
 .day-block { margin: 0 16px 10px; }
 .day-label {
-  font-size: 10.5px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .8px;
-  color: var(--text-3);
-  padding: 6px 0 5px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px;
+  color: var(--text-3); padding: 6px 0 5px; display: flex; align-items: center; gap: 6px;
 }
 .day-label.today { color: var(--green); }
 .day-label-date { font-weight: 400; color: var(--text-3); text-transform: none; letter-spacing: 0; }
 
-/* ── TASK ───────────────────────────────── */
-.task {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 11px 13px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 5px;
-}
+/* TASK */
+.task { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 11px 13px; display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
 .task-check {
-  width: 20px; height: 20px;
-  border-radius: 6px;
-  border: 1.5px solid var(--border);
-  flex-shrink: 0;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all .15s;
+  width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border);
+  flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
 .task-check.done { background: var(--green); border-color: var(--green); }
-.task-check.done::after {
-  content: '';
-  width: 4px; height: 8px;
-  border-right: 2px solid white;
-  border-bottom: 2px solid white;
-  transform: rotate(45deg) translate(-1px,-1px);
-  display: block;
-}
+.task-check.done::after { content: ''; width: 4px; height: 8px; border-right: 2px solid white; border-bottom: 2px solid white; transform: rotate(45deg) translate(-1px,-1px); display: block; }
 .task-content { flex: 1; min-width: 0; }
 .task-title { font-size: 14px; font-weight: 500; }
 .task-title.done { text-decoration: line-through; color: var(--text-3); }
 .task-sub { font-size: 12px; color: var(--text-2); margin-top: 1px; }
 
-/* ── ORDER CARD ─────────────────────────── */
-.order-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 13px 15px;
-  margin-bottom: 7px;
-}
+/* ORDER CARD */
+.order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 15px; margin-bottom: 7px; }
 .order-row { display: flex; align-items: center; gap: 8px; }
 .order-name { flex: 1; font-weight: 500; font-size: 14.5px; }
 .order-name.done { text-decoration: line-through; color: var(--text-3); }
-
-.qty-ctrl {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--surface-2);
-  border-radius: var(--r-sm);
-  padding: 3px;
-}
-.qty-btn {
-  width: 26px; height: 26px;
-  border: none;
-  background: var(--surface);
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text);
-  font-weight: 500;
-  transition: background .1s;
-}
+.qty-ctrl { display: flex; align-items: center; gap: 6px; background: var(--surface-2); border-radius: var(--r-sm); padding: 3px; }
+.qty-btn { width: 26px; height: 26px; border: none; background: var(--surface); border-radius: 5px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; color: var(--text); font-weight: 500; transition: background .1s; }
 .qty-btn:active { background: var(--border); }
 .qty-val { font-size: 13px; font-weight: 500; min-width: 36px; text-align: center; }
 .order-note { font-size: 12px; color: var(--text-2); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 
-/* ── MONEY CARD ─────────────────────────── */
-.money-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 15px;
-  margin-bottom: 8px;
-}
-.money-name {
-  font-family: 'Instrument Serif', serif;
-  font-size: 18px;
-  margin-bottom: 11px;
-}
-.money-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
-  padding: 2.5px 0;
-}
+/* MONEY CARD */
+.money-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 15px; margin-bottom: 8px; }
+.money-name { font-family: 'Instrument Serif', serif; font-size: 18px; margin-bottom: 11px; }
+.money-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 2.5px 0; }
 .money-lbl { color: var(--text-2); }
 .money-val { font-weight: 500; }
 .money-total { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; font-size: 14px; }
 .money-profit .money-val { color: var(--green); }
 .money-loss   .money-val { color: var(--red); }
-
-.sell-input {
-  width: 78px;
-  padding: 4px 8px;
-  border: 1px solid var(--border);
-  border-radius: var(--r-xs);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text);
-  background: var(--bg);
-  text-align: right;
-  outline: none;
-}
+.sell-input { width: 78px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--r-xs); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); background: var(--bg); text-align: right; outline: none; }
 .sell-input:focus { border-color: var(--green); }
 
-/* ── MODAL ──────────────────────────────── */
-.overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(20,18,14,.5);
-  z-index: 100;
-  align-items: flex-end;
-  backdrop-filter: blur(3px);
-}
+/* MODAL */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,14,.5); z-index: 100; align-items: flex-end; backdrop-filter: blur(3px); }
 .overlay.open { display: flex; }
+.overlay.on-top { z-index: 110; }
+.modal { width: 100%; max-width: 600px; margin: 0 auto; background: var(--surface); border-radius: 16px 16px 0 0; padding: 0 20px calc(22px + var(--safe-b)); max-height: 92vh; overflow-y: auto; animation: up .22s ease-out; }
+@keyframes up { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-handle { width: 36px; height: 4px; background: var(--surface-3); border-radius: 2px; margin: 14px auto 18px; }
+.modal-title { font-family: 'Instrument Serif', serif; font-size: 22px; margin-bottom: 20px; }
 
-.modal {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  background: var(--surface);
-  border-radius: 16px 16px 0 0;
-  padding: 0 20px calc(22px + var(--safe-b));
-  max-height: 92vh;
-  overflow-y: auto;
-  animation: up .22s ease-out;
-}
-@keyframes up {
-  from { transform: translateY(16px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
-.modal-handle {
-  width: 36px; height: 4px;
-  background: var(--surface-3);
-  border-radius: 2px;
-  margin: 14px auto 18px;
-}
-.modal-title {
-  font-family: 'Instrument Serif', serif;
-  font-size: 22px;
-  margin-bottom: 20px;
-}
-
-/* ── FORM ───────────────────────────────── */
+/* FORM */
 .field { margin-bottom: 14px; }
-.field label {
-  display: block;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .6px;
-  color: var(--text-2);
-  margin-bottom: 5px;
+.field label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--text-2); margin-bottom: 5px; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 10px 13px; background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r-sm); font-family: 'DM Sans', sans-serif; font-size: 14.5px;
+  color: var(--text); outline: none; transition: border-color .15s; appearance: none; -webkit-appearance: none;
 }
-.field input,
-.field select,
-.field textarea {
-  width: 100%;
-  padding: 10px 13px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14.5px;
-  color: var(--text);
-  outline: none;
-  transition: border-color .15s;
-  appearance: none;
-}
-.field input:focus,
-.field select:focus,
-.field textarea:focus { border-color: var(--green); }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
 .field textarea { resize: none; height: 78px; }
 .field-row { display: flex; gap: 10px; }
 .field-row .field { flex: 1; }
-
-/* ── BUTTONS ────────────────────────────── */
-.btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 12px 18px;
-  border-radius: var(--r);
-  border: none;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14.5px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all .15s;
-  width: 100%;
+.field select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A09890' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px;
 }
+
+/* BUTTONS */
+.btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 18px; border-radius: var(--r); border: none; font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 500; cursor: pointer; transition: all .15s; width: 100%; }
 .btn-primary { background: var(--green); color: white; }
 .btn-primary:active { background: var(--green-dim); }
 .btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border); }
@@ -552,28 +263,17 @@ main {
 .btn-row { display: flex; gap: 8px; margin-top: 6px; }
 .btn-row .btn { flex: 1; }
 
-/* ── LOADING ────────────────────────────── */
+/* MISC */
 .loading { padding: 44px; text-align: center; color: var(--text-3); font-size: 13.5px; }
-
-/* ── SETUP BANNER ───────────────────────── */
-.setup-banner {
-  margin: 12px 16px;
-  padding: 14px 16px;
-  background: var(--amber-light);
-  border: 1px solid #D4A050;
-  border-radius: var(--r);
-  font-size: 13px;
-  color: var(--amber);
-  line-height: 1.6;
-}
+.setup-banner { margin: 12px 16px; padding: 14px 16px; background: var(--amber-light); border: 1px solid #D4A050; border-radius: var(--r); font-size: 13px; color: var(--amber); line-height: 1.6; }
 .setup-banner strong { font-weight: 600; display: block; margin-bottom: 4px; }
 .setup-banner code { font-family: monospace; background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- HEADER -->
   <header class="app-header">
     <h1 id="sec-title">Ingredients</h1>
     <button class="header-btn" id="add-btn" onclick="openAdd()">
@@ -581,10 +281,9 @@ main {
     </button>
   </header>
 
-  <!-- MAIN -->
   <main id="main">
 
-    <!-- ── INGREDIENTS ── -->
+    <!-- INGREDIENTS -->
     <section class="section active" id="sec-ingredients">
       <div class="search-wrap">
         <span class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
@@ -598,40 +297,47 @@ main {
       <div class="list" id="ing-list"><div class="loading">Loading…</div></div>
     </section>
 
-    <!-- ── RECIPES ── -->
+    <!-- RECIPES -->
     <section class="section" id="sec-recipes">
-      <div class="search-wrap">
+      <div class="inner-tabs">
+        <button class="inner-tab active" id="rec-tab-components" onclick="recTab('components')">Components</button>
+        <button class="inner-tab" id="rec-tab-dishes" onclick="recTab('dishes')">Dishes</button>
+      </div>
+      <div class="search-wrap" style="padding-top:4px">
         <span class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
-        <input type="search" id="rec-search" placeholder="Search recipes…" oninput="filterRec()">
+        <input type="search" id="rec-search" placeholder="Search…" oninput="filterRec()">
       </div>
       <div class="chip-row" id="rec-chips"></div>
       <div class="row-label">
-        <span class="row-label-text">All recipes</span>
+        <span class="row-label-text" id="rec-list-label">Components</span>
         <span class="row-label-count" id="rec-count"></span>
       </div>
       <div class="list" id="rec-list"><div class="loading">Loading…</div></div>
     </section>
 
-    <!-- ── PANTRY ── -->
+    <!-- PANTRY -->
     <section class="section" id="sec-pantry">
       <div class="inner-tabs">
         <button class="inner-tab active" onclick="pantryTab('ingredients')">Ingredients</button>
-        <button class="inner-tab" onclick="pantryTab('prep')">Prep items</button>
+        <button class="inner-tab" onclick="pantryTab('components')">Components</button>
       </div>
-      <div id="pantry-ing">
+      <div id="pantry-ing-wrap">
         <div class="row-label">
           <span class="row-label-text">Stock status</span>
           <span class="row-label-count" id="pantry-attention"></span>
         </div>
         <div class="list" id="pantry-ing-list"><div class="loading">Loading…</div></div>
       </div>
-      <div id="pantry-prep" style="display:none">
-        <div class="row-label"><span class="row-label-text">Prep stock</span></div>
-        <div class="list" id="pantry-prep-list"><div class="loading">Loading…</div></div>
+      <div id="pantry-comp-wrap" style="display:none">
+        <div class="row-label">
+          <span class="row-label-text">Component stock</span>
+          <span class="row-label-count" id="pantry-comp-attention"></span>
+        </div>
+        <div class="list" id="pantry-comp-list"><div class="loading">Loading…</div></div>
       </div>
     </section>
 
-    <!-- ── PREP ── -->
+    <!-- PREP -->
     <section class="section" id="sec-prep">
       <div class="week-nav">
         <button class="week-nav-btn" onclick="shiftWeek(-1)"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
@@ -641,39 +347,40 @@ main {
       <div id="prep-days"></div>
     </section>
 
-    <!-- ── ORDERS ── -->
+    <!-- ORDERS -->
     <section class="section" id="sec-orders">
       <div class="inner-tabs">
         <button class="inner-tab active" onclick="orderTab('asap')">ASAP</button>
         <button class="inner-tab" onclick="orderTab('next_week')">Next week</button>
       </div>
-      <div id="orders-asap">
-        <div class="row-label">
-          <span class="row-label-text">Urgent</span>
-          <span class="row-label-count" id="asap-count"></span>
-        </div>
+      <div id="orders-asap-wrap">
+        <div class="row-label"><span class="row-label-text">Urgent</span><span class="row-label-count" id="asap-count"></span></div>
         <div style="padding:0 16px" id="orders-asap-list"><div class="loading">Loading…</div></div>
       </div>
-      <div id="orders-next" style="display:none">
-        <div class="row-label">
-          <span class="row-label-text">Next week</span>
-          <span class="row-label-count" id="next-count"></span>
-        </div>
-        <div style="padding:0 16px" id="orders-next-list"><div class="loading">Loading…</div></div>
+      <div id="orders-next-wrap" style="display:none">
+        <div class="row-label"><span class="row-label-text">Next week</span><span class="row-label-count" id="next-count"></span></div>
+        <div style="padding:0 16px" id="orders-next-list"></div>
       </div>
     </section>
 
-    <!-- ── MONEY ── -->
+    <!-- MONEY -->
     <section class="section" id="sec-money">
-      <div class="row-label" style="padding-top:16px">
-        <span class="row-label-text">Recipe costing</span>
+      <div class="inner-tabs">
+        <button class="inner-tab active" onclick="moneyTab('dishes')">Dish costing</button>
+        <button class="inner-tab" onclick="moneyTab('components')">Component costs</button>
       </div>
-      <div style="padding:0 16px" id="money-list"><div class="loading">Loading…</div></div>
+      <div id="money-dishes-wrap">
+        <div class="row-label" style="padding-top:6px"><span class="row-label-text">Dishes</span></div>
+        <div style="padding:0 16px" id="money-dishes-list"><div class="loading">Loading…</div></div>
+      </div>
+      <div id="money-comp-wrap" style="display:none">
+        <div class="row-label" style="padding-top:6px"><span class="row-label-text">Components</span></div>
+        <div style="padding:0 16px" id="money-comp-list"></div>
+      </div>
     </section>
 
   </main>
 
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="nav-tab active" data-s="ingredients" onclick="goTo('ingredients')">
       <svg viewBox="0 0 24 24"><path d="M7 22V11M12 22V4M17 22V14" stroke-linecap="round"/></svg>
@@ -702,9 +409,7 @@ main {
   </nav>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     MODALS
-═══════════════════════════════════════════ -->
+<!-- ═══════ MODALS ═══════ -->
 
 <!-- ADD / EDIT INGREDIENT -->
 <div class="overlay" id="m-ingredient">
@@ -714,7 +419,26 @@ main {
     <input type="hidden" id="ing-id">
     <div class="field"><label>Name</label><input type="text" id="ing-name" placeholder="e.g. Heavy cream"></div>
     <div class="field-row">
-      <div class="field"><label>Category</label><input type="text" id="ing-cat" placeholder="e.g. Dairy"></div>
+      <div class="field">
+        <label>Category</label>
+        <select id="ing-cat">
+          <option value="">— select —</option>
+          <option>Meat &amp; poultry</option>
+          <option>Fish &amp; seafood</option>
+          <option>Dairy &amp; eggs</option>
+          <option>Vegetables</option>
+          <option>Fruit</option>
+          <option>Herbs</option>
+          <option>Spices</option>
+          <option>Sauces &amp; condiments</option>
+          <option>Oils &amp; fats</option>
+          <option>Bread &amp; pastry</option>
+          <option>Nuts &amp; seeds</option>
+          <option>Drinks</option>
+          <option>Pantry items</option>
+          <option>Other</option>
+        </select>
+      </div>
       <div class="field">
         <label>Unit</label>
         <select id="ing-unit">
@@ -734,7 +458,7 @@ main {
     <div class="field"><label>Supplier</label><input type="text" id="ing-supplier" placeholder="Supplier name"></div>
     <div class="field"><label>Supplier contact / notes</label><textarea id="ing-notes" placeholder="Phone, email, ordering details…"></textarea></div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="close('m-ingredient')">Cancel</button>
+      <button class="btn btn-ghost" onclick="closeModal('m-ingredient')">Cancel</button>
       <button class="btn btn-primary" onclick="saveIng()">Save</button>
     </div>
   </div>
@@ -746,7 +470,7 @@ main {
     <div class="modal-handle"></div>
     <div id="ing-detail-body"></div>
     <div class="btn-row" style="margin-top:8px">
-      <button class="btn btn-ghost" onclick="close('m-ing-detail')">Close</button>
+      <button class="btn btn-ghost" onclick="closeModal('m-ing-detail')">Close</button>
       <button class="btn btn-primary" id="ing-order-btn">Add to order</button>
     </div>
   </div>
@@ -756,20 +480,36 @@ main {
 <div class="overlay" id="m-recipe">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="m-rec-title">New recipe</div>
+    <div class="modal-title" id="m-rec-title">New component</div>
     <input type="hidden" id="rec-id">
-    <div class="field"><label>Name</label><input type="text" id="rec-name" placeholder="e.g. Sourdough focaccia"></div>
+    <input type="hidden" id="rec-type" value="component">
+    <div class="field"><label>Name</label><input type="text" id="rec-name" placeholder="e.g. Confit garlic"></div>
     <div class="field-row">
-      <div class="field"><label>Category</label><input type="text" id="rec-cat" placeholder="e.g. Bread"></div>
-      <div class="field"><label>Portions</label><input type="number" id="rec-portions" placeholder="4" min="1"></div>
+      <div class="field">
+        <label>Category</label>
+        <select id="rec-cat"><option value="">— select —</option></select>
+      </div>
+      <div class="field"><label>Yield / portions</label><input type="number" id="rec-portions" placeholder="4" min="1"></div>
+    </div>
+    <div class="field">
+      <label>Yield unit</label>
+      <select id="rec-yield-unit">
+        <option value="portions">portions</option>
+        <option value="kg">kg</option>
+        <option value="g">g</option>
+        <option value="liter">liter</option>
+        <option value="ml">ml</option>
+        <option value="pieces">pieces</option>
+        <option value="jars">jars</option>
+      </select>
     </div>
     <div class="field-row">
       <div class="field"><label>Hands-on (min)</label><input type="number" id="rec-handson" placeholder="30" min="0"></div>
       <div class="field"><label>Prep days</label><input type="number" id="rec-days" placeholder="1" min="1"></div>
     </div>
-    <div class="field"><label>Notes</label><textarea id="rec-notes" placeholder="Yield, technique, storage…"></textarea></div>
+    <div class="field"><label>Notes</label><textarea id="rec-notes" placeholder="Technique, storage, shelf life…"></textarea></div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="close('m-recipe')">Cancel</button>
+      <button class="btn btn-ghost" onclick="closeModal('m-recipe')">Cancel</button>
       <button class="btn btn-primary" onclick="saveRec()">Save</button>
     </div>
   </div>
@@ -781,7 +521,7 @@ main {
     <div class="modal-handle"></div>
     <div id="rec-detail-body"></div>
     <div class="btn-row" style="margin-top:8px">
-      <button class="btn btn-ghost" onclick="close('m-rec-detail')">Close</button>
+      <button class="btn btn-ghost" onclick="closeModal('m-rec-detail')">Close</button>
       <button class="btn btn-primary" id="rec-prep-btn">Add to prep</button>
     </div>
   </div>
@@ -792,38 +532,31 @@ main {
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Add to order</div>
-    <div class="field"><label>Item</label><input type="text" id="ord-name" placeholder="Ingredient or item name"></div>
+    <div class="field"><label>Item</label><input type="text" id="ord-name" placeholder="Ingredient name"></div>
     <div class="field-row">
       <div class="field"><label>Amount</label><input type="number" id="ord-amount" placeholder="0" min="0" step="0.1"></div>
       <div class="field">
         <label>Unit</label>
         <select id="ord-unit">
-          <option value="kg">kg</option>
-          <option value="g">g</option>
-          <option value="liter">liter</option>
-          <option value="piece">piece</option>
-          <option value="pack">pack</option>
-          <option value="can">can</option>
-          <option value="bottle">bottle</option>
+          <option value="kg">kg</option><option value="g">g</option><option value="liter">liter</option>
+          <option value="piece">piece</option><option value="pack">pack</option>
+          <option value="can">can</option><option value="bottle">bottle</option>
         </select>
       </div>
     </div>
     <div class="field">
       <label>Priority</label>
-      <select id="ord-priority">
-        <option value="asap">ASAP</option>
-        <option value="next_week">Next week</option>
-      </select>
+      <select id="ord-priority"><option value="asap">ASAP</option><option value="next_week">Next week</option></select>
     </div>
-    <div class="field"><label>Notes</label><input type="text" id="ord-notes" placeholder="Brand, spec, supplier instruction…"></div>
+    <div class="field"><label>Notes</label><input type="text" id="ord-notes" placeholder="Brand, spec, supplier note…"></div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="close('m-order')">Cancel</button>
+      <button class="btn btn-ghost" onclick="closeModal('m-order')">Cancel</button>
       <button class="btn btn-primary" onclick="saveOrder()">Add to order</button>
     </div>
   </div>
 </div>
 
-<!-- ADD PREP TASK (manual) -->
+<!-- ADD PREP TASK -->
 <div class="overlay" id="m-prep">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -832,56 +565,45 @@ main {
     <div class="field"><label>Scheduled date</label><input type="date" id="prep-date"></div>
     <div class="field">
       <label>Priority</label>
-      <select id="prep-priority">
-        <option value="normal">Normal</option>
-        <option value="asap">ASAP</option>
-      </select>
+      <select id="prep-priority"><option value="normal">Normal</option><option value="asap">ASAP</option></select>
     </div>
     <div class="field"><label>Notes</label><input type="text" id="prep-notes" placeholder="Optional note…"></div>
     <div class="btn-row">
-      <button class="btn btn-ghost" onclick="close('m-prep')">Cancel</button>
+      <button class="btn btn-ghost" onclick="closeModal('m-prep')">Cancel</button>
       <button class="btn btn-primary" onclick="savePrepTask()">Add task</button>
     </div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// ⚙ CONFIG — replace these two values
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
 const SUPABASE_URL = 'https://mhhmyrmvybcrlhqyzrkj.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_KlgzzKrVkey0uf0WgOJh0Q_VSX4I5eI';
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 
 const configured = !SUPABASE_URL.startsWith('YOUR');
 const db = configured ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-// ─── APP STATE ───────────────────────────
+const COMPONENT_CATS = ['Stocks & sauces','Dressings & emulsions','Pickles & ferments','Confits & slow-cooked','Pastry & dough','Confectionery','Cured & marinated','Infusions & oils','Other'];
+const DISH_CATS      = ['Brunch','Cold snacks','Warm snacks','Hot dishes','Desserts'];
+
 const S = {
   section: 'ingredients',
-  ingredients: [],
-  recipes: [],
-  pantryIng: [],
-  pantryPrep: [],
-  orders: [],
-  prepTasks: [],
+  ingredients: [], recipes: [], pantryIng: [], pantryComp: [],
+  orders: [], prepTasks: [],
   weekStart: monday(new Date()),
   ingQ: '', ingCat: 'all',
-  recQ: '', recCat: 'all',
+  recType: 'components', recQ: '', recCat: 'all',
   pantryTabActive: 'ingredients',
-  orderTabActive: 'asap',
+  orderTabActive:  'asap',
+  moneyTabActive:  'dishes',
 };
 
-// ─── NAVIGATION ──────────────────────────
-const titles = {
-  ingredients: 'Ingredients',
-  recipes: 'Recipes',
-  pantry: 'Pantry',
-  prep: 'Prep',
-  orders: 'Orders',
-  money: 'Costing',
-};
-const hasAdd = { ingredients: true, recipes: true, pantry: false, prep: true, orders: true, money: false };
+// ── NAV ──────────────────────────────────
+const titles = { ingredients:'Ingredients', recipes:'Recipes', pantry:'Pantry', prep:'Prep', orders:'Orders', money:'Costing' };
+const hasAdd  = { ingredients:true, recipes:true, pantry:false, prep:true, orders:true, money:false };
 
 function goTo(name) {
   S.section = name;
@@ -895,21 +617,31 @@ function goTo(name) {
 }
 
 function openAdd() {
-  const map = { ingredients: 'm-ingredient', recipes: 'm-recipe', orders: 'm-order', prep: 'm-prep' };
-  if (map[S.section]) show(map[S.section]);
+  if (S.section === 'recipes') { openRecModal(S.recType === 'components' ? 'component' : 'dish'); return; }
+  const map = { ingredients:'m-ingredient', orders:'m-order', prep:'m-prep' };
+  if (map[S.section]) showModal(map[S.section]);
 }
 
-// ─── MODAL HELPERS ───────────────────────
-function show(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
-function close(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
-
+// ── MODALS ────────────────────────────────
+// Note: renamed to showModal/closeModal to avoid conflicting with window.close()
+function showModal(id, onTop = false) {
+  const el = document.getElementById(id);
+  el.classList.add('open');
+  if (onTop) el.classList.add('on-top');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  const el = document.getElementById(id);
+  el.classList.remove('open', 'on-top');
+  if (!document.querySelector('.overlay.open')) document.body.style.overflow = '';
+}
 document.querySelectorAll('.overlay').forEach(o => {
-  o.addEventListener('click', e => { if (e.target === o) close(o.id); });
+  o.addEventListener('click', e => { if (e.target === o) closeModal(o.id); });
 });
 
-// ─── LOAD SECTION ────────────────────────
+// ── LOAD ──────────────────────────────────
 async function load(name) {
-  if (!configured) { showSetup(name); return; }
+  if (!configured) { showSetup(); return; }
   try {
     if (name === 'ingredients') await loadIng();
     if (name === 'recipes')     await loadRec();
@@ -920,45 +652,35 @@ async function load(name) {
   } catch(e) { console.error(e); }
 }
 
-function showSetup(name) {
-  const targets = {
-    ingredients: 'ing-list', recipes: 'rec-list',
-    pantry: 'pantry-ing-list', orders: 'orders-asap-list', money: 'money-list',
-  };
-  const el = document.getElementById(targets[name]);
-  if (el) el.innerHTML = `
-    <div class="setup-banner">
-      <strong>Setup needed</strong>
-      Open this file in a text editor and replace <code>YOUR_SUPABASE_URL</code> and <code>YOUR_SUPABASE_ANON_KEY</code> near the top of the &lt;script&gt; section.<br><br>
-      Then paste the DB schema from the comment at the bottom of this file into your Supabase SQL editor and run it.
-    </div>`;
+function showSetup() {
+  const b = `<div class="setup-banner"><strong>Setup needed</strong>Replace <code>YOUR_SUPABASE_URL</code> and <code>YOUR_SUPABASE_ANON_KEY</code> near the top of the script, then paste the SQL schema from the HTML comment at the bottom into Supabase → SQL Editor and run it.</div>`;
+  ['ing-list','rec-list','pantry-ing-list','orders-asap-list','money-dishes-list'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.innerHTML = b;
+  });
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 // INGREDIENTS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 async function loadIng() {
   document.getElementById('ing-list').innerHTML = '<div class="loading">Loading…</div>';
   const { data } = await db.from('ingredients').select('*').order('name');
   S.ingredients = data || [];
   renderIngChips(); renderIng();
 }
-
 function renderIngChips() {
   const cats = ['all', ...new Set(S.ingredients.map(i => i.category).filter(Boolean).sort())];
   document.getElementById('ing-chips').innerHTML = cats.map(c =>
-    `<button class="chip ${c === S.ingCat ? 'active' : ''}" onclick="setIngCat('${c}')">${c === 'all' ? 'All' : c}</button>`
+    `<button class="chip ${c===S.ingCat?'active':''}" onclick="setIngCat('${c}')">${c==='all'?'All':c}</button>`
   ).join('');
 }
-
 function setIngCat(c) { S.ingCat = c; renderIngChips(); renderIng(); }
-function filterIng() { S.ingQ = document.getElementById('ing-search').value.toLowerCase(); renderIng(); }
-
+function filterIng()  { S.ingQ = document.getElementById('ing-search').value.toLowerCase(); renderIng(); }
 function renderIng() {
   let list = S.ingredients;
   if (S.ingCat !== 'all') list = list.filter(i => i.category === S.ingCat);
   if (S.ingQ) list = list.filter(i => i.name.toLowerCase().includes(S.ingQ));
-  document.getElementById('ing-count').textContent = `${list.length}`;
+  document.getElementById('ing-count').textContent = list.length;
   if (!list.length) {
     document.getElementById('ing-list').innerHTML = `<div class="empty"><div class="empty-icon">🌿</div><p>No ingredients yet.<br>Tap + to add your first one.</p></div>`;
     return;
@@ -966,210 +688,216 @@ function renderIng() {
   document.getElementById('ing-list').innerHTML = list.map(i => `
     <div class="card" onclick="ingDetail('${i.id}')">
       <div class="card-main">
-        <div class="card-name">${i.name}</div>
-        <div class="card-meta">${i.category || '—'} · ${i.supplier || 'No supplier'}</div>
+        <div class="card-name">${esc(i.name)}</div>
+        <div class="card-meta">${esc(i.category||'—')} · ${esc(i.supplier||'No supplier')}</div>
       </div>
       <div class="card-aside">
         <span class="price">${i.price_per_unit != null ? `€${(+i.price_per_unit).toFixed(2)}` : '—'}</span>
-        <span style="font-size:11px;color:var(--text-3)">/ ${i.unit || 'unit'}</span>
+        <span style="font-size:11px;color:var(--text-3)">/ ${esc(i.unit||'unit')}</span>
       </div>
     </div>`).join('');
 }
-
 function ingDetail(id) {
   const i = S.ingredients.find(x => x.id === id);
   if (!i) return;
   document.getElementById('ing-detail-body').innerHTML = `
-    <div style="margin-bottom:14px">
-      <div style="font-family:'Instrument Serif',serif;font-size:24px;margin-bottom:6px">${i.name}</div>
-      ${i.category ? `<span class="badge badge-neutral">${i.category}</span>` : ''}
-    </div>
+    <div style="font-family:'Instrument Serif',serif;font-size:24px;margin-bottom:6px">${esc(i.name)}</div>
+    ${i.category ? `<span class="badge badge-neutral" style="margin-bottom:14px;display:inline-flex">${esc(i.category)}</span>` : ''}
     <div style="background:var(--bg);border-radius:var(--r);padding:13px 14px;margin-bottom:12px">
-      ${row('Unit', i.unit || '—')}
-      ${row('Price', i.price_per_unit != null ? `€${(+i.price_per_unit).toFixed(2)} / ${i.unit}` : '—')}
-      ${row('Supplier', i.supplier || '—')}
-      ${i.supplier_contact ? row('Contact', i.supplier_contact) : ''}
+      ${drow('Unit', i.unit||'—')}
+      ${drow('Price', i.price_per_unit != null ? `€${(+i.price_per_unit).toFixed(2)} / ${i.unit}` : '—')}
+      ${drow('Supplier', i.supplier||'—')}
+      ${i.supplier_contact ? drow('Contact', i.supplier_contact) : ''}
     </div>
-    <div class="btn-row" style="margin-bottom:0">
-      <button class="btn btn-ghost" onclick="editIng('${i.id}');close('m-ing-detail')">Edit</button>
-    </div>`;
-  document.getElementById('ing-order-btn').onclick = () => { close('m-ing-detail'); prefillOrder(i); };
-  show('m-ing-detail');
+    <button class="btn btn-ghost" onclick="editIng('${i.id}')">Edit ingredient</button>`;
+  document.getElementById('ing-order-btn').onclick = () => { closeModal('m-ing-detail'); prefillOrder(i); };
+  showModal('m-ing-detail');
 }
-
 function editIng(id) {
   const i = S.ingredients.find(x => x.id === id);
   if (!i) return;
   document.getElementById('m-ing-title').textContent = 'Edit ingredient';
-  document.getElementById('ing-id').value = i.id;
-  document.getElementById('ing-name').value = i.name || '';
-  document.getElementById('ing-cat').value = i.category || '';
-  document.getElementById('ing-unit').value = i.unit || 'kg';
-  document.getElementById('ing-price').value = i.price_per_unit || '';
-  document.getElementById('ing-supplier').value = i.supplier || '';
-  document.getElementById('ing-notes').value = i.supplier_contact || '';
-  show('m-ingredient');
+  document.getElementById('ing-id').value        = i.id;
+  document.getElementById('ing-name').value      = i.name || '';
+  document.getElementById('ing-cat').value       = i.category || '';
+  document.getElementById('ing-unit').value      = i.unit || 'kg';
+  document.getElementById('ing-price').value     = i.price_per_unit || '';
+  document.getElementById('ing-supplier').value  = i.supplier || '';
+  document.getElementById('ing-notes').value     = i.supplier_contact || '';
+  showModal('m-ingredient', true);
 }
-
 async function saveIng() {
   const id = document.getElementById('ing-id').value;
   const payload = {
     name: document.getElementById('ing-name').value.trim(),
-    category: document.getElementById('ing-cat').value.trim() || null,
+    category: document.getElementById('ing-cat').value || null,
     unit: document.getElementById('ing-unit').value,
     price_per_unit: parseFloat(document.getElementById('ing-price').value) || null,
     supplier: document.getElementById('ing-supplier').value.trim() || null,
     supplier_contact: document.getElementById('ing-notes').value.trim() || null,
   };
   if (!payload.name) return;
-  if (id) { await db.from('ingredients').update(payload).eq('id', id); }
-  else     { await db.from('ingredients').insert(payload); }
-  close('m-ingredient');
+  if (id) await db.from('ingredients').update(payload).eq('id', id);
+  else    await db.from('ingredients').insert(payload);
+  closeModal('m-ingredient');
+  closeModal('m-ing-detail');
   clearIngForm();
   await loadIng();
 }
-
 function clearIngForm() {
   document.getElementById('m-ing-title').textContent = 'New ingredient';
-  ['ing-id','ing-name','ing-cat','ing-price','ing-supplier','ing-notes'].forEach(x => document.getElementById(x).value = '');
+  ['ing-id','ing-name','ing-price','ing-supplier','ing-notes'].forEach(x => document.getElementById(x).value = '');
+  document.getElementById('ing-cat').value  = '';
   document.getElementById('ing-unit').value = 'kg';
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 // RECIPES
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 async function loadRec() {
   document.getElementById('rec-list').innerHTML = '<div class="loading">Loading…</div>';
   const { data } = await db.from('recipes').select('*').order('name');
   S.recipes = data || [];
   renderRecChips(); renderRec();
 }
-
+function recTab(tab) {
+  S.recType = tab; S.recCat = 'all';
+  document.getElementById('rec-tab-components').classList.toggle('active', tab === 'components');
+  document.getElementById('rec-tab-dishes').classList.toggle('active',     tab === 'dishes');
+  document.getElementById('rec-list-label').textContent = tab === 'components' ? 'Components' : 'Dishes';
+  renderRecChips(); renderRec();
+}
 function renderRecChips() {
-  const cats = ['all', ...new Set(S.recipes.map(r => r.category).filter(Boolean).sort())];
+  const type = S.recType === 'components' ? 'component' : 'dish';
+  const cats = ['all', ...new Set(S.recipes.filter(r => r.type === type).map(r => r.category).filter(Boolean).sort())];
   document.getElementById('rec-chips').innerHTML = cats.map(c =>
-    `<button class="chip ${c === S.recCat ? 'active' : ''}" onclick="setRecCat('${c}')">${c === 'all' ? 'All' : c}</button>`
+    `<button class="chip ${c===S.recCat?'active':''}" onclick="setRecCat('${c}')">${c==='all'?'All':c}</button>`
   ).join('');
 }
-
 function setRecCat(c) { S.recCat = c; renderRecChips(); renderRec(); }
-function filterRec() { S.recQ = document.getElementById('rec-search').value.toLowerCase(); renderRec(); }
-
+function filterRec()  { S.recQ = document.getElementById('rec-search').value.toLowerCase(); renderRec(); }
 function renderRec() {
-  let list = S.recipes;
+  const type = S.recType === 'components' ? 'component' : 'dish';
+  let list = S.recipes.filter(r => r.type === type);
   if (S.recCat !== 'all') list = list.filter(r => r.category === S.recCat);
   if (S.recQ) list = list.filter(r => r.name.toLowerCase().includes(S.recQ));
-  document.getElementById('rec-count').textContent = `${list.length}`;
+  document.getElementById('rec-count').textContent = list.length;
   if (!list.length) {
-    document.getElementById('rec-list').innerHTML = `<div class="empty"><div class="empty-icon">📋</div><p>No recipes yet.<br>Tap + to add your first one.</p></div>`;
+    const icon = type === 'component' ? '🫙' : '🍽';
+    document.getElementById('rec-list').innerHTML = `<div class="empty"><div class="empty-icon">${icon}</div><p>No ${type}s yet.<br>Tap + to add your first one.</p></div>`;
     return;
   }
   document.getElementById('rec-list').innerHTML = list.map(r => `
     <div class="card" onclick="recDetail('${r.id}')">
       <div class="card-main">
-        <div class="card-name">${r.name}</div>
+        <div class="card-name">${esc(r.name)}</div>
         <div class="card-meta">
-          ${r.portions ? r.portions + ' portions' : ''}
-          ${r.hands_on_minutes ? ' · ' + fmtTime(r.hands_on_minutes) + ' hands-on' : ''}
-          ${r.total_prep_days > 1 ? ' · ' + r.total_prep_days + '-day prep' : ''}
+          ${r.portions ? r.portions + ' ' + (r.yield_unit||'portions') : ''}${r.hands_on_minutes ? ' · ' + fmtTime(r.hands_on_minutes) : ''}${r.total_prep_days > 1 ? ' · ' + r.total_prep_days + '-day prep' : ''}
         </div>
       </div>
       <div class="card-aside">
-        ${r.category ? `<span class="badge badge-neutral">${r.category}</span>` : ''}
+        ${r.category ? `<span class="badge ${type==='component'?'badge-blue':'badge-green'}">${esc(r.category)}</span>` : ''}
       </div>
     </div>`).join('');
 }
-
+function openRecModal(type) {
+  document.getElementById('rec-type').value = type;
+  document.getElementById('m-rec-title').textContent = type === 'component' ? 'New component' : 'New dish';
+  const cats = type === 'component' ? COMPONENT_CATS : DISH_CATS;
+  document.getElementById('rec-cat').innerHTML = `<option value="">— select —</option>` + cats.map(c => `<option>${c}</option>`).join('');
+  clearRecForm();
+  showModal('m-recipe');
+}
 function recDetail(id) {
   const r = S.recipes.find(x => x.id === id);
   if (!r) return;
+  const isComp = r.type === 'component';
   document.getElementById('rec-detail-body').innerHTML = `
-    <div style="font-family:'Instrument Serif',serif;font-size:24px;margin-bottom:8px">${r.name}</div>
-    ${r.category ? `<span class="badge badge-neutral" style="margin-bottom:12px;display:inline-block">${r.category}</span>` : ''}
+    <div style="font-family:'Instrument Serif',serif;font-size:24px;margin-bottom:8px">${esc(r.name)}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+      <span class="badge ${isComp?'badge-blue':'badge-green'}">${isComp?'Component':'Dish'}</span>
+      ${r.category ? `<span class="badge badge-neutral">${esc(r.category)}</span>` : ''}
+    </div>
     <div style="background:var(--bg);border-radius:var(--r);padding:13px 14px;margin-bottom:12px">
-      ${r.portions ? row('Portions', r.portions) : ''}
-      ${r.hands_on_minutes ? row('Hands-on time', fmtTime(r.hands_on_minutes)) : ''}
-      ${r.total_prep_days ? row('Prep days', r.total_prep_days) : ''}
-      ${r.notes ? row('Notes', r.notes) : ''}
+      ${r.portions ? drow('Yield', `${r.portions} ${r.yield_unit||'portions'}`) : ''}
+      ${r.hands_on_minutes ? drow('Hands-on time', fmtTime(r.hands_on_minutes)) : ''}
+      ${r.total_prep_days > 1 ? drow('Prep days', r.total_prep_days) : ''}
+      ${r.notes ? `<div class="divider"></div><div style="font-size:13px;color:var(--text-2);line-height:1.6">${esc(r.notes)}</div>` : ''}
     </div>
-    <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">
-      Steps & ingredients — coming in next build
-    </div>
-    <div class="btn-row" style="margin-bottom:0">
-      <button class="btn btn-ghost" onclick="editRec('${r.id}');close('m-rec-detail')">Edit</button>
-    </div>`;
+    <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">Ingredients &amp; steps — coming next</div>
+    <button class="btn btn-ghost" onclick="editRec('${r.id}')">Edit ${isComp?'component':'dish'}</button>`;
   document.getElementById('rec-prep-btn').onclick = () => {
-    close('m-rec-detail');
+    closeModal('m-rec-detail');
     document.getElementById('prep-title').value = r.name;
-    document.getElementById('prep-date').value = toDateStr(new Date());
-    show('m-prep');
+    document.getElementById('prep-date').value  = toDateStr(new Date());
+    showModal('m-prep');
   };
-  show('m-rec-detail');
+  showModal('m-rec-detail');
 }
-
 function editRec(id) {
   const r = S.recipes.find(x => x.id === id);
   if (!r) return;
-  document.getElementById('m-rec-title').textContent = 'Edit recipe';
-  document.getElementById('rec-id').value = r.id;
-  document.getElementById('rec-name').value = r.name || '';
-  document.getElementById('rec-cat').value = r.category || '';
-  document.getElementById('rec-portions').value = r.portions || '';
-  document.getElementById('rec-handson').value = r.hands_on_minutes || '';
-  document.getElementById('rec-days').value = r.total_prep_days || 1;
-  document.getElementById('rec-notes').value = r.notes || '';
-  show('m-recipe');
+  const cats = r.type === 'component' ? COMPONENT_CATS : DISH_CATS;
+  document.getElementById('rec-type').value      = r.type;
+  document.getElementById('m-rec-title').textContent = r.type === 'component' ? 'Edit component' : 'Edit dish';
+  document.getElementById('rec-cat').innerHTML   = `<option value="">— select —</option>` + cats.map(c => `<option ${c===r.category?'selected':''}>${c}</option>`).join('');
+  document.getElementById('rec-id').value        = r.id;
+  document.getElementById('rec-name').value      = r.name || '';
+  document.getElementById('rec-portions').value  = r.portions || '';
+  document.getElementById('rec-yield-unit').value = r.yield_unit || 'portions';
+  document.getElementById('rec-handson').value   = r.hands_on_minutes || '';
+  document.getElementById('rec-days').value      = r.total_prep_days || 1;
+  document.getElementById('rec-notes').value     = r.notes || '';
+  showModal('m-recipe', true);
 }
-
 async function saveRec() {
   const id = document.getElementById('rec-id').value;
   const payload = {
-    name: document.getElementById('rec-name').value.trim(),
-    category: document.getElementById('rec-cat').value.trim() || null,
-    portions: parseInt(document.getElementById('rec-portions').value) || null,
+    type:             document.getElementById('rec-type').value,
+    name:             document.getElementById('rec-name').value.trim(),
+    category:         document.getElementById('rec-cat').value || null,
+    portions:         parseInt(document.getElementById('rec-portions').value) || null,
+    yield_unit:       document.getElementById('rec-yield-unit').value || 'portions',
     hands_on_minutes: parseInt(document.getElementById('rec-handson').value) || null,
-    total_prep_days: parseInt(document.getElementById('rec-days').value) || 1,
-    notes: document.getElementById('rec-notes').value.trim() || null,
+    total_prep_days:  parseInt(document.getElementById('rec-days').value) || 1,
+    notes:            document.getElementById('rec-notes').value.trim() || null,
   };
   if (!payload.name) return;
-  if (id) { await db.from('recipes').update(payload).eq('id', id); }
-  else     { await db.from('recipes').insert(payload); }
-  close('m-recipe');
+  if (id) await db.from('recipes').update(payload).eq('id', id);
+  else    await db.from('recipes').insert(payload);
+  closeModal('m-recipe');
+  closeModal('m-rec-detail');
   clearRecForm();
   await loadRec();
 }
-
 function clearRecForm() {
-  document.getElementById('m-rec-title').textContent = 'New recipe';
-  ['rec-id','rec-name','rec-cat','rec-portions','rec-handson','rec-days','rec-notes'].forEach(x => {
+  ['rec-id','rec-name','rec-portions','rec-handson','rec-days','rec-notes'].forEach(x => {
     const el = document.getElementById(x); if (el) el.value = '';
   });
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 // PANTRY
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 async function loadPantry() {
-  document.getElementById('pantry-ing-list').innerHTML = '<div class="loading">Loading…</div>';
-  const [{ data: pi }, { data: pp }] = await Promise.all([
+  document.getElementById('pantry-ing-list').innerHTML  = '<div class="loading">Loading…</div>';
+  document.getElementById('pantry-comp-list').innerHTML = '<div class="loading">Loading…</div>';
+  const [{ data: pi }, { data: pc }] = await Promise.all([
     db.from('pantry_ingredients').select('*, ingredients(name, unit)').order('ingredients(name)'),
-    db.from('pantry_prep').select('*, recipes(name)').order('name'),
+    db.from('pantry_components').select('*, recipes(name, yield_unit)').order('recipes(name)'),
   ]);
-  S.pantryIng = pi || [];
-  S.pantryPrep = pp || [];
-  renderPantryIng();
-  renderPantryPrep();
+  S.pantryIng  = pi || [];
+  S.pantryComp = pc || [];
+  renderPantryIng(); renderPantryComp();
 }
-
 function pantryTab(tab) {
   S.pantryTabActive = tab;
   document.querySelectorAll('#sec-pantry .inner-tab').forEach((t, i) =>
-    t.classList.toggle('active', (i === 0 && tab === 'ingredients') || (i === 1 && tab === 'prep'))
+    t.classList.toggle('active', (i===0 && tab==='ingredients') || (i===1 && tab==='components'))
   );
-  document.getElementById('pantry-ing').style.display  = tab === 'ingredients' ? '' : 'none';
-  document.getElementById('pantry-prep').style.display = tab === 'prep' ? '' : 'none';
+  document.getElementById('pantry-ing-wrap').style.display  = tab === 'ingredients' ? '' : 'none';
+  document.getElementById('pantry-comp-wrap').style.display = tab === 'components'  ? '' : 'none';
 }
-
 function stockStatus(item) {
   if (+item.in_stock <= 0) return 'out';
   if (item.min_stock && +item.in_stock <= +item.min_stock) return 'low';
@@ -1179,75 +907,77 @@ function stockPct(item) {
   if (!item.min_stock) return item.in_stock > 0 ? 75 : 0;
   return Math.min(100, (+item.in_stock / (+item.min_stock * 2)) * 100);
 }
-
 function renderPantryIng() {
-  const items = [...S.pantryIng].sort((a, b) => {
-    const o = { out: 0, low: 1, ok: 2 };
-    return o[stockStatus(a)] - o[stockStatus(b)];
-  });
-  const needAttn = items.filter(i => stockStatus(i) !== 'ok').length;
-  const attnEl = document.getElementById('pantry-attention');
-  attnEl.textContent = needAttn ? `${needAttn} need attention` : 'All good';
-  attnEl.style.color = needAttn ? 'var(--amber)' : 'var(--green)';
+  const items = [...S.pantryIng].sort((a,b) => ({out:0,low:1,ok:2})[stockStatus(a)] - ({out:0,low:1,ok:2})[stockStatus(b)]);
+  const need  = items.filter(i => stockStatus(i) !== 'ok').length;
+  const attn  = document.getElementById('pantry-attention');
+  attn.textContent = need ? `${need} need attention` : 'All good';
+  attn.style.color = need ? 'var(--amber)' : 'var(--green)';
   if (!items.length) {
-    document.getElementById('pantry-ing-list').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No pantry entries yet.<br>Add ingredients first, then track stock here.</p></div>`;
+    document.getElementById('pantry-ing-list').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No pantry entries yet.</p></div>`;
     return;
   }
   document.getElementById('pantry-ing-list').innerHTML = items.map(item => {
-    const s = stockStatus(item);
-    const u = item.unit || item.ingredients?.unit || '';
-    const nm = item.ingredients?.name || 'Unknown';
-    return `
-    <div class="card" style="cursor:default">
+    const s = stockStatus(item), u = item.unit || item.ingredients?.unit || '', nm = item.ingredients?.name || '?';
+    return `<div class="card" style="cursor:default">
       <span class="dot dot-${s}"></span>
       <div class="card-main">
-        <div class="card-name">${nm}</div>
-        <div class="card-meta">${item.in_stock} ${u} in stock · min ${item.min_stock || 0} ${u}</div>
+        <div class="card-name">${esc(nm)}</div>
+        <div class="card-meta">${item.in_stock} ${u} in stock · min ${item.min_stock||0} ${u}</div>
       </div>
       <div class="card-aside" style="gap:6px">
-        <div class="stock-bar"><div class="stock-fill ${s === 'ok' ? '' : s}" style="width:${stockPct(item)}%"></div></div>
+        <div class="stock-bar"><div class="stock-fill ${s==='ok'?'':s}" style="width:${stockPct(item)}%"></div></div>
         <div style="display:flex;gap:4px">
-          <button class="mini-btn" onclick="nudgeStock('${item.id}',${item.in_stock},-1)">−</button>
-          <button class="mini-btn mini-btn-green" onclick="nudgeStock('${item.id}',${item.in_stock},1)">+</button>
+          <button class="mini-btn" onclick="nudgePantryIng('${item.id}',${item.in_stock},-1)">−</button>
+          <button class="mini-btn mini-btn-green" onclick="nudgePantryIng('${item.id}',${item.in_stock},1)">+</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
-
-function renderPantryPrep() {
-  const items = S.pantryPrep;
+function renderPantryComp() {
+  const items = [...S.pantryComp].sort((a,b) => ({out:0,low:1,ok:2})[stockStatus(a)] - ({out:0,low:1,ok:2})[stockStatus(b)]);
+  const need  = items.filter(i => stockStatus(i) !== 'ok').length;
+  const attn  = document.getElementById('pantry-comp-attention');
+  if (attn) { attn.textContent = need ? `${need} need attention` : 'All good'; attn.style.color = need ? 'var(--amber)' : 'var(--green)'; }
   if (!items.length) {
-    document.getElementById('pantry-prep-list').innerHTML = `<div class="empty"><div class="empty-icon">🍲</div><p>No prep items tracked yet.</p></div>`;
+    document.getElementById('pantry-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components tracked yet.</p></div>`;
     return;
   }
-  document.getElementById('pantry-prep-list').innerHTML = items.map(item => {
-    const s = stockStatus(item);
-    return `
-    <div class="card" style="cursor:default">
+  document.getElementById('pantry-comp-list').innerHTML = items.map(item => {
+    const s = stockStatus(item), u = item.unit || item.recipes?.yield_unit || '', nm = item.recipes?.name || '?';
+    return `<div class="card" style="cursor:default">
       <span class="dot dot-${s}"></span>
       <div class="card-main">
-        <div class="card-name">${item.name}</div>
-        <div class="card-meta">${item.in_stock} ${item.unit || ''} · min ${item.min_stock || 0}</div>
+        <div class="card-name">${esc(nm)}</div>
+        <div class="card-meta">${item.in_stock} ${u} · min ${item.min_stock||0}</div>
       </div>
-      <div class="card-aside">
-        <div class="stock-bar"><div class="stock-fill ${s === 'ok' ? '' : s}" style="width:${stockPct(item)}%"></div></div>
+      <div class="card-aside" style="gap:6px">
+        <div class="stock-bar"><div class="stock-fill ${s==='ok'?'':s}" style="width:${stockPct(item)}%"></div></div>
+        <div style="display:flex;gap:4px">
+          <button class="mini-btn" onclick="nudgePantryComp('${item.id}',${item.in_stock},-1)">−</button>
+          <button class="mini-btn mini-btn-green" onclick="nudgePantryComp('${item.id}',${item.in_stock},1)">+</button>
+        </div>
       </div>
     </div>`;
   }).join('');
 }
-
-async function nudgeStock(id, cur, d) {
+async function nudgePantryIng(id, cur, d) {
   const val = Math.max(0, +cur + d);
   await db.from('pantry_ingredients').update({ in_stock: val, updated_at: new Date().toISOString() }).eq('id', id);
-  const item = S.pantryIng.find(i => i.id === id);
-  if (item) item.in_stock = val;
+  const item = S.pantryIng.find(i => i.id === id); if (item) item.in_stock = val;
   renderPantryIng();
 }
+async function nudgePantryComp(id, cur, d) {
+  const val = Math.max(0, +cur + d);
+  await db.from('pantry_components').update({ in_stock: val, updated_at: new Date().toISOString() }).eq('id', id);
+  const item = S.pantryComp.find(i => i.id === id); if (item) item.in_stock = val;
+  renderPantryComp();
+}
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 // PREP
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 async function loadPrep() {
   document.getElementById('week-label').textContent = weekLabel(S.weekStart);
   document.getElementById('prep-days').innerHTML = '<div class="loading">Loading…</div>';
@@ -1256,259 +986,219 @@ async function loadPrep() {
   S.prepTasks = data || [];
   renderPrep();
 }
-
 function shiftWeek(dir) {
-  const d = new Date(S.weekStart);
-  d.setDate(d.getDate() + dir * 7);
-  S.weekStart = d;
-  loadPrep();
+  const d = new Date(S.weekStart); d.setDate(d.getDate() + dir * 7); S.weekStart = d; loadPrep();
 }
-
 function renderPrep() {
   const today = toDateStr(new Date());
-  const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  const DAYS  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   let html = '';
   for (let i = 0; i < 7; i++) {
-    const d = new Date(S.weekStart);
-    d.setDate(d.getDate() + i);
-    const ds = toDateStr(d);
-    const isToday = ds === today;
+    const d = new Date(S.weekStart); d.setDate(d.getDate() + i);
+    const ds = toDateStr(d), isToday = ds === today;
     const tasks = S.prepTasks.filter(t => t.scheduled_date === ds);
     if (!tasks.length && !isToday) continue;
-    html += `<div class="day-block">
-      <div class="day-label ${isToday ? 'today' : ''}">
-        ${DAYS[i]}${isToday ? ' · Today' : ''}
-        <span class="day-label-date">${fmtDate(d)}</span>
+    html += `<div class="day-block"><div class="day-label ${isToday?'today':''}">${DAYS[i]}${isToday?' · Today':''}<span class="day-label-date">${fmtDate(d)}</span></div>`;
+    if (!tasks.length) { html += `<div style="padding:8px 0;font-size:13px;color:var(--text-3)">Nothing scheduled</div>`; }
+    else tasks.forEach(t => {
+      const done = t.status === 'done';
+      html += `<div class="task">
+        <div class="task-check ${done?'done':''}" onclick="toggleTask('${t.id}','${t.status}')"></div>
+        <div class="task-content">
+          <div class="task-title ${done?'done':''}">${esc(t.title)}</div>
+          ${t.recipes?.name ? `<div class="task-sub">${esc(t.recipes.name)}</div>` : ''}
+          ${t.notes ? `<div class="task-sub">${esc(t.notes)}</div>` : ''}
+        </div>
+        ${i < 6 ? `<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}')">→</button>` : ''}
       </div>`;
-    if (!tasks.length) {
-      html += `<div style="padding:8px 0;font-size:13px;color:var(--text-3)">Nothing scheduled</div>`;
-    } else {
-      tasks.forEach(t => {
-        const done = t.status === 'done';
-        html += `
-        <div class="task">
-          <div class="task-check ${done ? 'done' : ''}" onclick="toggleTask('${t.id}','${t.status}')"></div>
-          <div class="task-content">
-            <div class="task-title ${done ? 'done' : ''}">${t.title}</div>
-            ${t.recipes?.name ? `<div class="task-sub">${t.recipes.name}</div>` : ''}
-            ${t.notes ? `<div class="task-sub">${t.notes}</div>` : ''}
-          </div>
-          ${i < 6 ? `<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}',1)">→</button>` : ''}
-        </div>`;
-      });
-    }
+    });
     html += `</div>`;
   }
   if (!html) html = `<div class="empty"><div class="empty-icon">📅</div><p>No tasks this week.</p></div>`;
   document.getElementById('prep-days').innerHTML = html;
 }
-
 async function toggleTask(id, cur) {
   const next = cur === 'done' ? 'pending' : 'done';
   await db.from('prep_list').update({ status: next }).eq('id', id);
-  const t = S.prepTasks.find(x => x.id === id);
-  if (t) t.status = next;
+  const t = S.prepTasks.find(x => x.id === id); if (t) t.status = next;
   renderPrep();
 }
-
-async function moveTask(id, fromDate, dir) {
-  const d = new Date(fromDate);
-  d.setDate(d.getDate() + dir);
+async function moveTask(id, fromDate) {
+  const d = new Date(fromDate); d.setDate(d.getDate() + 1);
   await db.from('prep_list').update({ scheduled_date: toDateStr(d) }).eq('id', id);
-  const { start, end } = weekRange(S.weekStart);
-  const { data } = await db.from('prep_list').select('*, recipes(name)').gte('scheduled_date', start).lte('scheduled_date', end).order('scheduled_date');
-  S.prepTasks = data || [];
-  renderPrep();
+  await loadPrep();
 }
-
 async function savePrepTask() {
-  const payload = {
-    title: document.getElementById('prep-title').value.trim(),
-    scheduled_date: document.getElementById('prep-date').value,
-    priority: document.getElementById('prep-priority').value,
-    notes: document.getElementById('prep-notes').value.trim() || null,
-    status: 'pending',
-  };
+  const payload = { title: document.getElementById('prep-title').value.trim(), scheduled_date: document.getElementById('prep-date').value, priority: document.getElementById('prep-priority').value, notes: document.getElementById('prep-notes').value.trim() || null, status: 'pending' };
   if (!payload.title || !payload.scheduled_date) return;
   await db.from('prep_list').insert(payload);
-  close('m-prep');
+  closeModal('m-prep');
   ['prep-title','prep-notes'].forEach(x => document.getElementById(x).value = '');
   await loadPrep();
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 // ORDERS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 async function loadOrders() {
-  const { data } = await db.from('orders').select('*').neq('status','received').order('created_at', { ascending: false });
+  const { data } = await db.from('orders').select('*').neq('status','received').order('created_at',{ascending:false});
   S.orders = data || [];
   renderOrders();
 }
-
 function orderTab(tab) {
   S.orderTabActive = tab;
-  document.querySelectorAll('#sec-orders .inner-tab').forEach((t, i) =>
-    t.classList.toggle('active', (i === 0 && tab === 'asap') || (i === 1 && tab === 'next_week'))
+  document.querySelectorAll('#sec-orders .inner-tab').forEach((t,i) =>
+    t.classList.toggle('active', (i===0 && tab==='asap') || (i===1 && tab==='next_week'))
   );
-  document.getElementById('orders-asap').style.display = tab === 'asap' ? '' : 'none';
-  document.getElementById('orders-next').style.display = tab === 'next_week' ? '' : 'none';
+  document.getElementById('orders-asap-wrap').style.display = tab==='asap'      ? '' : 'none';
+  document.getElementById('orders-next-wrap').style.display = tab==='next_week' ? '' : 'none';
 }
-
 function renderOrders() {
-  const asap = S.orders.filter(o => o.priority === 'asap');
-  const next = S.orders.filter(o => o.priority === 'next_week');
+  const asap = S.orders.filter(o => o.priority==='asap'), next = S.orders.filter(o => o.priority==='next_week');
   document.getElementById('asap-count').textContent = asap.length;
   document.getElementById('next-count').textContent = next.length;
-  renderOrderList('orders-asap-list', asap);
-  renderOrderList('orders-next-list', next);
+  renderOrderList('orders-asap-list', asap); renderOrderList('orders-next-list', next);
 }
-
 function renderOrderList(elId, orders) {
-  if (!orders.length) {
-    document.getElementById(elId).innerHTML = `<div class="empty"><div class="empty-icon">✓</div><p>Empty list.</p></div>`;
-    return;
-  }
+  if (!orders.length) { document.getElementById(elId).innerHTML = `<div class="empty"><div class="empty-icon">✓</div><p>List is clear.</p></div>`; return; }
   document.getElementById(elId).innerHTML = orders.map(o => {
     const done = o.status === 'ordered';
-    return `
-    <div class="order-card">
+    return `<div class="order-card">
       <div class="order-row">
-        <div class="task-check ${done ? 'done' : ''}" onclick="toggleOrder('${o.id}','${o.status}')"></div>
-        <div class="order-name ${done ? 'done' : ''}">${o.ingredient_name}</div>
+        <div class="task-check ${done?'done':''}" onclick="toggleOrder('${o.id}','${o.status}')"></div>
+        <div class="order-name ${done?'done':''}">${esc(o.ingredient_name)}</div>
         <div class="qty-ctrl">
           <button class="qty-btn" onclick="nudgeOrder('${o.id}',${o.amount},-1)">−</button>
-          <span class="qty-val">${o.amount}<span style="font-size:11px;color:var(--text-3);font-weight:400"> ${o.unit||''}</span></span>
+          <span class="qty-val">${o.amount}<span style="font-size:11px;color:var(--text-3);font-weight:400"> ${esc(o.unit||'')}</span></span>
           <button class="qty-btn" onclick="nudgeOrder('${o.id}',${o.amount},1)">+</button>
         </div>
       </div>
-      ${o.notes ? `<div class="order-note">📝 ${o.notes}</div>` : ''}
+      ${o.notes ? `<div class="order-note">📝 ${esc(o.notes)}</div>` : ''}
     </div>`;
   }).join('');
 }
-
 async function toggleOrder(id, cur) {
-  const next = cur === 'ordered' ? 'pending' : 'ordered';
+  const next = cur==='ordered' ? 'pending' : 'ordered';
   await db.from('orders').update({ status: next }).eq('id', id);
-  const o = S.orders.find(x => x.id === id);
-  if (o) o.status = next;
+  const o = S.orders.find(x => x.id===id); if (o) o.status = next;
   renderOrders();
 }
-
 async function nudgeOrder(id, cur, d) {
   const val = Math.max(0, +cur + d);
   await db.from('orders').update({ amount: val }).eq('id', id);
-  const o = S.orders.find(x => x.id === id);
-  if (o) o.amount = val;
+  const o = S.orders.find(x => x.id===id); if (o) o.amount = val;
   renderOrders();
 }
-
 function prefillOrder(ing) {
   document.getElementById('ord-name').value = ing.name;
   document.getElementById('ord-unit').value = ing.unit || 'kg';
-  show('m-order');
+  showModal('m-order');
 }
-
 async function saveOrder() {
-  const payload = {
-    ingredient_name: document.getElementById('ord-name').value.trim(),
-    amount: parseFloat(document.getElementById('ord-amount').value) || 1,
-    unit: document.getElementById('ord-unit').value,
-    priority: document.getElementById('ord-priority').value,
-    notes: document.getElementById('ord-notes').value.trim() || null,
-    status: 'pending',
-  };
+  const payload = { ingredient_name: document.getElementById('ord-name').value.trim(), amount: parseFloat(document.getElementById('ord-amount').value)||1, unit: document.getElementById('ord-unit').value, priority: document.getElementById('ord-priority').value, notes: document.getElementById('ord-notes').value.trim()||null, status:'pending' };
   if (!payload.ingredient_name) return;
   await db.from('orders').insert(payload);
-  close('m-order');
+  closeModal('m-order');
   ['ord-name','ord-amount','ord-notes'].forEach(x => document.getElementById(x).value = '');
   if (S.section === 'orders') await loadOrders();
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 // MONEY
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 async function loadMoney() {
-  document.getElementById('money-list').innerHTML = '<div class="loading">Loading…</div>';
+  document.getElementById('money-dishes-list').innerHTML = '<div class="loading">Loading…</div>';
   const [{ data: recipes }, { data: ricosts }] = await Promise.all([
     db.from('recipes').select('*').order('name'),
-    db.from('recipe_ingredients').select('recipe_id, amount, ingredients(price_per_unit, unit)'),
+    db.from('recipe_ingredients').select('recipe_id, amount, ingredients(price_per_unit)'),
   ]);
-  if (!recipes?.length) {
-    document.getElementById('money-list').innerHTML = `<div class="empty"><div class="empty-icon">💰</div><p>Add recipes to see costing.</p></div>`;
-    return;
-  }
-  document.getElementById('money-list').innerHTML = recipes.map(r => {
-    const rCosts = (ricosts || []).filter(c => c.recipe_id === r.id);
-    const total = rCosts.reduce((s, c) => s + (+c.amount * +(c.ingredients?.price_per_unit || 0)), 0);
-    const cpp = r.portions ? total / r.portions : null;
-    return `
-    <div class="money-card">
-      <div class="money-name">${r.name}</div>
-      <div class="money-row"><span class="money-lbl">Total ingredient cost</span><span class="money-val">€${total.toFixed(2)}</span></div>
+  const recs  = recipes || [];
+  const costs = ricosts || [];
+  S.recipes = recs;
+  renderMoneyDishes(recs, costs);
+  renderMoneyComps(recs, costs);
+}
+function moneyTab(tab) {
+  S.moneyTabActive = tab;
+  document.querySelectorAll('#sec-money .inner-tab').forEach((t,i) =>
+    t.classList.toggle('active', (i===0 && tab==='dishes') || (i===1 && tab==='components'))
+  );
+  document.getElementById('money-dishes-wrap').style.display = tab==='dishes'     ? '' : 'none';
+  document.getElementById('money-comp-wrap').style.display   = tab==='components' ? '' : 'none';
+}
+function recipeCost(rid, costs) {
+  return costs.filter(c => c.recipe_id===rid).reduce((s,c) => s + (+c.amount * +(c.ingredients?.price_per_unit||0)), 0);
+}
+function renderMoneyDishes(recs, costs) {
+  const dishes = recs.filter(r => r.type==='dish');
+  if (!dishes.length) { document.getElementById('money-dishes-list').innerHTML = `<div class="empty"><div class="empty-icon">🍽</div><p>No dishes yet.</p></div>`; return; }
+  document.getElementById('money-dishes-list').innerHTML = dishes.map(r => {
+    const total = recipeCost(r.id, costs);
+    const cpp   = r.portions ? total / r.portions : null;
+    return `<div class="money-card">
+      <div class="money-name">${esc(r.name)}</div>
+      <div class="money-row"><span class="money-lbl">Ingredient cost total</span><span class="money-val">€${total.toFixed(2)}</span></div>
       ${cpp != null ? `
       <div class="money-row"><span class="money-lbl">Cost per portion</span><span class="money-val">€${cpp.toFixed(2)}</span></div>
-      <div class="money-row" style="margin-top:4px">
-        <span class="money-lbl">Selling price</span>
-        <input class="sell-input" type="number" id="sell-${r.id}" placeholder="€" step="0.5" oninput="calcMargin('${r.id}',${cpp.toFixed(3)})">
+      <div class="money-row" style="margin-top:4px"><span class="money-lbl">Selling price</span>
+        <input class="sell-input" type="number" id="sell-${r.id}" placeholder="€" step="0.5" oninput="calcMargin('${r.id}',${cpp.toFixed(4)})">
       </div>
       <div class="money-row money-total" id="margin-${r.id}" style="display:none">
         <span class="money-lbl">Profit / margin</span>
         <span class="money-val" id="margin-val-${r.id}"></span>
-      </div>` : `<div class="money-row"><span class="money-lbl" style="color:var(--text-3)">Set portion count in recipe for per-portion costing</span></div>`}
+      </div>` : `<div class="money-row"><span class="money-lbl" style="color:var(--text-3)">Set portions on dish to see per-portion cost</span></div>`}
     </div>`;
   }).join('');
 }
-
+function renderMoneyComps(recs, costs) {
+  const comps = recs.filter(r => r.type==='component');
+  if (!comps.length) { document.getElementById('money-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components yet.</p></div>`; return; }
+  document.getElementById('money-comp-list').innerHTML = comps.map(r => {
+    const total = recipeCost(r.id, costs);
+    const cpy   = r.portions ? total / r.portions : null;
+    return `<div class="money-card">
+      <div class="money-name">${esc(r.name)}</div>
+      <div class="money-row"><span class="money-lbl">Total ingredient cost</span><span class="money-val">€${total.toFixed(2)}</span></div>
+      ${cpy != null ? `<div class="money-row"><span class="money-lbl">Cost per ${r.yield_unit||'portion'}</span><span class="money-val">€${cpy.toFixed(2)}</span></div>` : ''}
+    </div>`;
+  }).join('');
+}
 function calcMargin(rid, cpp) {
   const sell = parseFloat(document.getElementById(`sell-${rid}`).value);
-  const mEl = document.getElementById(`margin-${rid}`);
-  const vEl = document.getElementById(`margin-val-${rid}`);
-  if (!sell) { mEl.style.display = 'none'; return; }
-  const profit = sell - cpp;
-  const margin = (profit / sell) * 100;
-  mEl.style.display = 'flex';
-  mEl.className = `money-row money-total ${profit >= 0 ? 'money-profit' : 'money-loss'}`;
-  vEl.textContent = `€${profit.toFixed(2)} (${margin.toFixed(0)}%)`;
+  const mEl = document.getElementById(`margin-${rid}`), vEl = document.getElementById(`margin-val-${rid}`);
+  if (!sell) { mEl.style.display='none'; return; }
+  const profit = sell - cpp, margin = (profit/sell)*100;
+  mEl.style.display='flex';
+  mEl.className=`money-row money-total ${profit>=0?'money-profit':'money-loss'}`;
+  vEl.textContent=`€${profit.toFixed(2)} (${margin.toFixed(0)}%)`;
 }
 
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 // UTILS
-// ═══════════════════════════════════════════
+// ═══════════════════════════════════════
 function monday(d) {
-  const dt = new Date(d);
-  const day = dt.getDay();
-  dt.setDate(dt.getDate() - day + (day === 0 ? -6 : 1));
-  dt.setHours(0,0,0,0);
-  return dt;
+  const dt=new Date(d), day=dt.getDay();
+  dt.setDate(dt.getDate()-day+(day===0?-6:1)); dt.setHours(0,0,0,0); return dt;
 }
 function weekRange(mon) {
-  const end = new Date(mon);
-  end.setDate(end.getDate() + 6);
-  return { start: toDateStr(mon), end: toDateStr(end) };
+  const end=new Date(mon); end.setDate(end.getDate()+6);
+  return {start:toDateStr(mon),end:toDateStr(end)};
 }
 function toDateStr(d) { return d.toISOString().split('T')[0]; }
 function weekLabel(mon) {
-  const end = new Date(mon); end.setDate(end.getDate() + 6);
-  const o = { month: 'short', day: 'numeric' };
-  return `${mon.toLocaleDateString('en', o)} – ${end.toLocaleDateString('en', o)}`;
+  const end=new Date(mon); end.setDate(end.getDate()+6);
+  const o={month:'short',day:'numeric'};
+  return `${mon.toLocaleDateString('en',o)} – ${end.toLocaleDateString('en',o)}`;
 }
-function fmtDate(d) { return d.toLocaleDateString('en', { month: 'short', day: 'numeric' }); }
-function fmtTime(m) { return m < 60 ? `${m}min` : `${Math.floor(m/60)}h${m%60 ? ' '+m%60+'min':''}`.trim(); }
-function row(label, value) {
-  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;font-size:13px">
-    <span style="color:var(--text-2)">${label}</span>
-    <span style="font-weight:500;text-align:right;max-width:60%">${value}</span>
-  </div>`;
+function fmtDate(d) { return d.toLocaleDateString('en',{month:'short',day:'numeric'}); }
+function fmtTime(m) { return m<60?`${m}min`:`${Math.floor(m/60)}h${m%60?' '+m%60+'min':''}`.trim(); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function drow(label,value) {
+  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;font-size:13px"><span style="color:var(--text-2)">${label}</span><span style="font-weight:500;text-align:right;max-width:60%">${value}</span></div>`;
 }
 
-// ═══════════════════════════════════════════
 // BOOT
-// ═══════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('add-btn').style.display = 'flex';
-  load('ingredients');
-});
+document.addEventListener('DOMContentLoaded', () => { load('ingredients'); });
 </script>
-
 </body>
 </html>
