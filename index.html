@@ -26,57 +26,35 @@
   --amber-light: #FBF0E2;
   --blue:        #3A6080;
   --blue-light:  #E5EFF6;
-  --nav-h:       64px;
-  --safe-b:      env(safe-area-inset-bottom, 0px);
-  --header-h:    54px;
-  --r:           12px;
-  --r-sm:        8px;
-  --r-xs:        6px;
+  --nav-h: 64px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --header-h: 54px;
+  --r: 12px; --r-sm: 8px; --r-xs: 6px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body {
-  height: 100%;
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 15px;
-  line-height: 1.5;
-  overscroll-behavior: none;
-  -webkit-font-smoothing: antialiased;
-}
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.5; overscroll-behavior: none; -webkit-font-smoothing: antialiased; }
 #app { display: flex; flex-direction: column; height: 100%; max-width: 600px; margin: 0 auto; }
 
 /* HEADER */
-.app-header {
-  height: var(--header-h); background: var(--bg);
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 18px; border-bottom: 1px solid var(--border);
-  flex-shrink: 0; position: sticky; top: 0; z-index: 10;
-}
+.app-header { height: var(--header-h); background: var(--bg); display: flex; align-items: center; justify-content: space-between; padding: 0 18px; border-bottom: 1px solid var(--border); flex-shrink: 0; position: sticky; top: 0; z-index: 10; gap: 8px; }
 .app-header h1 { font-family: 'Instrument Serif', serif; font-size: 22px; font-weight: 400; letter-spacing: -0.2px; }
-.header-btn {
-  width: 34px; height: 34px; border-radius: 50%; background: var(--green); color: white;
-  border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  transition: background .15s, transform .1s; flex-shrink: 0;
-}
+.header-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--green); color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .15s, transform .1s; flex-shrink: 0; }
 .header-btn:active { background: var(--green-dim); transform: scale(.95); }
 .header-btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+/* Detail header */
+.back-btn { display: flex; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--green); font-weight: 500; padding: 4px 0; white-space: nowrap; flex-shrink: 0; }
+.back-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.header-detail-title { font-size: 15px; font-weight: 500; flex: 1; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header-icon-btn { width: 34px; height: 34px; border-radius: 50%; background: var(--surface-2); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .15s; }
+.header-icon-btn:active { background: var(--surface-3); }
+.header-icon-btn svg { width: 15px; height: 15px; stroke: var(--text-2); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 /* MAIN */
 main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding-bottom: calc(var(--nav-h) + var(--safe-b) + 24px); }
 
 /* BOTTOM NAV */
-.bottom-nav {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 600px; background: var(--surface);
-  border-top: 1px solid var(--border); display: flex; z-index: 20; padding-bottom: var(--safe-b);
-}
-.nav-tab {
-  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 10px 0 8px; gap: 3px; cursor: pointer; border: none; background: none;
-  color: var(--text-3); font-family: 'DM Sans', sans-serif; font-size: 9.5px; font-weight: 400;
-  letter-spacing: 0.1px; transition: color .15s;
-}
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 600px; background: var(--surface); border-top: 1px solid var(--border); display: flex; z-index: 20; padding-bottom: var(--safe-b); }
+.nav-tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0 8px; gap: 3px; cursor: pointer; border: none; background: none; color: var(--text-3); font-family: 'DM Sans', sans-serif; font-size: 9.5px; font-weight: 400; letter-spacing: 0.1px; transition: color .15s; }
 .nav-tab.active { color: var(--green); }
 .nav-tab svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .nav-tab.active svg { stroke-width: 2.2; }
@@ -87,12 +65,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 
 /* SEARCH */
 .search-wrap { padding: 12px 16px 4px; position: relative; }
-.search-wrap input {
-  width: 100%; padding: 10px 14px 10px 38px; background: var(--surface);
-  border: 1px solid var(--border); border-radius: var(--r);
-  font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text);
-  outline: none; transition: border-color .15s;
-}
+.search-wrap input { width: 100%; padding: 10px 14px 10px 38px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--text); outline: none; transition: border-color .15s; }
 .search-wrap input:focus { border-color: var(--green); }
 .search-wrap input::placeholder { color: var(--text-3); }
 .search-icon { position: absolute; left: 28px; top: 50%; transform: translateY(-50%); pointer-events: none; }
@@ -101,11 +74,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 /* CHIPS */
 .chip-row { display: flex; gap: 6px; padding: 8px 16px 4px; overflow-x: auto; scrollbar-width: none; }
 .chip-row::-webkit-scrollbar { display: none; }
-.chip {
-  flex-shrink: 0; padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border);
-  background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 12.5px;
-  color: var(--text-2); cursor: pointer; white-space: nowrap; transition: all .15s;
-}
+.chip { flex-shrink: 0; padding: 5px 13px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 12.5px; color: var(--text-2); cursor: pointer; white-space: nowrap; transition: all .15s; }
 .chip.active { background: var(--green); border-color: var(--green); color: white; }
 
 /* ROW LABEL */
@@ -115,11 +84,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 
 /* LIST + CARD */
 .list { display: flex; flex-direction: column; gap: 7px; padding: 0 16px; }
-.card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
-  padding: 13px 15px; display: flex; align-items: center; gap: 11px;
-  cursor: pointer; transition: border-color .15s, transform .1s; user-select: none;
-}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 15px; display: flex; align-items: center; gap: 11px; cursor: pointer; transition: border-color .15s, transform .1s; user-select: none; }
 .card:active { transform: scale(.99); border-color: var(--green); }
 .card-main { flex: 1; min-width: 0; }
 .card-name { font-weight: 500; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -128,11 +93,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 
 /* INNER TABS */
 .inner-tabs { display: flex; margin: 12px 16px 10px; background: var(--surface-2); border-radius: var(--r-sm); padding: 3px; }
-.inner-tab {
-  flex: 1; padding: 7px; border-radius: 6px; border: none; background: none;
-  font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-2);
-  cursor: pointer; transition: all .15s;
-}
+.inner-tab { flex: 1; padding: 7px; border-radius: 6px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-2); cursor: pointer; transition: all .15s; }
 .inner-tab.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
 
 /* EMPTY */
@@ -140,72 +101,41 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .empty-icon { font-size: 36px; margin-bottom: 10px; }
 .empty p { font-size: 13.5px; line-height: 1.7; }
 
-/* BADGE */
+/* BADGES */
 .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 500; }
 .badge-green   { background: var(--green-light); color: var(--green); }
 .badge-blue    { background: var(--blue-light);  color: var(--blue); }
 .badge-amber   { background: var(--amber-light); color: var(--amber); }
 .badge-neutral { background: var(--surface-2);   color: var(--text-2); }
 
-/* PRICE */
-.price { font-family: 'Instrument Serif', serif; font-size: 15px; font-weight: 400; }
-
-/* STATUS DOT */
+/* MISC */
+.price { font-family: 'Instrument Serif', serif; font-size: 15px; }
 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.dot-ok  { background: var(--green); }
-.dot-low { background: var(--amber); }
-.dot-out { background: var(--red); }
-
-/* STOCK BAR */
+.dot-ok { background: var(--green); } .dot-low { background: var(--amber); } .dot-out { background: var(--red); }
 .stock-bar { width: 44px; height: 4px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
 .stock-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width .3s; }
-.stock-fill.low { background: var(--amber); }
-.stock-fill.out { background: var(--red); }
-
-/* MINI BTNS */
-.mini-btn {
-  width: 28px; height: 28px; border-radius: var(--r-xs); border: 1px solid var(--border);
-  background: var(--surface); cursor: pointer; font-size: 16px; display: flex;
-  align-items: center; justify-content: center; color: var(--text); transition: background .1s;
-}
+.stock-fill.low { background: var(--amber); } .stock-fill.out { background: var(--red); }
+.mini-btn { width: 28px; height: 28px; border-radius: var(--r-xs); border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: var(--text); transition: background .1s; }
 .mini-btn:active { background: var(--surface-2); }
 .mini-btn-green { border: none; background: var(--green); color: white; }
 .mini-btn-green:active { background: var(--green-dim); }
-
-/* WEEK NAV */
 .week-nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 8px; }
 .week-nav-label { font-family: 'Instrument Serif', serif; font-size: 18px; }
-.week-nav-btn {
-  width: 32px; height: 32px; border-radius: var(--r-sm); border: 1px solid var(--border);
-  background: var(--surface); cursor: pointer; display: flex; align-items: center;
-  justify-content: center; color: var(--text-2); transition: border-color .15s;
-}
+.week-nav-btn { width: 32px; height: 32px; border-radius: var(--r-sm); border: 1px solid var(--border); background: var(--surface); cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-2); transition: border-color .15s; }
 .week-nav-btn:active { border-color: var(--green); }
 .week-nav-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-
-/* DAY BLOCK */
 .day-block { margin: 0 16px 10px; }
-.day-label {
-  font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px;
-  color: var(--text-3); padding: 6px 0 5px; display: flex; align-items: center; gap: 6px;
-}
+.day-label { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--text-3); padding: 6px 0 5px; display: flex; align-items: center; gap: 6px; }
 .day-label.today { color: var(--green); }
 .day-label-date { font-weight: 400; color: var(--text-3); text-transform: none; letter-spacing: 0; }
-
-/* TASK */
 .task { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 11px 13px; display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
-.task-check {
-  width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border);
-  flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s;
-}
+.task-check { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .task-check.done { background: var(--green); border-color: var(--green); }
 .task-check.done::after { content: ''; width: 4px; height: 8px; border-right: 2px solid white; border-bottom: 2px solid white; transform: rotate(45deg) translate(-1px,-1px); display: block; }
 .task-content { flex: 1; min-width: 0; }
 .task-title { font-size: 14px; font-weight: 500; }
 .task-title.done { text-decoration: line-through; color: var(--text-3); }
 .task-sub { font-size: 12px; color: var(--text-2); margin-top: 1px; }
-
-/* ORDER CARD */
 .order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 15px; margin-bottom: 7px; }
 .order-row { display: flex; align-items: center; gap: 8px; }
 .order-name { flex: 1; font-weight: 500; font-size: 14.5px; }
@@ -215,18 +145,19 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .qty-btn:active { background: var(--border); }
 .qty-val { font-size: 13px; font-weight: 500; min-width: 36px; text-align: center; }
 .order-note { font-size: 12px; color: var(--text-2); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
-
-/* MONEY CARD */
 .money-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 15px; margin-bottom: 8px; }
 .money-name { font-family: 'Instrument Serif', serif; font-size: 18px; margin-bottom: 11px; }
 .money-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 2.5px 0; }
-.money-lbl { color: var(--text-2); }
-.money-val { font-weight: 500; }
+.money-lbl { color: var(--text-2); } .money-val { font-weight: 500; }
 .money-total { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 8px; font-size: 14px; }
-.money-profit .money-val { color: var(--green); }
-.money-loss   .money-val { color: var(--red); }
+.money-profit .money-val { color: var(--green); } .money-loss .money-val { color: var(--red); }
 .sell-input { width: 78px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--r-xs); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); background: var(--bg); text-align: right; outline: none; }
 .sell-input:focus { border-color: var(--green); }
+.divider { height: 1px; background: var(--border); margin: 12px 0; }
+.loading { padding: 44px; text-align: center; color: var(--text-3); font-size: 13.5px; }
+.setup-banner { margin: 12px 16px; padding: 14px 16px; background: var(--amber-light); border: 1px solid #D4A050; border-radius: var(--r); font-size: 13px; color: var(--amber); line-height: 1.6; }
+.setup-banner strong { font-weight: 600; display: block; margin-bottom: 4px; }
+.setup-banner code { font-family: monospace; background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
 
 /* MODAL */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,14,.5); z-index: 100; align-items: flex-end; backdrop-filter: blur(3px); }
@@ -240,21 +171,12 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 /* FORM */
 .field { margin-bottom: 14px; }
 .field label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .6px; color: var(--text-2); margin-bottom: 5px; }
-.field input, .field select, .field textarea {
-  width: 100%; padding: 10px 13px; background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--r-sm); font-family: 'DM Sans', sans-serif; font-size: 14.5px;
-  color: var(--text); outline: none; transition: border-color .15s; appearance: none; -webkit-appearance: none;
-}
+.field input, .field select, .field textarea { width: 100%; padding: 10px 13px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); font-family: 'DM Sans', sans-serif; font-size: 14.5px; color: var(--text); outline: none; transition: border-color .15s; appearance: none; -webkit-appearance: none; }
 .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--green); }
-.field textarea { resize: none; height: 78px; }
+.field textarea { resize: none; height: 72px; }
 .field-row { display: flex; gap: 10px; }
 .field-row .field { flex: 1; }
-.field select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A09890' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px;
-}
-
-/* BUTTONS */
+.field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23A09890' stroke-width='2.5' stroke-linecap='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px; }
 .btn { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 12px 18px; border-radius: var(--r); border: none; font-family: 'DM Sans', sans-serif; font-size: 14.5px; font-weight: 500; cursor: pointer; transition: all .15s; width: 100%; }
 .btn-primary { background: var(--green); color: white; }
 .btn-primary:active { background: var(--green-dim); }
@@ -263,22 +185,82 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .btn-row { display: flex; gap: 8px; margin-top: 6px; }
 .btn-row .btn { flex: 1; }
 
-/* MISC */
-.loading { padding: 44px; text-align: center; color: var(--text-3); font-size: 13.5px; }
-.setup-banner { margin: 12px 16px; padding: 14px 16px; background: var(--amber-light); border: 1px solid #D4A050; border-radius: var(--r); font-size: 13px; color: var(--amber); line-height: 1.6; }
-.setup-banner strong { font-weight: 600; display: block; margin-bottom: 4px; }
-.setup-banner code { font-family: monospace; background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
-.divider { height: 1px; background: var(--border); margin: 12px 0; }
+/* ═══ RECIPE DETAIL STYLES ═══ */
+#recipe-detail-view { display: none; }
+.scale-bar { position: sticky; top: 0; z-index: 8; background: var(--surface); border-bottom: 1px solid var(--border); padding: 9px 16px; display: flex; align-items: center; gap: 10px; }
+.unit-toggle-sm { display: flex; background: var(--surface-2); border-radius: 6px; padding: 2px; gap: 1px; flex-shrink: 0; }
+.utab { padding: 4px 10px; border-radius: 4px; border: none; background: none; font-size: 12px; font-family: 'DM Sans', sans-serif; color: var(--text-2); cursor: pointer; transition: all .15s; white-space: nowrap; }
+.utab.active { background: var(--surface); color: var(--text); font-weight: 500; box-shadow: 0 1px 2px rgba(0,0,0,.07); }
+.scale-ctrl { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: center; }
+.scale-btn { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text); transition: border-color .15s; flex-shrink: 0; }
+.scale-btn:active { border-color: var(--green); }
+.scale-display { font-family: 'Instrument Serif', serif; font-size: 16px; min-width: 90px; text-align: center; white-space: nowrap; }
+.scale-display.scaled { color: var(--amber); }
+.scale-reset-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--amber); background: var(--amber-light); color: var(--amber); font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.rec-info-block { padding: 16px 16px 14px; border-bottom: 1px solid var(--border); }
+.rec-info-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.rec-meta-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.rec-meta-pill { padding: 4px 11px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; font-size: 12px; color: var(--text-2); }
+.rec-notes-text { font-size: 13px; color: var(--text-2); margin-top: 10px; line-height: 1.6; }
+.rec-day-group { padding: 0 16px 4px; }
+.rec-day-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); padding: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
+.rec-day-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.step-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 8px; overflow: hidden; }
+.step-header { display: flex; align-items: center; padding: 11px 12px 9px; gap: 7px; }
+.step-num { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); flex-shrink: 0; }
+.step-title-text { font-weight: 600; font-size: 14.5px; flex: 1; line-height: 1.3; }
+.step-ctrl { width: 26px; height: 26px; border: none; background: none; cursor: pointer; font-size: 13px; color: var(--text-3); display: flex; align-items: center; justify-content: center; border-radius: 5px; flex-shrink: 0; transition: background .1s, color .1s; }
+.step-ctrl:hover { background: var(--surface-2); color: var(--text); }
+/* Highlight line */
+.step-highlight { margin: 0 12px 10px; padding: 7px 11px; background: var(--amber-light); border-left: 3px solid var(--amber); border-radius: 0 6px 6px 0; font-size: 13px; font-weight: 600; color: #7A5020; display: flex; align-items: flex-start; gap: 7px; line-height: 1.45; text-decoration: underline; text-decoration-color: rgba(168,114,42,.3); text-underline-offset: 2px; }
+.step-hi-icon { flex-shrink: 0; font-size: 14px; line-height: 1.3; }
+.step-ings { padding: 0 12px 4px; }
+.step-ing-row { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--surface-2); font-size: 13.5px; }
+.step-ing-row:last-child { border-bottom: none; }
+.step-ing-name { flex: 1; color: var(--text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.step-ing-name.is-comp { font-weight: 600; color: var(--blue); cursor: pointer; text-decoration: underline; text-decoration-color: rgba(58,96,128,.25); text-underline-offset: 2px; }
+.step-ing-amt { font-size: 13px; flex-shrink: 0; color: var(--text-2); white-space: nowrap; }
+.step-ing-amt.scaled { color: var(--amber); font-weight: 500; }
+.step-ing-del { width: 22px; height: 22px; border: none; background: none; cursor: pointer; color: var(--text-3); font-size: 16px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: background .1s, color .1s; }
+.step-ing-del:active { background: var(--red-light); color: var(--red); }
+.step-notes { padding: 6px 12px 8px; font-size: 12.5px; color: var(--text-2); font-style: italic; line-height: 1.5; }
+.step-add-row { display: flex; gap: 6px; padding: 8px 12px 12px; border-top: 1px solid var(--surface-2); margin-top: 2px; }
+.step-add-btn { flex: 1; padding: 7px; border: 1px dashed var(--border); background: none; border-radius: var(--r-sm); font-family: 'DM Sans', sans-serif; font-size: 12.5px; color: var(--text-2); cursor: pointer; transition: border-color .15s, color .15s; }
+.step-add-btn:active { border-color: var(--green); color: var(--green); }
+.step-add-btn.for-comp { border-color: rgba(58,96,128,.3); color: var(--blue); }
+.step-add-btn.for-comp:active { border-color: var(--blue); }
+.add-step-btn { width: 100%; padding: 10px; border: 1px dashed var(--border); background: none; border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--text-3); cursor: pointer; margin-top: 4px; transition: border-color .15s, color .15s; }
+.add-step-btn:active { border-color: var(--green); color: var(--green); }
+.add-day-wrap { padding: 8px 16px 20px; }
+/* Search dropdown */
+.search-results { position: absolute; left: 0; right: 0; top: calc(100% + 2px); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); max-height: 210px; overflow-y: auto; z-index: 10; box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+.sr-item { padding: 10px 14px; cursor: pointer; font-size: 14px; border-bottom: 1px solid var(--surface-2); transition: background .1s; }
+.sr-item:last-child { border-bottom: none; }
+.sr-item:active { background: var(--green-light); }
+.sr-new { color: var(--green); font-style: italic; }
+.sr-meta { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
+.selected-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: var(--blue-light); border: 1px solid var(--blue); border-radius: 20px; font-size: 13px; color: var(--blue); font-weight: 500; margin-bottom: 10px; }
 </style>
 </head>
 <body>
 <div id="app">
 
   <header class="app-header">
-    <h1 id="sec-title">Ingredients</h1>
-    <button class="header-btn" id="add-btn" onclick="openAdd()">
-      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
+    <div id="header-normal" style="display:contents">
+      <h1 id="sec-title">Ingredients</h1>
+      <button class="header-btn" id="add-btn" onclick="openAdd()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+    <div id="header-detail" style="display:none;width:100%;align-items:center;justify-content:space-between;gap:8px">
+      <button class="back-btn" onclick="closeRecDetail()">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>Recipes
+      </button>
+      <span class="header-detail-title" id="detail-title"></span>
+      <button class="header-icon-btn" onclick="editCurrentRec()">
+        <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      </button>
+    </div>
   </header>
 
   <main id="main">
@@ -290,10 +272,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
         <input type="search" id="ing-search" placeholder="Search ingredients…" oninput="filterIng()">
       </div>
       <div class="chip-row" id="ing-chips"></div>
-      <div class="row-label">
-        <span class="row-label-text">All ingredients</span>
-        <span class="row-label-count" id="ing-count"></span>
-      </div>
+      <div class="row-label"><span class="row-label-text">All ingredients</span><span class="row-label-count" id="ing-count"></span></div>
       <div class="list" id="ing-list"><div class="loading">Loading…</div></div>
     </section>
 
@@ -308,10 +287,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
         <input type="search" id="rec-search" placeholder="Search…" oninput="filterRec()">
       </div>
       <div class="chip-row" id="rec-chips"></div>
-      <div class="row-label">
-        <span class="row-label-text" id="rec-list-label">Components</span>
-        <span class="row-label-count" id="rec-count"></span>
-      </div>
+      <div class="row-label"><span class="row-label-text" id="rec-list-label">Components</span><span class="row-label-count" id="rec-count"></span></div>
       <div class="list" id="rec-list"><div class="loading">Loading…</div></div>
     </section>
 
@@ -322,17 +298,11 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
         <button class="inner-tab" onclick="pantryTab('components')">Components</button>
       </div>
       <div id="pantry-ing-wrap">
-        <div class="row-label">
-          <span class="row-label-text">Stock status</span>
-          <span class="row-label-count" id="pantry-attention"></span>
-        </div>
+        <div class="row-label"><span class="row-label-text">Stock status</span><span class="row-label-count" id="pantry-attention"></span></div>
         <div class="list" id="pantry-ing-list"><div class="loading">Loading…</div></div>
       </div>
       <div id="pantry-comp-wrap" style="display:none">
-        <div class="row-label">
-          <span class="row-label-text">Component stock</span>
-          <span class="row-label-count" id="pantry-comp-attention"></span>
-        </div>
+        <div class="row-label"><span class="row-label-text">Component stock</span><span class="row-label-count" id="pantry-comp-attention"></span></div>
         <div class="list" id="pantry-comp-list"><div class="loading">Loading…</div></div>
       </div>
     </section>
@@ -379,37 +349,52 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
       </div>
     </section>
 
+    <!-- RECIPE DETAIL (full page, injected by JS) -->
+    <div id="recipe-detail-view">
+      <div class="scale-bar">
+        <div class="unit-toggle-sm">
+          <button class="utab active" id="utab-metric"   onclick="setUnitSys('metric')">Metric</button>
+          <button class="utab"        id="utab-imperial" onclick="setUnitSys('imperial')">Imperial</button>
+        </div>
+        <div class="scale-ctrl">
+          <button class="scale-btn" onclick="nudgeScale(-1)">−</button>
+          <span class="scale-display" id="scale-display">4 portions</span>
+          <button class="scale-btn" onclick="nudgeScale(1)">+</button>
+        </div>
+        <button class="scale-reset-btn" id="scale-reset-btn" onclick="resetScale()" style="display:none">Reset</button>
+      </div>
+      <div class="rec-info-block" id="rec-info-block"></div>
+      <div id="rec-detail-days"></div>
+      <div class="add-day-wrap">
+        <button class="btn btn-ghost" style="font-size:13px;color:var(--text-2)" onclick="addRecDay()">+ Add prep day</button>
+      </div>
+    </div>
+
   </main>
 
   <nav class="bottom-nav">
     <button class="nav-tab active" data-s="ingredients" onclick="goTo('ingredients')">
-      <svg viewBox="0 0 24 24"><path d="M7 22V11M12 22V4M17 22V14" stroke-linecap="round"/></svg>
-      Ingredients
+      <svg viewBox="0 0 24 24"><path d="M7 22V11M12 22V4M17 22V14" stroke-linecap="round"/></svg>Ingredients
     </button>
     <button class="nav-tab" data-s="recipes" onclick="goTo('recipes')">
-      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      Recipes
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Recipes
     </button>
     <button class="nav-tab" data-s="pantry" onclick="goTo('pantry')">
-      <svg viewBox="0 0 24 24"><path d="M2 3h20v4H2zM4 7v14h16V7"/><path d="M9 12h6M9 16h6"/></svg>
-      Pantry
+      <svg viewBox="0 0 24 24"><path d="M2 3h20v4H2zM4 7v14h16V7"/><path d="M9 12h6M9 16h6"/></svg>Pantry
     </button>
     <button class="nav-tab" data-s="prep" onclick="goTo('prep')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Prep
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Prep
     </button>
     <button class="nav-tab" data-s="orders" onclick="goTo('orders')">
-      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      Orders
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Orders
     </button>
     <button class="nav-tab" data-s="money" onclick="goTo('money')">
-      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      Money
+      <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Money
     </button>
   </nav>
 </div>
 
-<!-- ═══════ MODALS ═══════ -->
+<!-- ══════════════ MODALS ══════════════ -->
 
 <!-- ADD / EDIT INGREDIENT -->
 <div class="overlay" id="m-ingredient">
@@ -419,44 +404,26 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
     <input type="hidden" id="ing-id">
     <div class="field"><label>Name</label><input type="text" id="ing-name" placeholder="e.g. Heavy cream"></div>
     <div class="field-row">
-      <div class="field">
-        <label>Category</label>
-        <select id="ing-cat">
-          <option value="">— select —</option>
-          <option>Meat &amp; poultry</option>
-          <option>Fish &amp; seafood</option>
-          <option>Dairy &amp; eggs</option>
-          <option>Vegetables</option>
-          <option>Fruit</option>
-          <option>Herbs</option>
-          <option>Spices</option>
-          <option>Sauces &amp; condiments</option>
-          <option>Oils &amp; fats</option>
-          <option>Bread &amp; pastry</option>
-          <option>Nuts &amp; seeds</option>
-          <option>Drinks</option>
-          <option>Pantry items</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Unit</label>
-        <select id="ing-unit">
-          <option value="kg">kg</option>
-          <option value="g">g</option>
-          <option value="liter">liter</option>
-          <option value="ml">ml</option>
-          <option value="piece">piece</option>
-          <option value="bunch">bunch</option>
-          <option value="can">can</option>
-          <option value="pack">pack</option>
-          <option value="bottle">bottle</option>
-        </select>
-      </div>
+      <div class="field"><label>Category</label><select id="ing-cat">
+        <option value="">— select —</option>
+        <option>Meat &amp; poultry</option><option>Fish &amp; seafood</option><option>Dairy &amp; eggs</option>
+        <option>Vegetables</option><option>Fruit</option><option>Herbs</option><option>Spices</option>
+        <option>Sauces &amp; condiments</option><option>Oils &amp; fats</option>
+        <option>Bread &amp; pastry</option><option>Nuts &amp; seeds</option>
+        <option>Drinks</option><option>Pantry items</option><option>Other</option>
+      </select></div>
+      <div class="field"><label>Unit</label><select id="ing-unit">
+        <option value="kg">kg</option><option value="g">g</option><option value="liter">liter</option>
+        <option value="ml">ml</option><option value="piece">piece</option><option value="bunch">bunch</option>
+        <option value="can">can</option><option value="pack">pack</option><option value="bottle">bottle</option>
+      </select></div>
     </div>
-    <div class="field"><label>Price per unit (€)</label><input type="number" id="ing-price" placeholder="0.00" step="0.01" min="0"></div>
+    <div class="field-row">
+      <div class="field"><label>Price / unit (€)</label><input type="number" id="ing-price" placeholder="0.00" step="0.01" min="0"></div>
+      <div class="field"><label>Density (g/ml)</label><input type="number" id="ing-density" placeholder="e.g. 1.0" step="0.01" min="0"></div>
+    </div>
     <div class="field"><label>Supplier</label><input type="text" id="ing-supplier" placeholder="Supplier name"></div>
-    <div class="field"><label>Supplier contact / notes</label><textarea id="ing-notes" placeholder="Phone, email, ordering details…"></textarea></div>
+    <div class="field"><label>Contact / notes</label><textarea id="ing-notes" placeholder="Phone, email, ordering details…"></textarea></div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeModal('m-ingredient')">Cancel</button>
       <button class="btn btn-primary" onclick="saveIng()">Save</button>
@@ -481,28 +448,17 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="m-rec-title">New component</div>
-    <input type="hidden" id="rec-id">
-    <input type="hidden" id="rec-type" value="component">
+    <input type="hidden" id="rec-id"><input type="hidden" id="rec-type" value="component">
     <div class="field"><label>Name</label><input type="text" id="rec-name" placeholder="e.g. Confit garlic"></div>
     <div class="field-row">
-      <div class="field">
-        <label>Category</label>
-        <select id="rec-cat"><option value="">— select —</option></select>
-      </div>
+      <div class="field"><label>Category</label><select id="rec-cat"><option value="">— select —</option></select></div>
       <div class="field"><label>Yield / portions</label><input type="number" id="rec-portions" placeholder="4" min="1"></div>
     </div>
-    <div class="field">
-      <label>Yield unit</label>
-      <select id="rec-yield-unit">
-        <option value="portions">portions</option>
-        <option value="kg">kg</option>
-        <option value="g">g</option>
-        <option value="liter">liter</option>
-        <option value="ml">ml</option>
-        <option value="pieces">pieces</option>
-        <option value="jars">jars</option>
-      </select>
-    </div>
+    <div class="field"><label>Yield unit</label><select id="rec-yield-unit">
+      <option value="portions">portions</option><option value="kg">kg</option><option value="g">g</option>
+      <option value="liter">liter</option><option value="ml">ml</option>
+      <option value="pieces">pieces</option><option value="jars">jars</option>
+    </select></div>
     <div class="field-row">
       <div class="field"><label>Hands-on (min)</label><input type="number" id="rec-handson" placeholder="30" min="0"></div>
       <div class="field"><label>Prep days</label><input type="number" id="rec-days" placeholder="1" min="1"></div>
@@ -515,18 +471,6 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
   </div>
 </div>
 
-<!-- RECIPE DETAIL -->
-<div class="overlay" id="m-rec-detail">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div id="rec-detail-body"></div>
-    <div class="btn-row" style="margin-top:8px">
-      <button class="btn btn-ghost" onclick="closeModal('m-rec-detail')">Close</button>
-      <button class="btn btn-primary" id="rec-prep-btn">Add to prep</button>
-    </div>
-  </div>
-</div>
-
 <!-- ADD ORDER -->
 <div class="overlay" id="m-order">
   <div class="modal">
@@ -535,19 +479,13 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
     <div class="field"><label>Item</label><input type="text" id="ord-name" placeholder="Ingredient name"></div>
     <div class="field-row">
       <div class="field"><label>Amount</label><input type="number" id="ord-amount" placeholder="0" min="0" step="0.1"></div>
-      <div class="field">
-        <label>Unit</label>
-        <select id="ord-unit">
-          <option value="kg">kg</option><option value="g">g</option><option value="liter">liter</option>
-          <option value="piece">piece</option><option value="pack">pack</option>
-          <option value="can">can</option><option value="bottle">bottle</option>
-        </select>
-      </div>
+      <div class="field"><label>Unit</label><select id="ord-unit">
+        <option value="kg">kg</option><option value="g">g</option><option value="liter">liter</option>
+        <option value="piece">piece</option><option value="pack">pack</option>
+        <option value="can">can</option><option value="bottle">bottle</option>
+      </select></div>
     </div>
-    <div class="field">
-      <label>Priority</label>
-      <select id="ord-priority"><option value="asap">ASAP</option><option value="next_week">Next week</option></select>
-    </div>
+    <div class="field"><label>Priority</label><select id="ord-priority"><option value="asap">ASAP</option><option value="next_week">Next week</option></select></div>
     <div class="field"><label>Notes</label><input type="text" id="ord-notes" placeholder="Brand, spec, supplier note…"></div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeModal('m-order')">Cancel</button>
@@ -563,10 +501,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
     <div class="modal-title">Add prep task</div>
     <div class="field"><label>Task title</label><input type="text" id="prep-title" placeholder="e.g. Make focaccia dough"></div>
     <div class="field"><label>Scheduled date</label><input type="date" id="prep-date"></div>
-    <div class="field">
-      <label>Priority</label>
-      <select id="prep-priority"><option value="normal">Normal</option><option value="asap">ASAP</option></select>
-    </div>
+    <div class="field"><label>Priority</label><select id="prep-priority"><option value="normal">Normal</option><option value="asap">ASAP</option></select></div>
     <div class="field"><label>Notes</label><input type="text" id="prep-notes" placeholder="Optional note…"></div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeModal('m-prep')">Cancel</button>
@@ -575,13 +510,108 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
   </div>
 </div>
 
+<!-- ADD / EDIT STEP -->
+<div class="overlay" id="m-step">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="m-step-title">Add step</div>
+    <input type="hidden" id="step-id">
+    <input type="hidden" id="step-day-num" value="1">
+    <input type="hidden" id="step-order-val" value="0">
+    <div class="field"><label>Step title</label><input type="text" id="step-title-inp" placeholder="e.g. Autolyse, Lamination, Bake"></div>
+    <div class="field"><label>Key info / highlight</label><input type="text" id="step-highlight-inp" placeholder="e.g. Bake at 210°C for 15 min"></div>
+    <div class="field"><label>Notes</label><textarea id="step-notes-inp" placeholder="Technique details, temperature notes…"></textarea></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('m-step')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStep()">Save step</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD INGREDIENT TO STEP -->
+<div class="overlay" id="m-step-ing">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add ingredient</div>
+    <input type="hidden" id="si-step-id">
+    <input type="hidden" id="si-ing-id">
+    <div class="field" style="position:relative">
+      <label>Ingredient</label>
+      <input type="text" id="si-search" placeholder="Search or type to add new…" oninput="searchIngForStep()" autocomplete="off">
+      <div class="search-results" id="si-results" style="display:none"></div>
+    </div>
+    <div id="si-new-wrap" style="display:none">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--green);margin-bottom:8px">New ingredient details</div>
+      <div class="field-row">
+        <div class="field"><label>Category</label><select id="si-new-cat">
+          <option value="">— select —</option>
+          <option>Meat &amp; poultry</option><option>Fish &amp; seafood</option><option>Dairy &amp; eggs</option>
+          <option>Vegetables</option><option>Fruit</option><option>Herbs</option><option>Spices</option>
+          <option>Sauces &amp; condiments</option><option>Oils &amp; fats</option>
+          <option>Bread &amp; pastry</option><option>Nuts &amp; seeds</option>
+          <option>Drinks</option><option>Pantry items</option><option>Other</option>
+        </select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Price / unit (€)</label><input type="number" id="si-new-price" placeholder="0.00" step="0.01" min="0"></div>
+        <div class="field"><label>Density (g/ml)</label><input type="number" id="si-new-density" placeholder="e.g. 1.0" step="0.01" min="0"></div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Amount</label><input type="number" id="si-amount" placeholder="0" min="0" step="0.01"></div>
+      <div class="field"><label>Unit</label><select id="si-unit">
+        <option value="g">g</option><option value="kg">kg</option>
+        <option value="ml">ml</option><option value="liter">liter</option>
+        <option value="tsp">tsp</option><option value="tbsp">tbsp</option><option value="cup">cup</option>
+        <option value="piece">piece</option><option value="bunch">bunch</option>
+        <option value="pinch">pinch</option><option value="to taste">to taste</option>
+      </select></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('m-step-ing')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStepIng()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD COMPONENT TO STEP -->
+<div class="overlay" id="m-step-comp">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add component</div>
+    <input type="hidden" id="sc-step-id">
+    <input type="hidden" id="sc-comp-id">
+    <div class="field" style="position:relative">
+      <label>Component</label>
+      <input type="text" id="sc-search" placeholder="Search components…" oninput="searchCompForStep()" autocomplete="off">
+      <div class="search-results" id="sc-results" style="display:none"></div>
+    </div>
+    <div id="sc-selected-wrap" style="display:none">
+      <div class="selected-chip" id="sc-selected-name"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Amount</label><input type="number" id="sc-amount" placeholder="0" min="0" step="0.01"></div>
+      <div class="field"><label>Unit</label><select id="sc-unit">
+        <option value="portions">portions</option><option value="g">g</option><option value="kg">kg</option>
+        <option value="ml">ml</option><option value="liter">liter</option>
+        <option value="pieces">pieces</option><option value="tbsp">tbsp</option><option value="cup">cup</option>
+      </select></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('m-step-comp')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStepComp()">Add</button>
+    </div>
+  </div>
+</div>
+
+<!-- PART 2 SCRIPT GOES HERE — paste contents of kitchen-p2.js below this line -->
 <script>
-// ═══════════════════════════════════════
-// CONFIG
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
+// CONFIG — replace these two values
+// ═══════════════════════════════════════════
 const SUPABASE_URL = 'https://mhhmyrmvybcrlhqyzrkj.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_KlgzzKrVkey0uf0WgOJh0Q_VSX4I5eI';
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 
 const configured = !SUPABASE_URL.startsWith('YOUR');
 const db = configured ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
@@ -589,6 +619,7 @@ const db = configured ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null
 const COMPONENT_CATS = ['Stocks & sauces','Dressings & emulsions','Pickles & ferments','Confits & slow-cooked','Pastry & dough','Confectionery','Cured & marinated','Infusions & oils','Other'];
 const DISH_CATS      = ['Brunch','Cold snacks','Warm snacks','Hot dishes','Desserts'];
 
+// ── GLOBAL STATE ─────────────────────────
 const S = {
   section: 'ingredients',
   ingredients: [], recipes: [], pantryIng: [], pantryComp: [],
@@ -596,12 +627,16 @@ const S = {
   weekStart: monday(new Date()),
   ingQ: '', ingCat: 'all',
   recType: 'components', recQ: '', recCat: 'all',
-  pantryTabActive: 'ingredients',
-  orderTabActive:  'asap',
-  moneyTabActive:  'dishes',
+  pantryTabActive: 'ingredients', orderTabActive: 'asap', moneyTabActive: 'dishes',
 };
 
-// ── NAV ──────────────────────────────────
+// Recipe detail state
+const D = {
+  recipe: null, steps: [], ingredients: [],
+  scaledPortions: 1, unitSys: 'metric',
+};
+
+// ── NAVIGATION ───────────────────────────
 const titles = { ingredients:'Ingredients', recipes:'Recipes', pantry:'Pantry', prep:'Prep', orders:'Orders', money:'Costing' };
 const hasAdd  = { ingredients:true, recipes:true, pantry:false, prep:true, orders:true, money:false };
 
@@ -622,8 +657,7 @@ function openAdd() {
   if (map[S.section]) showModal(map[S.section]);
 }
 
-// ── MODALS ────────────────────────────────
-// Note: renamed to showModal/closeModal to avoid conflicting with window.close()
+// ── MODALS ───────────────────────────────
 function showModal(id, onTop = false) {
   const el = document.getElementById(id);
   el.classList.add('open');
@@ -639,7 +673,7 @@ document.querySelectorAll('.overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) closeModal(o.id); });
 });
 
-// ── LOAD ──────────────────────────────────
+// ── LOAD ─────────────────────────────────
 async function load(name) {
   if (!configured) { showSetup(); return; }
   try {
@@ -651,17 +685,16 @@ async function load(name) {
     if (name === 'money')       await loadMoney();
   } catch(e) { console.error(e); }
 }
-
 function showSetup() {
-  const b = `<div class="setup-banner"><strong>Setup needed</strong>Replace <code>YOUR_SUPABASE_URL</code> and <code>YOUR_SUPABASE_ANON_KEY</code> near the top of the script, then paste the SQL schema from the HTML comment at the bottom into Supabase → SQL Editor and run it.</div>`;
+  const b = `<div class="setup-banner"><strong>Setup needed</strong>Replace <code>YOUR_SUPABASE_URL</code> and <code>YOUR_SUPABASE_ANON_KEY</code> at the top of the script block, then run the SQL schema from the HTML comment at the bottom of this file in Supabase → SQL Editor.</div>`;
   ['ing-list','rec-list','pantry-ing-list','orders-asap-list','money-dishes-list'].forEach(id => {
     const el = document.getElementById(id); if (el) el.innerHTML = b;
   });
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // INGREDIENTS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 async function loadIng() {
   document.getElementById('ing-list').innerHTML = '<div class="loading">Loading…</div>';
   const { data } = await db.from('ingredients').select('*').order('name');
@@ -698,14 +731,14 @@ function renderIng() {
     </div>`).join('');
 }
 function ingDetail(id) {
-  const i = S.ingredients.find(x => x.id === id);
-  if (!i) return;
+  const i = S.ingredients.find(x => x.id === id); if (!i) return;
   document.getElementById('ing-detail-body').innerHTML = `
     <div style="font-family:'Instrument Serif',serif;font-size:24px;margin-bottom:6px">${esc(i.name)}</div>
     ${i.category ? `<span class="badge badge-neutral" style="margin-bottom:14px;display:inline-flex">${esc(i.category)}</span>` : ''}
     <div style="background:var(--bg);border-radius:var(--r);padding:13px 14px;margin-bottom:12px">
       ${drow('Unit', i.unit||'—')}
       ${drow('Price', i.price_per_unit != null ? `€${(+i.price_per_unit).toFixed(2)} / ${i.unit}` : '—')}
+      ${i.density ? drow('Density', `${i.density} g/ml`) : ''}
       ${drow('Supplier', i.supplier||'—')}
       ${i.supplier_contact ? drow('Contact', i.supplier_contact) : ''}
     </div>
@@ -714,46 +747,44 @@ function ingDetail(id) {
   showModal('m-ing-detail');
 }
 function editIng(id) {
-  const i = S.ingredients.find(x => x.id === id);
-  if (!i) return;
-  document.getElementById('m-ing-title').textContent = 'Edit ingredient';
-  document.getElementById('ing-id').value        = i.id;
-  document.getElementById('ing-name').value      = i.name || '';
-  document.getElementById('ing-cat').value       = i.category || '';
-  document.getElementById('ing-unit').value      = i.unit || 'kg';
-  document.getElementById('ing-price').value     = i.price_per_unit || '';
-  document.getElementById('ing-supplier').value  = i.supplier || '';
-  document.getElementById('ing-notes').value     = i.supplier_contact || '';
+  const i = S.ingredients.find(x => x.id === id); if (!i) return;
+  document.getElementById('m-ing-title').textContent  = 'Edit ingredient';
+  document.getElementById('ing-id').value             = i.id;
+  document.getElementById('ing-name').value           = i.name||'';
+  document.getElementById('ing-cat').value            = i.category||'';
+  document.getElementById('ing-unit').value           = i.unit||'kg';
+  document.getElementById('ing-price').value          = i.price_per_unit||'';
+  document.getElementById('ing-density').value        = i.density||'';
+  document.getElementById('ing-supplier').value       = i.supplier||'';
+  document.getElementById('ing-notes').value          = i.supplier_contact||'';
   showModal('m-ingredient', true);
 }
 async function saveIng() {
   const id = document.getElementById('ing-id').value;
   const payload = {
-    name: document.getElementById('ing-name').value.trim(),
-    category: document.getElementById('ing-cat').value || null,
-    unit: document.getElementById('ing-unit').value,
-    price_per_unit: parseFloat(document.getElementById('ing-price').value) || null,
-    supplier: document.getElementById('ing-supplier').value.trim() || null,
-    supplier_contact: document.getElementById('ing-notes').value.trim() || null,
+    name:             document.getElementById('ing-name').value.trim(),
+    category:         document.getElementById('ing-cat').value||null,
+    unit:             document.getElementById('ing-unit').value,
+    price_per_unit:   parseFloat(document.getElementById('ing-price').value)||null,
+    density:          parseFloat(document.getElementById('ing-density').value)||null,
+    supplier:         document.getElementById('ing-supplier').value.trim()||null,
+    supplier_contact: document.getElementById('ing-notes').value.trim()||null,
   };
   if (!payload.name) return;
   if (id) await db.from('ingredients').update(payload).eq('id', id);
   else    await db.from('ingredients').insert(payload);
-  closeModal('m-ingredient');
-  closeModal('m-ing-detail');
-  clearIngForm();
-  await loadIng();
+  closeModal('m-ingredient'); closeModal('m-ing-detail');
+  clearIngForm(); await loadIng();
 }
 function clearIngForm() {
   document.getElementById('m-ing-title').textContent = 'New ingredient';
-  ['ing-id','ing-name','ing-price','ing-supplier','ing-notes'].forEach(x => document.getElementById(x).value = '');
-  document.getElementById('ing-cat').value  = '';
-  document.getElementById('ing-unit').value = 'kg';
+  ['ing-id','ing-name','ing-price','ing-density','ing-supplier','ing-notes'].forEach(x => document.getElementById(x).value = '');
+  document.getElementById('ing-cat').value = ''; document.getElementById('ing-unit').value = 'kg';
 }
 
-// ═══════════════════════════════════════
-// RECIPES
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
+// RECIPES — list
+// ═══════════════════════════════════════════
 async function loadRec() {
   document.getElementById('rec-list').innerHTML = '<div class="loading">Loading…</div>';
   const { data } = await db.from('recipes').select('*').order('name');
@@ -762,14 +793,14 @@ async function loadRec() {
 }
 function recTab(tab) {
   S.recType = tab; S.recCat = 'all';
-  document.getElementById('rec-tab-components').classList.toggle('active', tab === 'components');
-  document.getElementById('rec-tab-dishes').classList.toggle('active',     tab === 'dishes');
-  document.getElementById('rec-list-label').textContent = tab === 'components' ? 'Components' : 'Dishes';
+  document.getElementById('rec-tab-components').classList.toggle('active', tab==='components');
+  document.getElementById('rec-tab-dishes').classList.toggle('active',     tab==='dishes');
+  document.getElementById('rec-list-label').textContent = tab==='components' ? 'Components' : 'Dishes';
   renderRecChips(); renderRec();
 }
 function renderRecChips() {
-  const type = S.recType === 'components' ? 'component' : 'dish';
-  const cats = ['all', ...new Set(S.recipes.filter(r => r.type === type).map(r => r.category).filter(Boolean).sort())];
+  const type = S.recType==='components' ? 'component' : 'dish';
+  const cats = ['all', ...new Set(S.recipes.filter(r=>r.type===type).map(r=>r.category).filter(Boolean).sort())];
   document.getElementById('rec-chips').innerHTML = cats.map(c =>
     `<button class="chip ${c===S.recCat?'active':''}" onclick="setRecCat('${c}')">${c==='all'?'All':c}</button>`
   ).join('');
@@ -777,77 +808,47 @@ function renderRecChips() {
 function setRecCat(c) { S.recCat = c; renderRecChips(); renderRec(); }
 function filterRec()  { S.recQ = document.getElementById('rec-search').value.toLowerCase(); renderRec(); }
 function renderRec() {
-  const type = S.recType === 'components' ? 'component' : 'dish';
+  const type = S.recType==='components' ? 'component' : 'dish';
   let list = S.recipes.filter(r => r.type === type);
   if (S.recCat !== 'all') list = list.filter(r => r.category === S.recCat);
   if (S.recQ) list = list.filter(r => r.name.toLowerCase().includes(S.recQ));
   document.getElementById('rec-count').textContent = list.length;
   if (!list.length) {
-    const icon = type === 'component' ? '🫙' : '🍽';
-    document.getElementById('rec-list').innerHTML = `<div class="empty"><div class="empty-icon">${icon}</div><p>No ${type}s yet.<br>Tap + to add your first one.</p></div>`;
+    document.getElementById('rec-list').innerHTML = `<div class="empty"><div class="empty-icon">${type==='component'?'🫙':'🍽'}</div><p>No ${type}s yet.<br>Tap + to add your first one.</p></div>`;
     return;
   }
   document.getElementById('rec-list').innerHTML = list.map(r => `
-    <div class="card" onclick="recDetail('${r.id}')">
+    <div class="card" onclick="openRecDetail('${r.id}')">
       <div class="card-main">
         <div class="card-name">${esc(r.name)}</div>
-        <div class="card-meta">
-          ${r.portions ? r.portions + ' ' + (r.yield_unit||'portions') : ''}${r.hands_on_minutes ? ' · ' + fmtTime(r.hands_on_minutes) : ''}${r.total_prep_days > 1 ? ' · ' + r.total_prep_days + '-day prep' : ''}
-        </div>
+        <div class="card-meta">${r.portions?r.portions+' '+(r.yield_unit||'portions'):''}${r.hands_on_minutes?' · '+fmtTime(r.hands_on_minutes):''}${r.total_prep_days>1?' · '+r.total_prep_days+'-day prep':''}</div>
       </div>
       <div class="card-aside">
-        ${r.category ? `<span class="badge ${type==='component'?'badge-blue':'badge-green'}">${esc(r.category)}</span>` : ''}
+        ${r.category?`<span class="badge ${type==='component'?'badge-blue':'badge-green'}">${esc(r.category)}</span>`:''}
       </div>
     </div>`).join('');
 }
 function openRecModal(type) {
   document.getElementById('rec-type').value = type;
-  document.getElementById('m-rec-title').textContent = type === 'component' ? 'New component' : 'New dish';
-  const cats = type === 'component' ? COMPONENT_CATS : DISH_CATS;
-  document.getElementById('rec-cat').innerHTML = `<option value="">— select —</option>` + cats.map(c => `<option>${c}</option>`).join('');
-  clearRecForm();
-  showModal('m-recipe');
+  document.getElementById('m-rec-title').textContent = type==='component' ? 'New component' : 'New dish';
+  const cats = type==='component' ? COMPONENT_CATS : DISH_CATS;
+  document.getElementById('rec-cat').innerHTML = `<option value="">— select —</option>`+cats.map(c=>`<option>${c}</option>`).join('');
+  clearRecForm(); showModal('m-recipe');
 }
-function recDetail(id) {
-  const r = S.recipes.find(x => x.id === id);
-  if (!r) return;
-  const isComp = r.type === 'component';
-  document.getElementById('rec-detail-body').innerHTML = `
-    <div style="font-family:'Instrument Serif',serif;font-size:24px;margin-bottom:8px">${esc(r.name)}</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
-      <span class="badge ${isComp?'badge-blue':'badge-green'}">${isComp?'Component':'Dish'}</span>
-      ${r.category ? `<span class="badge badge-neutral">${esc(r.category)}</span>` : ''}
-    </div>
-    <div style="background:var(--bg);border-radius:var(--r);padding:13px 14px;margin-bottom:12px">
-      ${r.portions ? drow('Yield', `${r.portions} ${r.yield_unit||'portions'}`) : ''}
-      ${r.hands_on_minutes ? drow('Hands-on time', fmtTime(r.hands_on_minutes)) : ''}
-      ${r.total_prep_days > 1 ? drow('Prep days', r.total_prep_days) : ''}
-      ${r.notes ? `<div class="divider"></div><div style="font-size:13px;color:var(--text-2);line-height:1.6">${esc(r.notes)}</div>` : ''}
-    </div>
-    <div style="color:var(--text-3);font-size:13px;margin-bottom:10px">Ingredients &amp; steps — coming next</div>
-    <button class="btn btn-ghost" onclick="editRec('${r.id}')">Edit ${isComp?'component':'dish'}</button>`;
-  document.getElementById('rec-prep-btn').onclick = () => {
-    closeModal('m-rec-detail');
-    document.getElementById('prep-title').value = r.name;
-    document.getElementById('prep-date').value  = toDateStr(new Date());
-    showModal('m-prep');
-  };
-  showModal('m-rec-detail');
-}
+function editCurrentRec() { if (D.recipe) editRec(D.recipe.id); }
 function editRec(id) {
-  const r = S.recipes.find(x => x.id === id);
-  if (!r) return;
-  const cats = r.type === 'component' ? COMPONENT_CATS : DISH_CATS;
-  document.getElementById('rec-type').value      = r.type;
-  document.getElementById('m-rec-title').textContent = r.type === 'component' ? 'Edit component' : 'Edit dish';
-  document.getElementById('rec-cat').innerHTML   = `<option value="">— select —</option>` + cats.map(c => `<option ${c===r.category?'selected':''}>${c}</option>`).join('');
-  document.getElementById('rec-id').value        = r.id;
-  document.getElementById('rec-name').value      = r.name || '';
-  document.getElementById('rec-portions').value  = r.portions || '';
-  document.getElementById('rec-yield-unit').value = r.yield_unit || 'portions';
-  document.getElementById('rec-handson').value   = r.hands_on_minutes || '';
-  document.getElementById('rec-days').value      = r.total_prep_days || 1;
-  document.getElementById('rec-notes').value     = r.notes || '';
+  const r = S.recipes.find(x => x.id === id); if (!r) return;
+  const cats = r.type==='component' ? COMPONENT_CATS : DISH_CATS;
+  document.getElementById('rec-type').value = r.type;
+  document.getElementById('m-rec-title').textContent = r.type==='component' ? 'Edit component' : 'Edit dish';
+  document.getElementById('rec-cat').innerHTML = `<option value="">— select —</option>`+cats.map(c=>`<option ${c===r.category?'selected':''}>${c}</option>`).join('');
+  document.getElementById('rec-id').value      = r.id;
+  document.getElementById('rec-name').value    = r.name||'';
+  document.getElementById('rec-portions').value = r.portions||'';
+  document.getElementById('rec-yield-unit').value = r.yield_unit||'portions';
+  document.getElementById('rec-handson').value = r.hands_on_minutes||'';
+  document.getElementById('rec-days').value    = r.total_prep_days||1;
+  document.getElementById('rec-notes').value   = r.notes||'';
   showModal('m-recipe', true);
 }
 async function saveRec() {
@@ -855,20 +856,30 @@ async function saveRec() {
   const payload = {
     type:             document.getElementById('rec-type').value,
     name:             document.getElementById('rec-name').value.trim(),
-    category:         document.getElementById('rec-cat').value || null,
-    portions:         parseInt(document.getElementById('rec-portions').value) || null,
-    yield_unit:       document.getElementById('rec-yield-unit').value || 'portions',
-    hands_on_minutes: parseInt(document.getElementById('rec-handson').value) || null,
-    total_prep_days:  parseInt(document.getElementById('rec-days').value) || 1,
-    notes:            document.getElementById('rec-notes').value.trim() || null,
+    category:         document.getElementById('rec-cat').value||null,
+    portions:         parseInt(document.getElementById('rec-portions').value)||null,
+    yield_unit:       document.getElementById('rec-yield-unit').value||'portions',
+    hands_on_minutes: parseInt(document.getElementById('rec-handson').value)||null,
+    total_prep_days:  parseInt(document.getElementById('rec-days').value)||1,
+    notes:            document.getElementById('rec-notes').value.trim()||null,
   };
   if (!payload.name) return;
-  if (id) await db.from('recipes').update(payload).eq('id', id);
-  else    await db.from('recipes').insert(payload);
+  if (id) {
+    await db.from('recipes').update(payload).eq('id', id);
+    const idx = S.recipes.findIndex(r => r.id === id);
+    if (idx >= 0) S.recipes[idx] = { ...S.recipes[idx], ...payload };
+    if (D.recipe?.id === id) {
+      Object.assign(D.recipe, payload);
+      document.getElementById('detail-title').textContent = payload.name;
+      renderRecInfoBlock();
+    }
+  } else {
+    const { data } = await db.from('recipes').insert(payload).select().single();
+    if (data) S.recipes.push(data);
+  }
   closeModal('m-recipe');
-  closeModal('m-rec-detail');
   clearRecForm();
-  await loadRec();
+  if (S.section === 'recipes') await loadRec();
 }
 function clearRecForm() {
   ['rec-id','rec-name','rec-portions','rec-handson','rec-days','rec-notes'].forEach(x => {
@@ -876,27 +887,435 @@ function clearRecForm() {
   });
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
+// RECIPE DETAIL — full page
+// ═══════════════════════════════════════════
+async function openRecDetail(id) {
+  if (!S.recipes.length) {
+    const { data } = await db.from('recipes').select('*').order('name');
+    S.recipes = data || [];
+  }
+  const [{ data: rec }, { data: steps }, { data: ings }] = await Promise.all([
+    db.from('recipes').select('*').eq('id', id).single(),
+    db.from('recipe_steps').select('*').eq('recipe_id', id).order('day_number').order('step_order'),
+    db.from('recipe_ingredients')
+      .select('*, ingredients(id,name,unit,price_per_unit,density), comp_recipe:recipes!component_id(id,name,type,yield_unit,portions)')
+      .eq('recipe_id', id),
+  ]);
+  D.recipe        = rec;
+  D.steps         = steps || [];
+  D.ingredients   = ings  || [];
+  D.scaledPortions = rec.portions || 1;
+
+  document.getElementById('header-normal').style.display = 'none';
+  document.getElementById('header-detail').style.display = 'flex';
+  document.getElementById('detail-title').textContent    = rec.name;
+  document.getElementById('add-btn').style.display       = 'none';
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('recipe-detail-view').style.display = 'block';
+  document.getElementById('main').scrollTop = 0;
+  renderRecDetail();
+}
+
+function closeRecDetail() {
+  document.getElementById('recipe-detail-view').style.display = 'none';
+  document.getElementById('header-detail').style.display      = 'none';
+  document.getElementById('header-normal').style.display      = 'contents';
+  document.getElementById('add-btn').style.display = hasAdd[S.section] ? 'flex' : 'none';
+  document.getElementById(`sec-${S.section}`).classList.add('active');
+  document.getElementById('main').scrollTop = 0;
+}
+
+function renderRecInfoBlock() {
+  const r = D.recipe; if (!r) return;
+  document.getElementById('rec-info-block').innerHTML = `
+    <div class="rec-info-badges">
+      <span class="badge ${r.type==='component'?'badge-blue':'badge-green'}">${r.type==='component'?'Component':'Dish'}</span>
+      ${r.category?`<span class="badge badge-neutral">${esc(r.category)}</span>`:''}
+    </div>
+    <div class="rec-meta-pills">
+      ${r.portions?`<span class="rec-meta-pill">Yield: ${r.portions} ${r.yield_unit||'portions'}</span>`:''}
+      ${r.hands_on_minutes?`<span class="rec-meta-pill">${fmtTime(r.hands_on_minutes)} hands-on</span>`:''}
+      ${r.total_prep_days>1?`<span class="rec-meta-pill">${r.total_prep_days}-day prep</span>`:''}
+    </div>
+    ${r.notes?`<div class="rec-notes-text">${esc(r.notes)}</div>`:''}`;
+}
+
+function renderRecDetail() {
+  updateScaleBar();
+  renderRecInfoBlock();
+  const maxDay = Math.max(D.recipe?.total_prep_days||1, ...D.steps.map(s=>s.day_number||1), 1);
+  const multiDay = maxDay > 1;
+  let html = '';
+  for (let day = 1; day <= maxDay; day++) {
+    const daySteps = D.steps.filter(s => s.day_number === day).sort((a,b) => a.step_order - b.step_order);
+    html += `<div class="rec-day-group">`;
+    html += multiDay ? `<div class="rec-day-label">Day ${day}</div>` : `<div style="height:8px"></div>`;
+    daySteps.forEach((step, idx) => { html += renderStepCard(step, idx + 1); });
+    html += `<button class="add-step-btn" onclick="openAddStep(${day})">+ Add step${multiDay?' to Day '+day:''}</button>`;
+    html += `</div>`;
+  }
+  document.getElementById('rec-detail-days').innerHTML = html || '<div style="height:8px"></div>';
+}
+
+function renderStepCard(step, num) {
+  const factor   = getScaleFactor();
+  const isScaled = Math.abs(factor - 1) > 0.001;
+  const stepIngs = D.ingredients.filter(ri => ri.step_id === step.id);
+
+  let ingsHtml = '';
+  if (!stepIngs.length) {
+    ingsHtml = '<div style="padding:4px 0 6px;font-size:12.5px;color:var(--text-3)">No ingredients — add below</div>';
+  } else {
+    stepIngs.forEach(ri => {
+      const isComp = !!ri.component_id;
+      const name   = isComp ? ri.comp_recipe?.name : ri.ingredients?.name;
+      if (!name) return;
+      const { amount: da, unit: du } = displayAmt(ri.amount, ri.unit, factor, isComp ? null : ri.ingredients);
+      const amtStr  = da !== '' ? fmtNum(da) + ' ' + du : du;
+      const baseStr = fmtNum(ri.amount) + ' ' + (ri.unit||'');
+      ingsHtml += `
+        <div class="step-ing-row">
+          <span class="step-ing-name ${isComp?'is-comp':''}"
+            ${isComp ? `onclick="openRecDetail('${ri.component_id}')"` : ''}>
+            ${isComp ? '⬡ ' : ''}${esc(name)}
+          </span>
+          <span class="step-ing-amt ${isScaled?'scaled':''}" title="${isScaled?'Base: '+baseStr:''}">${amtStr}</span>
+          <button class="step-ing-del" onclick="deleteRecIng('${ri.id}')">×</button>
+        </div>`;
+    });
+  }
+
+  return `
+    <div class="step-card">
+      <div class="step-header">
+        <span class="step-num">Step ${num}</span>
+        <span class="step-title-text">${esc(step.title)}</span>
+        <button class="step-ctrl" onclick="openEditStep('${step.id}')" title="Edit step">✏</button>
+        <button class="step-ctrl" onclick="confirmDeleteStep('${step.id}')" title="Delete step">×</button>
+      </div>
+      ${step.highlight ? `<div class="step-highlight"><span class="step-hi-icon">${hiIcon(step.highlight)}</span>${esc(step.highlight)}</div>` : ''}
+      <div class="step-ings">${ingsHtml}</div>
+      ${step.description ? `<div class="step-notes">${esc(step.description)}</div>` : ''}
+      <div class="step-add-row">
+        <button class="step-add-btn"          onclick="openAddIngToStep('${step.id}')">+ Ingredient</button>
+        <button class="step-add-btn for-comp" onclick="openAddCompToStep('${step.id}')">+ Component</button>
+      </div>
+    </div>`;
+}
+
+function hiIcon(text) {
+  const t = text.toLowerCase();
+  if (/°[cf]|bake|roast|fry|boil|simmer|heat|warm|cool|chill|freeze|temp/.test(t)) return '🌡';
+  if (/\bmin\b|minute|hour|\bhr\b|rest|wait|overnight/.test(t)) return '⏱';
+  if (/mix|whisk|fold|stir|beat|knead/.test(t)) return '🥄';
+  return '✦';
+}
+
+// ── SCALE ────────────────────────────────
+function getScaleFactor() {
+  if (!D.recipe?.portions) return 1;
+  return D.scaledPortions / D.recipe.portions;
+}
+function getScaleStep() {
+  const u = D.recipe?.yield_unit || 'portions';
+  if (['g','ml'].includes(u))       return 50;
+  if (['kg','liter'].includes(u))   return 0.25;
+  return 1;
+}
+function nudgeScale(dir) {
+  if (!D.recipe) return;
+  const step = getScaleStep();
+  D.scaledPortions = Math.max(step, parseFloat((D.scaledPortions + dir * step).toFixed(4)));
+  updateScaleBar(); renderRecDetail();
+}
+function resetScale() {
+  D.scaledPortions = D.recipe.portions || 1;
+  updateScaleBar(); renderRecDetail();
+}
+function updateScaleBar() {
+  const factor   = getScaleFactor();
+  const isScaled = Math.abs(factor - 1) > 0.001;
+  const el = document.getElementById('scale-display');
+  el.textContent = fmtNum(D.scaledPortions) + ' ' + (D.recipe?.yield_unit||'portions');
+  el.className   = 'scale-display' + (isScaled ? ' scaled' : '');
+  document.getElementById('scale-reset-btn').style.display = isScaled ? '' : 'none';
+}
+
+// ── UNIT CONVERSION ──────────────────────
+const TO_IMP = { g:{u:'oz',f:0.035274}, kg:{u:'lb',f:2.20462}, ml:{u:'fl oz',f:0.033814}, liter:{u:'qt',f:1.05669} };
+const TO_MET = { oz:{u:'g',f:28.3495}, lb:{u:'kg',f:0.453592}, 'fl oz':{u:'ml',f:29.5735}, qt:{u:'liter',f:0.946353} };
+
+function simplify(a, u) {
+  // Volume spoon/cup chain
+  if (u==='tsp')  { if (a >= 48) return simplify(a/48, 'cup'); if (a >= 3) return simplify(a/3, 'tbsp'); }
+  if (u==='tbsp') { if (a >= 16) return { a: a/16, u: 'cup' }; if (a < 1 && a > 0) return { a: a*3, u: 'tsp' }; }
+  if (u==='cup')  { if (a < 0.0625 && a > 0) return { a: a*16, u: 'tbsp' }; }
+  // Metric scale
+  if (u==='g'    && a >= 1000)            return { a: a/1000,  u: 'kg' };
+  if (u==='kg'   && a > 0 && a < 0.01)   return { a: a*1000,  u: 'g' };
+  if (u==='ml'   && a >= 1000)            return { a: a/1000,  u: 'liter' };
+  if (u==='liter'&& a > 0 && a < 0.1)    return { a: a*1000,  u: 'ml' };
+  // Imperial scale
+  if (u==='oz'   && a >= 16)              return { a: a/16,    u: 'lb' };
+  if (u==='lb'   && a > 0 && a < 0.0625) return { a: a*16,    u: 'oz' };
+  if (u==='fl oz'&& a >= 32)              return { a: a/32,    u: 'qt' };
+  return { a, u };
+}
+
+function displayAmt(amount, unit, factor, ingredient) {
+  if (amount === null || amount === undefined || unit === 'to taste' || unit === 'pinch') {
+    return { amount: '', unit: unit||'' };
+  }
+  let a = +amount * factor;
+  let u = unit || '';
+  // Try cups-to-grams if ingredient has density and unit is volume
+  if (ingredient?.density && D.unitSys === 'metric') {
+    if (u === 'cup')  { a = a * 240 * +ingredient.density; u = 'g'; }
+    if (u === 'tbsp') { a = a * 15  * +ingredient.density; u = 'g'; }
+    if (u === 'tsp')  { a = a * 5   * +ingredient.density; u = 'g'; }
+  }
+  const r = simplify(a, u);
+  a = r.a; u = r.u;
+  // System conversion
+  if (D.unitSys === 'imperial' && TO_IMP[u]) {
+    a = a * TO_IMP[u].f; u = TO_IMP[u].u;
+    const r2 = simplify(a, u); a = r2.a; u = r2.u;
+  }
+  if (D.unitSys === 'metric' && TO_MET[u]) {
+    a = a * TO_MET[u].f; u = TO_MET[u].u;
+    const r2 = simplify(a, u); a = r2.a; u = r2.u;
+  }
+  return { amount: a, unit: u };
+}
+
+function setUnitSys(sys) {
+  D.unitSys = sys;
+  document.getElementById('utab-metric').classList.toggle('active',   sys === 'metric');
+  document.getElementById('utab-imperial').classList.toggle('active', sys === 'imperial');
+  renderRecDetail();
+}
+
+// ── STEPS CRUD ───────────────────────────
+function openAddStep(dayNum) {
+  document.getElementById('m-step-title').textContent  = 'Add step';
+  document.getElementById('step-id').value             = '';
+  document.getElementById('step-day-num').value        = dayNum;
+  const ord = D.steps.filter(s => s.day_number === dayNum).length;
+  document.getElementById('step-order-val').value      = ord;
+  ['step-title-inp','step-highlight-inp','step-notes-inp'].forEach(x => document.getElementById(x).value = '');
+  showModal('m-step');
+}
+function openEditStep(id) {
+  const s = D.steps.find(x => x.id === id); if (!s) return;
+  document.getElementById('m-step-title').textContent  = 'Edit step';
+  document.getElementById('step-id').value             = s.id;
+  document.getElementById('step-day-num').value        = s.day_number;
+  document.getElementById('step-order-val').value      = s.step_order;
+  document.getElementById('step-title-inp').value      = s.title||'';
+  document.getElementById('step-highlight-inp').value  = s.highlight||'';
+  document.getElementById('step-notes-inp').value      = s.description||'';
+  showModal('m-step');
+}
+async function saveStep() {
+  const id = document.getElementById('step-id').value;
+  const payload = {
+    recipe_id:   D.recipe.id,
+    day_number:  parseInt(document.getElementById('step-day-num').value)||1,
+    step_order:  parseInt(document.getElementById('step-order-val').value)||0,
+    title:       document.getElementById('step-title-inp').value.trim(),
+    highlight:   document.getElementById('step-highlight-inp').value.trim()||null,
+    description: document.getElementById('step-notes-inp').value.trim()||null,
+  };
+  if (!payload.title) return;
+  if (id) {
+    await db.from('recipe_steps').update(payload).eq('id', id);
+    const idx = D.steps.findIndex(s => s.id === id);
+    if (idx >= 0) D.steps[idx] = { ...D.steps[idx], ...payload };
+  } else {
+    const { data } = await db.from('recipe_steps').insert(payload).select().single();
+    if (data) D.steps.push(data);
+  }
+  closeModal('m-step');
+  renderRecDetail();
+}
+function confirmDeleteStep(id) {
+  if (!confirm('Delete this step and all its ingredients?')) return;
+  deleteStep(id);
+}
+async function deleteStep(id) {
+  await db.from('recipe_ingredients').delete().eq('step_id', id);
+  await db.from('recipe_steps').delete().eq('id', id);
+  D.steps       = D.steps.filter(s => s.id !== id);
+  D.ingredients = D.ingredients.filter(i => i.step_id !== id);
+  renderRecDetail();
+}
+async function addRecDay() {
+  if (!D.recipe) return;
+  const n = (D.recipe.total_prep_days || 1) + 1;
+  await db.from('recipes').update({ total_prep_days: n }).eq('id', D.recipe.id);
+  D.recipe.total_prep_days = n;
+  const r = S.recipes.find(x => x.id === D.recipe.id); if (r) r.total_prep_days = n;
+  renderRecDetail();
+}
+
+// ── INGREDIENTS IN STEPS ─────────────────
+let _siMode = 'existing';
+
+function openAddIngToStep(stepId) {
+  _siMode = 'existing';
+  document.getElementById('si-step-id').value = stepId;
+  document.getElementById('si-ing-id').value  = '';
+  document.getElementById('si-search').value  = '';
+  document.getElementById('si-amount').value  = '';
+  document.getElementById('si-results').style.display  = 'none';
+  document.getElementById('si-new-wrap').style.display = 'none';
+  ['si-new-cat','si-new-price','si-new-density'].forEach(x => document.getElementById(x).value = '');
+  showModal('m-step-ing');
+  setTimeout(() => document.getElementById('si-search').focus(), 320);
+}
+
+function searchIngForStep() {
+  const q   = document.getElementById('si-search').value.trim();
+  const qLo = q.toLowerCase();
+  const res = document.getElementById('si-results');
+  if (!q) { res.style.display = 'none'; return; }
+  const matches = S.ingredients.filter(i => i.name.toLowerCase().includes(qLo)).slice(0, 8);
+  let html = matches.map(i => `
+    <div class="sr-item" onclick="selectIngForStep('${i.id}')">
+      ${esc(i.name)}<div class="sr-meta">${i.category||''} · ${i.unit||''}${i.price_per_unit!=null?' · €'+i.price_per_unit:''}</div>
+    </div>`).join('');
+  html += `<div class="sr-item sr-new" onclick="selectNewIngForStep()">+ Add "${esc(q)}" as new ingredient</div>`;
+  res.innerHTML = html;
+  res.style.display = 'block';
+}
+
+function selectIngForStep(id) {
+  _siMode = 'existing';
+  const ing = S.ingredients.find(i => i.id === id); if (!ing) return;
+  document.getElementById('si-ing-id').value  = id;
+  document.getElementById('si-search').value  = ing.name;
+  document.getElementById('si-results').style.display  = 'none';
+  document.getElementById('si-new-wrap').style.display = 'none';
+  // Default to smaller unit for recipe use
+  const defaults = { kg:'g', liter:'ml', piece:'piece', bunch:'bunch', can:'can', pack:'pack', bottle:'bottle' };
+  document.getElementById('si-unit').value = defaults[ing.unit] || ing.unit || 'g';
+}
+
+function selectNewIngForStep() {
+  _siMode = 'new';
+  document.getElementById('si-ing-id').value = '';
+  document.getElementById('si-results').style.display  = 'none';
+  document.getElementById('si-new-wrap').style.display = 'block';
+}
+
+async function saveStepIng() {
+  const stepId = document.getElementById('si-step-id').value;
+  let   ingId  = document.getElementById('si-ing-id').value;
+  const amount = parseFloat(document.getElementById('si-amount').value) || null;
+  const unit   = document.getElementById('si-unit').value;
+
+  if (_siMode === 'new') {
+    const name = document.getElementById('si-search').value.trim();
+    if (!name) return;
+    const { data: newIng } = await db.from('ingredients').insert({
+      name, unit,
+      category:      document.getElementById('si-new-cat').value || null,
+      price_per_unit: parseFloat(document.getElementById('si-new-price').value) || null,
+      density:        parseFloat(document.getElementById('si-new-density').value) || null,
+    }).select().single();
+    if (!newIng) return;
+    ingId = newIng.id;
+    S.ingredients.push(newIng);
+  }
+  if (!ingId) return;
+
+  const { data: newRI } = await db.from('recipe_ingredients').insert({
+    recipe_id: D.recipe.id, step_id: stepId, ingredient_id: ingId, amount, unit,
+  }).select('*, ingredients(id,name,unit,price_per_unit,density)').single();
+  if (newRI) D.ingredients.push(newRI);
+  closeModal('m-step-ing');
+  renderRecDetail();
+}
+
+// ── COMPONENTS IN STEPS ──────────────────
+function openAddCompToStep(stepId) {
+  document.getElementById('sc-step-id').value = stepId;
+  document.getElementById('sc-comp-id').value = '';
+  document.getElementById('sc-search').value  = '';
+  document.getElementById('sc-amount').value  = '';
+  document.getElementById('sc-results').style.display      = 'none';
+  document.getElementById('sc-selected-wrap').style.display = 'none';
+  showModal('m-step-comp');
+  setTimeout(() => document.getElementById('sc-search').focus(), 320);
+}
+
+function searchCompForStep() {
+  const q   = document.getElementById('sc-search').value.trim();
+  const qLo = q.toLowerCase();
+  const res = document.getElementById('sc-results');
+  if (!q) { res.style.display = 'none'; return; }
+  const matches = S.recipes.filter(r => r.type === 'component' && r.name.toLowerCase().includes(qLo)).slice(0, 8);
+  if (!matches.length) {
+    res.innerHTML = `<div class="sr-item" style="color:var(--text-3)">No components found</div>`;
+    res.style.display = 'block'; return;
+  }
+  res.innerHTML = matches.map(r => `
+    <div class="sr-item" onclick="selectCompForStep('${r.id}')">
+      ${esc(r.name)}<div class="sr-meta">${r.category||''} · ${r.portions||''} ${r.yield_unit||''}</div>
+    </div>`).join('');
+  res.style.display = 'block';
+}
+
+function selectCompForStep(id) {
+  const comp = S.recipes.find(r => r.id === id); if (!comp) return;
+  document.getElementById('sc-comp-id').value = id;
+  document.getElementById('sc-search').value  = comp.name;
+  document.getElementById('sc-results').style.display       = 'none';
+  document.getElementById('sc-selected-name').textContent   = comp.name;
+  document.getElementById('sc-selected-wrap').style.display = 'block';
+  document.getElementById('sc-unit').value = comp.yield_unit || 'portions';
+}
+
+async function saveStepComp() {
+  const stepId = document.getElementById('sc-step-id').value;
+  const compId = document.getElementById('sc-comp-id').value;
+  if (!compId) return;
+  const amount = parseFloat(document.getElementById('sc-amount').value) || null;
+  const unit   = document.getElementById('sc-unit').value;
+  const { data: newRI } = await db.from('recipe_ingredients').insert({
+    recipe_id: D.recipe.id, step_id: stepId, component_id: compId, amount, unit,
+  }).select('*, comp_recipe:recipes!component_id(id,name,type,yield_unit,portions)').single();
+  if (newRI) D.ingredients.push(newRI);
+  closeModal('m-step-comp');
+  renderRecDetail();
+}
+
+async function deleteRecIng(id) {
+  await db.from('recipe_ingredients').delete().eq('id', id);
+  D.ingredients = D.ingredients.filter(i => i.id !== id);
+  renderRecDetail();
+}
+
+// ═══════════════════════════════════════════
 // PANTRY
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 async function loadPantry() {
   document.getElementById('pantry-ing-list').innerHTML  = '<div class="loading">Loading…</div>';
   document.getElementById('pantry-comp-list').innerHTML = '<div class="loading">Loading…</div>';
   const [{ data: pi }, { data: pc }] = await Promise.all([
-    db.from('pantry_ingredients').select('*, ingredients(name, unit)').order('ingredients(name)'),
-    db.from('pantry_components').select('*, recipes(name, yield_unit)').order('recipes(name)'),
+    db.from('pantry_ingredients').select('*, ingredients(name,unit)').order('ingredients(name)'),
+    db.from('pantry_components').select('*, recipes(name,yield_unit)').order('recipes(name)'),
   ]);
-  S.pantryIng  = pi || [];
-  S.pantryComp = pc || [];
+  S.pantryIng = pi||[]; S.pantryComp = pc||[];
   renderPantryIng(); renderPantryComp();
 }
 function pantryTab(tab) {
   S.pantryTabActive = tab;
-  document.querySelectorAll('#sec-pantry .inner-tab').forEach((t, i) =>
-    t.classList.toggle('active', (i===0 && tab==='ingredients') || (i===1 && tab==='components'))
-  );
-  document.getElementById('pantry-ing-wrap').style.display  = tab === 'ingredients' ? '' : 'none';
-  document.getElementById('pantry-comp-wrap').style.display = tab === 'components'  ? '' : 'none';
+  document.querySelectorAll('#sec-pantry .inner-tab').forEach((t,i) =>
+    t.classList.toggle('active', (i===0&&tab==='ingredients')||(i===1&&tab==='components')));
+  document.getElementById('pantry-ing-wrap').style.display  = tab==='ingredients' ? '' : 'none';
+  document.getElementById('pantry-comp-wrap').style.display = tab==='components'  ? '' : 'none';
 }
 function stockStatus(item) {
   if (+item.in_stock <= 0) return 'out';
@@ -907,77 +1326,58 @@ function stockPct(item) {
   if (!item.min_stock) return item.in_stock > 0 ? 75 : 0;
   return Math.min(100, (+item.in_stock / (+item.min_stock * 2)) * 100);
 }
+function pantryCardHtml(item, nm, u, nudgeFn) {
+  const s = stockStatus(item);
+  return `<div class="card" style="cursor:default"><span class="dot dot-${s}"></span>
+    <div class="card-main">
+      <div class="card-name">${esc(nm)}</div>
+      <div class="card-meta">${item.in_stock} ${u} in stock · min ${item.min_stock||0} ${u}</div>
+    </div>
+    <div class="card-aside" style="gap:6px">
+      <div class="stock-bar"><div class="stock-fill ${s==='ok'?'':s}" style="width:${stockPct(item)}%"></div></div>
+      <div style="display:flex;gap:4px">
+        <button class="mini-btn" onclick="${nudgeFn}('${item.id}',${item.in_stock},-1)">−</button>
+        <button class="mini-btn mini-btn-green" onclick="${nudgeFn}('${item.id}',${item.in_stock},1)">+</button>
+      </div>
+    </div></div>`;
+}
 function renderPantryIng() {
   const items = [...S.pantryIng].sort((a,b) => ({out:0,low:1,ok:2})[stockStatus(a)] - ({out:0,low:1,ok:2})[stockStatus(b)]);
   const need  = items.filter(i => stockStatus(i) !== 'ok').length;
   const attn  = document.getElementById('pantry-attention');
   attn.textContent = need ? `${need} need attention` : 'All good';
   attn.style.color = need ? 'var(--amber)' : 'var(--green)';
-  if (!items.length) {
-    document.getElementById('pantry-ing-list').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No pantry entries yet.</p></div>`;
-    return;
-  }
-  document.getElementById('pantry-ing-list').innerHTML = items.map(item => {
-    const s = stockStatus(item), u = item.unit || item.ingredients?.unit || '', nm = item.ingredients?.name || '?';
-    return `<div class="card" style="cursor:default">
-      <span class="dot dot-${s}"></span>
-      <div class="card-main">
-        <div class="card-name">${esc(nm)}</div>
-        <div class="card-meta">${item.in_stock} ${u} in stock · min ${item.min_stock||0} ${u}</div>
-      </div>
-      <div class="card-aside" style="gap:6px">
-        <div class="stock-bar"><div class="stock-fill ${s==='ok'?'':s}" style="width:${stockPct(item)}%"></div></div>
-        <div style="display:flex;gap:4px">
-          <button class="mini-btn" onclick="nudgePantryIng('${item.id}',${item.in_stock},-1)">−</button>
-          <button class="mini-btn mini-btn-green" onclick="nudgePantryIng('${item.id}',${item.in_stock},1)">+</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  if (!items.length) { document.getElementById('pantry-ing-list').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No pantry entries yet.</p></div>`; return; }
+  document.getElementById('pantry-ing-list').innerHTML = items.map(item =>
+    pantryCardHtml(item, item.ingredients?.name||'?', item.unit||item.ingredients?.unit||'', 'nudgePantryIng')
+  ).join('');
 }
 function renderPantryComp() {
   const items = [...S.pantryComp].sort((a,b) => ({out:0,low:1,ok:2})[stockStatus(a)] - ({out:0,low:1,ok:2})[stockStatus(b)]);
   const need  = items.filter(i => stockStatus(i) !== 'ok').length;
   const attn  = document.getElementById('pantry-comp-attention');
   if (attn) { attn.textContent = need ? `${need} need attention` : 'All good'; attn.style.color = need ? 'var(--amber)' : 'var(--green)'; }
-  if (!items.length) {
-    document.getElementById('pantry-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components tracked yet.</p></div>`;
-    return;
-  }
-  document.getElementById('pantry-comp-list').innerHTML = items.map(item => {
-    const s = stockStatus(item), u = item.unit || item.recipes?.yield_unit || '', nm = item.recipes?.name || '?';
-    return `<div class="card" style="cursor:default">
-      <span class="dot dot-${s}"></span>
-      <div class="card-main">
-        <div class="card-name">${esc(nm)}</div>
-        <div class="card-meta">${item.in_stock} ${u} · min ${item.min_stock||0}</div>
-      </div>
-      <div class="card-aside" style="gap:6px">
-        <div class="stock-bar"><div class="stock-fill ${s==='ok'?'':s}" style="width:${stockPct(item)}%"></div></div>
-        <div style="display:flex;gap:4px">
-          <button class="mini-btn" onclick="nudgePantryComp('${item.id}',${item.in_stock},-1)">−</button>
-          <button class="mini-btn mini-btn-green" onclick="nudgePantryComp('${item.id}',${item.in_stock},1)">+</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  if (!items.length) { document.getElementById('pantry-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components tracked yet.</p></div>`; return; }
+  document.getElementById('pantry-comp-list').innerHTML = items.map(item =>
+    pantryCardHtml(item, item.recipes?.name||'?', item.unit||item.recipes?.yield_unit||'', 'nudgePantryComp')
+  ).join('');
 }
 async function nudgePantryIng(id, cur, d) {
   const val = Math.max(0, +cur + d);
   await db.from('pantry_ingredients').update({ in_stock: val, updated_at: new Date().toISOString() }).eq('id', id);
-  const item = S.pantryIng.find(i => i.id === id); if (item) item.in_stock = val;
+  const it = S.pantryIng.find(i => i.id === id); if (it) it.in_stock = val;
   renderPantryIng();
 }
 async function nudgePantryComp(id, cur, d) {
   const val = Math.max(0, +cur + d);
   await db.from('pantry_components').update({ in_stock: val, updated_at: new Date().toISOString() }).eq('id', id);
-  const item = S.pantryComp.find(i => i.id === id); if (item) item.in_stock = val;
+  const it = S.pantryComp.find(i => i.id === id); if (it) it.in_stock = val;
   renderPantryComp();
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // PREP
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 async function loadPrep() {
   document.getElementById('week-label').textContent = weekLabel(S.weekStart);
   document.getElementById('prep-days').innerHTML = '<div class="loading">Loading…</div>';
@@ -1006,10 +1406,10 @@ function renderPrep() {
         <div class="task-check ${done?'done':''}" onclick="toggleTask('${t.id}','${t.status}')"></div>
         <div class="task-content">
           <div class="task-title ${done?'done':''}">${esc(t.title)}</div>
-          ${t.recipes?.name ? `<div class="task-sub">${esc(t.recipes.name)}</div>` : ''}
-          ${t.notes ? `<div class="task-sub">${esc(t.notes)}</div>` : ''}
+          ${t.recipes?.name?`<div class="task-sub">${esc(t.recipes.name)}</div>`:''}
+          ${t.notes?`<div class="task-sub">${esc(t.notes)}</div>`:''}
         </div>
-        ${i < 6 ? `<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}')">→</button>` : ''}
+        ${i<6?`<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}')">→</button>`:''}
       </div>`;
     });
     html += `</div>`;
@@ -1018,18 +1418,24 @@ function renderPrep() {
   document.getElementById('prep-days').innerHTML = html;
 }
 async function toggleTask(id, cur) {
-  const next = cur === 'done' ? 'pending' : 'done';
+  const next = cur==='done' ? 'pending' : 'done';
   await db.from('prep_list').update({ status: next }).eq('id', id);
   const t = S.prepTasks.find(x => x.id === id); if (t) t.status = next;
   renderPrep();
 }
-async function moveTask(id, fromDate) {
-  const d = new Date(fromDate); d.setDate(d.getDate() + 1);
+async function moveTask(id, from) {
+  const d = new Date(from); d.setDate(d.getDate() + 1);
   await db.from('prep_list').update({ scheduled_date: toDateStr(d) }).eq('id', id);
   await loadPrep();
 }
 async function savePrepTask() {
-  const payload = { title: document.getElementById('prep-title').value.trim(), scheduled_date: document.getElementById('prep-date').value, priority: document.getElementById('prep-priority').value, notes: document.getElementById('prep-notes').value.trim() || null, status: 'pending' };
+  const payload = {
+    title:          document.getElementById('prep-title').value.trim(),
+    scheduled_date: document.getElementById('prep-date').value,
+    priority:       document.getElementById('prep-priority').value,
+    notes:          document.getElementById('prep-notes').value.trim()||null,
+    status:         'pending',
+  };
   if (!payload.title || !payload.scheduled_date) return;
   await db.from('prep_list').insert(payload);
   closeModal('m-prep');
@@ -1037,27 +1443,28 @@ async function savePrepTask() {
   await loadPrep();
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // ORDERS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 async function loadOrders() {
-  const { data } = await db.from('orders').select('*').neq('status','received').order('created_at',{ascending:false});
+  const { data } = await db.from('orders').select('*').neq('status','received').order('created_at', { ascending: false });
   S.orders = data || [];
   renderOrders();
 }
 function orderTab(tab) {
   S.orderTabActive = tab;
   document.querySelectorAll('#sec-orders .inner-tab').forEach((t,i) =>
-    t.classList.toggle('active', (i===0 && tab==='asap') || (i===1 && tab==='next_week'))
-  );
+    t.classList.toggle('active', (i===0&&tab==='asap')||(i===1&&tab==='next_week')));
   document.getElementById('orders-asap-wrap').style.display = tab==='asap'      ? '' : 'none';
   document.getElementById('orders-next-wrap').style.display = tab==='next_week' ? '' : 'none';
 }
 function renderOrders() {
-  const asap = S.orders.filter(o => o.priority==='asap'), next = S.orders.filter(o => o.priority==='next_week');
+  const asap = S.orders.filter(o => o.priority==='asap');
+  const next  = S.orders.filter(o => o.priority==='next_week');
   document.getElementById('asap-count').textContent = asap.length;
   document.getElementById('next-count').textContent = next.length;
-  renderOrderList('orders-asap-list', asap); renderOrderList('orders-next-list', next);
+  renderOrderList('orders-asap-list', asap);
+  renderOrderList('orders-next-list', next);
 }
 function renderOrderList(elId, orders) {
   if (!orders.length) { document.getElementById(elId).innerHTML = `<div class="empty"><div class="empty-icon">✓</div><p>List is clear.</p></div>`; return; }
@@ -1073,20 +1480,20 @@ function renderOrderList(elId, orders) {
           <button class="qty-btn" onclick="nudgeOrder('${o.id}',${o.amount},1)">+</button>
         </div>
       </div>
-      ${o.notes ? `<div class="order-note">📝 ${esc(o.notes)}</div>` : ''}
+      ${o.notes?`<div class="order-note">📝 ${esc(o.notes)}</div>`:''}
     </div>`;
   }).join('');
 }
 async function toggleOrder(id, cur) {
   const next = cur==='ordered' ? 'pending' : 'ordered';
   await db.from('orders').update({ status: next }).eq('id', id);
-  const o = S.orders.find(x => x.id===id); if (o) o.status = next;
+  const o = S.orders.find(x => x.id === id); if (o) o.status = next;
   renderOrders();
 }
 async function nudgeOrder(id, cur, d) {
   const val = Math.max(0, +cur + d);
   await db.from('orders').update({ amount: val }).eq('id', id);
-  const o = S.orders.find(x => x.id===id); if (o) o.amount = val;
+  const o = S.orders.find(x => x.id === id); if (o) o.amount = val;
   renderOrders();
 }
 function prefillOrder(ing) {
@@ -1095,7 +1502,14 @@ function prefillOrder(ing) {
   showModal('m-order');
 }
 async function saveOrder() {
-  const payload = { ingredient_name: document.getElementById('ord-name').value.trim(), amount: parseFloat(document.getElementById('ord-amount').value)||1, unit: document.getElementById('ord-unit').value, priority: document.getElementById('ord-priority').value, notes: document.getElementById('ord-notes').value.trim()||null, status:'pending' };
+  const payload = {
+    ingredient_name: document.getElementById('ord-name').value.trim(),
+    amount:          parseFloat(document.getElementById('ord-amount').value)||1,
+    unit:            document.getElementById('ord-unit').value,
+    priority:        document.getElementById('ord-priority').value,
+    notes:           document.getElementById('ord-notes').value.trim()||null,
+    status:          'pending',
+  };
   if (!payload.ingredient_name) return;
   await db.from('orders').insert(payload);
   closeModal('m-order');
@@ -1103,17 +1517,16 @@ async function saveOrder() {
   if (S.section === 'orders') await loadOrders();
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // MONEY
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 async function loadMoney() {
   document.getElementById('money-dishes-list').innerHTML = '<div class="loading">Loading…</div>';
   const [{ data: recipes }, { data: ricosts }] = await Promise.all([
     db.from('recipes').select('*').order('name'),
-    db.from('recipe_ingredients').select('recipe_id, amount, ingredients(price_per_unit)'),
+    db.from('recipe_ingredients').select('recipe_id,amount,unit,ingredient_id,component_id,ingredients(price_per_unit),comp_recipe:recipes!component_id(id,portions)'),
   ]);
-  const recs  = recipes || [];
-  const costs = ricosts || [];
+  const recs = recipes||[], costs = ricosts||[];
   S.recipes = recs;
   renderMoneyDishes(recs, costs);
   renderMoneyComps(recs, costs);
@@ -1121,84 +1534,111 @@ async function loadMoney() {
 function moneyTab(tab) {
   S.moneyTabActive = tab;
   document.querySelectorAll('#sec-money .inner-tab').forEach((t,i) =>
-    t.classList.toggle('active', (i===0 && tab==='dishes') || (i===1 && tab==='components'))
-  );
+    t.classList.toggle('active', (i===0&&tab==='dishes')||(i===1&&tab==='components')));
   document.getElementById('money-dishes-wrap').style.display = tab==='dishes'     ? '' : 'none';
   document.getElementById('money-comp-wrap').style.display   = tab==='components' ? '' : 'none';
 }
-function recipeCost(rid, costs) {
-  return costs.filter(c => c.recipe_id===rid).reduce((s,c) => s + (+c.amount * +(c.ingredients?.price_per_unit||0)), 0);
+function recipeCost(rid, recs, costs) {
+  return costs.filter(c => c.recipe_id === rid).reduce((s, c) => {
+    if (c.ingredient_id) return s + (+c.amount * +(c.ingredients?.price_per_unit||0));
+    if (c.component_id) {
+      const compTotal = recipeCost(c.component_id, recs, costs);
+      const comp      = recs.find(r => r.id === c.component_id);
+      const cppu      = comp?.portions ? compTotal / comp.portions : 0;
+      return s + (+c.amount * cppu);
+    }
+    return s;
+  }, 0);
 }
 function renderMoneyDishes(recs, costs) {
-  const dishes = recs.filter(r => r.type==='dish');
+  const dishes = recs.filter(r => r.type === 'dish');
   if (!dishes.length) { document.getElementById('money-dishes-list').innerHTML = `<div class="empty"><div class="empty-icon">🍽</div><p>No dishes yet.</p></div>`; return; }
   document.getElementById('money-dishes-list').innerHTML = dishes.map(r => {
-    const total = recipeCost(r.id, costs);
+    const total = recipeCost(r.id, recs, costs);
     const cpp   = r.portions ? total / r.portions : null;
     return `<div class="money-card">
       <div class="money-name">${esc(r.name)}</div>
       <div class="money-row"><span class="money-lbl">Ingredient cost total</span><span class="money-val">€${total.toFixed(2)}</span></div>
-      ${cpp != null ? `
-      <div class="money-row"><span class="money-lbl">Cost per portion</span><span class="money-val">€${cpp.toFixed(2)}</span></div>
-      <div class="money-row" style="margin-top:4px"><span class="money-lbl">Selling price</span>
-        <input class="sell-input" type="number" id="sell-${r.id}" placeholder="€" step="0.5" oninput="calcMargin('${r.id}',${cpp.toFixed(4)})">
-      </div>
-      <div class="money-row money-total" id="margin-${r.id}" style="display:none">
-        <span class="money-lbl">Profit / margin</span>
-        <span class="money-val" id="margin-val-${r.id}"></span>
-      </div>` : `<div class="money-row"><span class="money-lbl" style="color:var(--text-3)">Set portions on dish to see per-portion cost</span></div>`}
+      ${cpp!=null ? `
+        <div class="money-row"><span class="money-lbl">Cost per portion</span><span class="money-val">€${cpp.toFixed(2)}</span></div>
+        <div class="money-row" style="margin-top:4px">
+          <span class="money-lbl">Selling price</span>
+          <input class="sell-input" type="number" id="sell-${r.id}" placeholder="€" step="0.5" oninput="calcMargin('${r.id}',${cpp.toFixed(4)})">
+        </div>
+        <div class="money-row money-total" id="margin-${r.id}" style="display:none">
+          <span class="money-lbl">Profit / margin</span>
+          <span class="money-val" id="margin-val-${r.id}"></span>
+        </div>`
+      : `<div class="money-row"><span class="money-lbl" style="color:var(--text-3)">Set portions on dish to see per-portion cost</span></div>`}
     </div>`;
   }).join('');
 }
 function renderMoneyComps(recs, costs) {
-  const comps = recs.filter(r => r.type==='component');
+  const comps = recs.filter(r => r.type === 'component');
   if (!comps.length) { document.getElementById('money-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components yet.</p></div>`; return; }
   document.getElementById('money-comp-list').innerHTML = comps.map(r => {
-    const total = recipeCost(r.id, costs);
+    const total = recipeCost(r.id, recs, costs);
     const cpy   = r.portions ? total / r.portions : null;
     return `<div class="money-card">
       <div class="money-name">${esc(r.name)}</div>
       <div class="money-row"><span class="money-lbl">Total ingredient cost</span><span class="money-val">€${total.toFixed(2)}</span></div>
-      ${cpy != null ? `<div class="money-row"><span class="money-lbl">Cost per ${r.yield_unit||'portion'}</span><span class="money-val">€${cpy.toFixed(2)}</span></div>` : ''}
+      ${cpy!=null ? `<div class="money-row"><span class="money-lbl">Cost per ${r.yield_unit||'portion'}</span><span class="money-val">€${cpy.toFixed(2)}</span></div>` : ''}
     </div>`;
   }).join('');
 }
 function calcMargin(rid, cpp) {
   const sell = parseFloat(document.getElementById(`sell-${rid}`).value);
-  const mEl = document.getElementById(`margin-${rid}`), vEl = document.getElementById(`margin-val-${rid}`);
-  if (!sell) { mEl.style.display='none'; return; }
-  const profit = sell - cpp, margin = (profit/sell)*100;
-  mEl.style.display='flex';
-  mEl.className=`money-row money-total ${profit>=0?'money-profit':'money-loss'}`;
-  vEl.textContent=`€${profit.toFixed(2)} (${margin.toFixed(0)}%)`;
+  const mEl  = document.getElementById(`margin-${rid}`);
+  const vEl  = document.getElementById(`margin-val-${rid}`);
+  if (!sell) { mEl.style.display = 'none'; return; }
+  const profit = sell - cpp, margin = (profit / sell) * 100;
+  mEl.style.display = 'flex';
+  mEl.className     = `money-row money-total ${profit>=0?'money-profit':'money-loss'}`;
+  vEl.textContent   = `€${profit.toFixed(2)} (${margin.toFixed(0)}%)`;
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 // UTILS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════
 function monday(d) {
-  const dt=new Date(d), day=dt.getDay();
-  dt.setDate(dt.getDate()-day+(day===0?-6:1)); dt.setHours(0,0,0,0); return dt;
+  const dt = new Date(d), day = dt.getDay();
+  dt.setDate(dt.getDate() - day + (day === 0 ? -6 : 1));
+  dt.setHours(0,0,0,0); return dt;
 }
 function weekRange(mon) {
-  const end=new Date(mon); end.setDate(end.getDate()+6);
-  return {start:toDateStr(mon),end:toDateStr(end)};
+  const end = new Date(mon); end.setDate(end.getDate() + 6);
+  return { start: toDateStr(mon), end: toDateStr(end) };
 }
-function toDateStr(d) { return d.toISOString().split('T')[0]; }
+function toDateStr(d)  { return d.toISOString().split('T')[0]; }
 function weekLabel(mon) {
-  const end=new Date(mon); end.setDate(end.getDate()+6);
-  const o={month:'short',day:'numeric'};
-  return `${mon.toLocaleDateString('en',o)} – ${end.toLocaleDateString('en',o)}`;
+  const end = new Date(mon); end.setDate(end.getDate() + 6);
+  const o = { month: 'short', day: 'numeric' };
+  return `${mon.toLocaleDateString('en', o)} – ${end.toLocaleDateString('en', o)}`;
 }
-function fmtDate(d) { return d.toLocaleDateString('en',{month:'short',day:'numeric'}); }
-function fmtTime(m) { return m<60?`${m}min`:`${Math.floor(m/60)}h${m%60?' '+m%60+'min':''}`.trim(); }
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function drow(label,value) {
-  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;font-size:13px"><span style="color:var(--text-2)">${label}</span><span style="font-weight:500;text-align:right;max-width:60%">${value}</span></div>`;
+function fmtDate(d) { return d.toLocaleDateString('en', { month: 'short', day: 'numeric' }); }
+function fmtTime(m) { return m < 60 ? `${m}min` : `${Math.floor(m/60)}h${m%60?' '+m%60+'min':''}`.trim(); }
+function fmtNum(n) {
+  if (n === null || n === undefined || n === '') return '';
+  const num = +n;
+  if (!isFinite(num)) return '';
+  if (num === 0) return '0';
+  if (num < 0.1) return parseFloat(num.toFixed(2)).toString();
+  if (num < 10)  return parseFloat(num.toFixed(1)).toString();
+  return Math.round(num).toString();
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function drow(label, value) {
+  return `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:3px 0;font-size:13px">
+    <span style="color:var(--text-2)">${label}</span>
+    <span style="font-weight:500;text-align:right;max-width:60%">${value}</span>
+  </div>`;
 }
 
-// BOOT
 document.addEventListener('DOMContentLoaded', () => { load('ingredients'); });
+
 </script>
+
 </body>
 </html>
