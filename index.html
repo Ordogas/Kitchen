@@ -609,8 +609,8 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 // ═══════════════════════════════════════════
 // CONFIG — replace these two values
 // ═══════════════════════════════════════════
-const SUPABASE_URL = 'https://mhhmyrmvybcrlhqyzrkj.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_KlgzzKrVkey0uf0WgOJh0Q_VSX4I5eI';
+const SUPABASE_URL = 'https://qoawsxutvxwzdgerzunw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_6CxO-uSs9sAsFUQL5rrj-w_RWlsJc3t';
 // ═══════════════════════════════════════════
 
 const configured = !SUPABASE_URL.startsWith('YOUR');
@@ -771,8 +771,13 @@ async function saveIng() {
     supplier_contact: document.getElementById('ing-notes').value.trim()||null,
   };
   if (!payload.name) return;
-  if (id) await db.from('ingredients').update(payload).eq('id', id);
-  else    await db.from('ingredients').insert(payload);
+  if (id) {
+    const { error } = await db.from('ingredients').update(payload).eq('id', id);
+    if (error) { console.error('saveIng:', error); alert('Save failed: ' + error.message); return; }
+  } else {
+    const { error } = await db.from('ingredients').insert(payload);
+    if (error) { console.error('saveIng:', error); alert('Save failed: ' + error.message); return; }
+  }
   closeModal('m-ingredient'); closeModal('m-ing-detail');
   clearIngForm(); await loadIng();
 }
@@ -865,7 +870,8 @@ async function saveRec() {
   };
   if (!payload.name) return;
   if (id) {
-    await db.from('recipes').update(payload).eq('id', id);
+    const { error } = await db.from('recipes').update(payload).eq('id', id);
+    if (error) { console.error('saveRec update:', error); alert('Save failed: ' + error.message); return; }
     const idx = S.recipes.findIndex(r => r.id === id);
     if (idx >= 0) S.recipes[idx] = { ...S.recipes[idx], ...payload };
     if (D.recipe?.id === id) {
@@ -874,17 +880,22 @@ async function saveRec() {
       renderRecInfoBlock();
     }
   } else {
-    const { data } = await db.from('recipes').insert(payload).select().single();
+    const { data, error } = await db.from('recipes').insert(payload).select().single();
+    if (error) { console.error('saveRec insert:', error); alert('Save failed: ' + error.message); return; }
     if (data) S.recipes.push(data);
   }
   closeModal('m-recipe');
   clearRecForm();
-  if (S.section === 'recipes') await loadRec();
+  // Always reload the recipe list so it's fresh
+  await loadRec();
 }
 function clearRecForm() {
   ['rec-id','rec-name','rec-portions','rec-handson','rec-days','rec-notes'].forEach(x => {
     const el = document.getElementById(x); if (el) el.value = '';
   });
+  // Reset yield unit to default
+  const yu = document.getElementById('rec-yield-unit');
+  if (yu) yu.value = 'portions';
 }
 
 // ═══════════════════════════════════════════
@@ -895,13 +906,14 @@ async function openRecDetail(id) {
     const { data } = await db.from('recipes').select('*').order('name');
     S.recipes = data || [];
   }
-  const [{ data: rec }, { data: steps }, { data: ings }] = await Promise.all([
+  const [{ data: rec, error: recErr }, { data: steps }, { data: ings }] = await Promise.all([
     db.from('recipes').select('*').eq('id', id).single(),
     db.from('recipe_steps').select('*').eq('recipe_id', id).order('day_number').order('step_order'),
     db.from('recipe_ingredients')
-      .select('*, ingredients(id,name,unit,price_per_unit,density), comp_recipe:recipes!component_id(id,name,type,yield_unit,portions)')
+      .select('*, ingredients(id,name,unit,price_per_unit,density), comp_recipe:recipes!recipe_ingredients_component_id_fkey(id,name,type,yield_unit,portions)')
       .eq('recipe_id', id),
   ]);
+  if (recErr) { console.error('openRecDetail:', recErr); alert('Could not load recipe: ' + recErr.message); return; }
   D.recipe        = rec;
   D.steps         = steps || [];
   D.ingredients   = ings  || [];
@@ -969,7 +981,9 @@ function renderStepCard(step, num) {
   } else {
     stepIngs.forEach(ri => {
       const isComp = !!ri.component_id;
-      const name   = isComp ? ri.comp_recipe?.name : ri.ingredients?.name;
+      // comp_recipe comes from the FK join; fall back to S.recipes lookup if join failed
+      const compRec = ri.comp_recipe || S.recipes.find(r => r.id === ri.component_id);
+      const name   = isComp ? compRec?.name : ri.ingredients?.name;
       if (!name) return;
       const { amount: da, unit: du } = displayAmt(ri.amount, ri.unit, factor, isComp ? null : ri.ingredients);
       const amtStr  = da !== '' ? fmtNum(da) + ' ' + du : du;
@@ -1230,9 +1244,10 @@ async function saveStepIng() {
   }
   if (!ingId) return;
 
-  const { data: newRI } = await db.from('recipe_ingredients').insert({
+  const { data: newRI, error: riErr } = await db.from('recipe_ingredients').insert({
     recipe_id: D.recipe.id, step_id: stepId, ingredient_id: ingId, amount, unit,
   }).select('*, ingredients(id,name,unit,price_per_unit,density)').single();
+  if (riErr) { console.error('saveStepIng:', riErr); alert('Could not add ingredient: ' + riErr.message); return; }
   if (newRI) D.ingredients.push(newRI);
   closeModal('m-step-ing');
   renderRecDetail();
@@ -1283,9 +1298,10 @@ async function saveStepComp() {
   if (!compId) return;
   const amount = parseFloat(document.getElementById('sc-amount').value) || null;
   const unit   = document.getElementById('sc-unit').value;
-  const { data: newRI } = await db.from('recipe_ingredients').insert({
+  const { data: newRI, error: scErr } = await db.from('recipe_ingredients').insert({
     recipe_id: D.recipe.id, step_id: stepId, component_id: compId, amount, unit,
-  }).select('*, comp_recipe:recipes!component_id(id,name,type,yield_unit,portions)').single();
+  }).select('*, comp_recipe:recipes!recipe_ingredients_component_id_fkey(id,name,type,yield_unit,portions)').single();
+  if (scErr) { console.error('saveStepComp:', scErr); alert('Could not add component: ' + scErr.message); return; }
   if (newRI) D.ingredients.push(newRI);
   closeModal('m-step-comp');
   renderRecDetail();
@@ -1524,7 +1540,7 @@ async function loadMoney() {
   document.getElementById('money-dishes-list').innerHTML = '<div class="loading">Loading…</div>';
   const [{ data: recipes }, { data: ricosts }] = await Promise.all([
     db.from('recipes').select('*').order('name'),
-    db.from('recipe_ingredients').select('recipe_id,amount,unit,ingredient_id,component_id,ingredients(price_per_unit),comp_recipe:recipes!component_id(id,portions)'),
+    db.from('recipe_ingredients').select('recipe_id,amount,unit,ingredient_id,component_id,ingredients(price_per_unit),comp_recipe:recipes!recipe_ingredients_component_id_fkey(id,portions)'),
   ]);
   const recs = recipes||[], costs = ricosts||[];
   S.recipes = recs;
@@ -1637,6 +1653,7 @@ function drow(label, value) {
 }
 
 document.addEventListener('DOMContentLoaded', () => { load('ingredients'); });
+
 
 </script>
 
