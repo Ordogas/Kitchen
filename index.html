@@ -240,10 +240,99 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .sr-new { color: var(--green); font-style: italic; }
 .sr-meta { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
 .selected-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: var(--blue-light); border: 1px solid var(--blue); border-radius: 20px; font-size: 13px; color: var(--blue); font-weight: 500; margin-bottom: 10px; }
+/* Pantry cards */
+/* Pantry row layout */
+.pantry-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pr-name { font-weight: 500; font-size: 13.5px; flex: 1; min-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pr-cell { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.pr-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); }
+.pr-input { width: 52px; padding: 4px 6px; border: 1px solid var(--border); border-radius: var(--r-xs); font-family: "DM Sans", sans-serif; font-size: 13px; color: var(--text); background: var(--bg); text-align: right; outline: none; transition: border-color .15s; }
+.pr-input:focus { border-color: var(--green); }
+.pr-unit { font-size: 11px; color: var(--text-3); }
+.pr-surplus { font-size: 13px; font-weight: 600; min-width: 30px; text-align: center; flex-shrink: 0; }
+.pantry-act-btn { padding: 5px 9px; border-radius: var(--r-xs); border: 1px solid var(--border); background: var(--surface-2); font-family: "DM Sans", sans-serif; font-size: 11.5px; font-weight: 500; color: var(--text-2); cursor: pointer; white-space: nowrap; transition: all .15s; flex-shrink: 0; }
+.pantry-act-btn:active { background: var(--surface-3); }
+.pantry-act-btn.order { border-color: var(--amber); color: var(--amber); background: var(--amber-light); }
+.pantry-act-btn.prep  { border-color: var(--green); color: var(--green); background: var(--green-light); }
+/* Delete button */
+.del-btn { width: 26px; height: 26px; border-radius: var(--r-xs); border: 1px solid var(--border); background: var(--surface-2); cursor: pointer; font-size: 16px; color: var(--text-3); display: flex; align-items: center; justify-content: center; transition: all .15s; flex-shrink: 0; }
+.del-btn:active { background: var(--red-light); color: var(--red); border-color: var(--red); }
+/* Order supplier grouping */
+.order-supplier-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-3); padding: 12px 0 5px; display: flex; align-items: center; gap: 8px; }
+.order-supplier-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ── LOGIN SCREEN ───────────────────────── */
+#login-screen {
+  position: fixed; inset: 0; z-index: 999;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 32px 24px;
+  max-width: 600px; margin: 0 auto;
+}
+.login-logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 38px; font-weight: 400;
+  color: var(--text); margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+.login-sub {
+  font-size: 13px; color: var(--text-3);
+  margin-bottom: 44px; letter-spacing: .3px;
+}
+.login-field {
+  width: 100%; max-width: 320px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px; color: var(--text);
+  outline: none; text-align: center;
+  transition: border-color .2s;
+  letter-spacing: .5px;
+}
+.login-field:focus { border-color: var(--green); }
+.login-field.error { border-color: var(--red); animation: shake .3s ease; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%,60%  { transform: translateX(-6px); }
+  40%,80%  { transform: translateX(6px); }
+}
+.login-error {
+  margin-top: 12px; font-size: 13px;
+  color: var(--red); height: 18px;
+  transition: opacity .2s;
+}
+.login-btn {
+  margin-top: 16px;
+  padding: 13px 32px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  letter-spacing: .2px;
+}
+.login-btn:active { background: var(--green-dim); transform: scale(.97); }
 </style>
 </head>
 <body>
-<div id="app">
+<div id="login-screen">
+  <div class="login-logo">Kitchen OS</div>
+  <div class="login-sub">mise en place</div>
+  <input class="login-field" id="login-input" type="text"
+    placeholder="Who's cooking?"
+    autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false"
+    onkeydown="if(event.key==='Enter')tryLogin()">
+  <div class="login-error" id="login-error"></div>
+  <button class="login-btn" onclick="tryLogin()">Enter kitchen</button>
+</div>
+<div id="app" style="display:none">
 
   <header class="app-header">
     <div id="header-normal" style="display:contents">
@@ -298,11 +387,19 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
         <button class="inner-tab" onclick="pantryTab('components')">Components</button>
       </div>
       <div id="pantry-ing-wrap">
-        <div class="row-label"><span class="row-label-text">Stock status</span><span class="row-label-count" id="pantry-attention"></span></div>
+        <div class="search-wrap" style="padding-top:4px">
+          <span class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+          <input type="search" id="pantry-ing-search" placeholder="Search ingredients…" oninput="renderPantryIng()">
+        </div>
+        <div class="row-label"><span class="row-label-text">All ingredients</span><span class="row-label-count" id="pantry-attention"></span></div>
         <div class="list" id="pantry-ing-list"><div class="loading">Loading…</div></div>
       </div>
       <div id="pantry-comp-wrap" style="display:none">
-        <div class="row-label"><span class="row-label-text">Component stock</span><span class="row-label-count" id="pantry-comp-attention"></span></div>
+        <div class="search-wrap" style="padding-top:4px">
+          <span class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+          <input type="search" id="pantry-comp-search" placeholder="Search components…" oninput="renderPantryComp()">
+        </div>
+        <div class="row-label"><span class="row-label-text">All components</span><span class="row-label-count" id="pantry-comp-attention"></span></div>
         <div class="list" id="pantry-comp-list"><div class="loading">Loading…</div></div>
       </div>
     </section>
@@ -353,8 +450,8 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
     <div id="recipe-detail-view">
       <div class="scale-bar">
         <div class="unit-toggle-sm">
-          <button class="utab active" id="utab-metric"   onclick="setUnitSys('metric')">Metric</button>
-          <button class="utab"        id="utab-imperial" onclick="setUnitSys('imperial')">Imperial</button>
+          <button class="utab active" id="utab-metric"      onclick="setUnitSys('metric')">Metric</button>
+          <button class="utab"        id="utab-volumetric" onclick="setUnitSys('volumetric')">Cups&amp;Spoons</button>
         </div>
         <div class="scale-ctrl">
           <button class="scale-btn" onclick="nudgeScale(-1)">−</button>
@@ -476,7 +573,11 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Add to order</div>
-    <div class="field"><label>Item</label><input type="text" id="ord-name" placeholder="Ingredient name"></div>
+    <div class="field" style="position:relative">
+      <label>Ingredient</label>
+      <input type="text" id="ord-name" placeholder="Search or type name…" oninput="searchOrdIng()" autocomplete="off">
+      <div class="search-results" id="ord-results" style="display:none"></div>
+    </div>
     <div class="field-row">
       <div class="field"><label>Amount</label><input type="number" id="ord-amount" placeholder="0" min="0" step="0.1"></div>
       <div class="field"><label>Unit</label><select id="ord-unit">
@@ -499,7 +600,11 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Add prep task</div>
-    <div class="field"><label>Task title</label><input type="text" id="prep-title" placeholder="e.g. Make focaccia dough"></div>
+    <div class="field" style="position:relative">
+      <label>Recipe / task</label>
+      <input type="text" id="prep-title" placeholder="Search recipes or type task…" oninput="searchPrepRec()" autocomplete="off">
+      <div class="search-results" id="prep-results" style="display:none"></div>
+    </div>
     <div class="field"><label>Scheduled date</label><input type="date" id="prep-date"></div>
     <div class="field"><label>Priority</label><select id="prep-priority"><option value="normal">Normal</option><option value="asap">ASAP</option></select></div>
     <div class="field"><label>Notes</label><input type="text" id="prep-notes" placeholder="Optional note…"></div>
@@ -642,6 +747,10 @@ const hasAdd  = { ingredients:true, recipes:true, pantry:false, prep:true, order
 
 function goTo(name) {
   S.section = name;
+  // Always hide recipe detail view and restore normal header
+  document.getElementById('recipe-detail-view').style.display = 'none';
+  document.getElementById('header-detail').style.display      = 'none';
+  document.getElementById('header-normal').style.display      = 'contents';
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.s === name));
   document.getElementById(`sec-${name}`).classList.add('active');
@@ -651,8 +760,27 @@ function goTo(name) {
   load(name);
 }
 
-function openAdd() {
+async function openAdd() {
   if (S.section === 'recipes') { openRecModal(S.recType === 'components' ? 'component' : 'dish'); return; }
+  // Ensure ingredients + recipes are loaded for search in order/prep modals
+  if (!S.ingredients.length && configured) {
+    const { data } = await db.from('ingredients').select('*').order('name');
+    S.ingredients = data || [];
+  }
+  if (!S.recipes.length && configured) {
+    const { data } = await db.from('recipes').select('*').order('name');
+    S.recipes = data || [];
+  }
+  if (S.section === 'orders') {
+    // Reset order form
+    ['ord-name','ord-amount','ord-notes'].forEach(x => document.getElementById(x).value = '');
+    document.getElementById('ord-results').style.display = 'none';
+  }
+  if (S.section === 'prep') {
+    document.getElementById('prep-title').value = '';
+    document.getElementById('prep-date').value  = toDateStr(new Date());
+    document.getElementById('prep-results').style.display = 'none';
+  }
   const map = { ingredients:'m-ingredient', orders:'m-order', prep:'m-prep' };
   if (map[S.section]) showModal(map[S.section]);
 }
@@ -828,8 +956,14 @@ function renderRec() {
         <div class="card-name">${esc(r.name)}</div>
         <div class="card-meta">${r.portions?r.portions+' '+(r.yield_unit||'portions'):''}${r.hands_on_minutes?' · '+fmtTime(r.hands_on_minutes):''}${r.total_prep_days>1?' · '+r.total_prep_days+'-day prep':''}</div>
       </div>
-      <div class="card-aside">
+      <div class="card-aside" style="align-items:flex-end;gap:5px">
         ${r.category?`<span class="badge ${type==='component'?'badge-blue':'badge-green'}">${esc(r.category)}</span>`:''}
+        <div style="display:flex;gap:4px;margin-top:2px">
+          <button class="pantry-act-btn prep"
+            onclick="event.stopPropagation();quickAddPrep('${esc(r.name)}')">+ Prep</button>
+          <button class="del-btn" style="width:24px;height:24px;font-size:14px"
+            onclick="event.stopPropagation();deleteRec('${r.id}','${esc(r.name)}')">×</button>
+        </div>
       </div>
     </div>`).join('');
 }
@@ -888,6 +1022,19 @@ async function saveRec() {
   clearRecForm();
   // Always reload the recipe list so it's fresh
   await loadRec();
+}
+async function deleteRec(id, name) {
+  if (!confirm(`Delete "${name}"? This will also remove all its steps and ingredients.`)) return;
+  // Delete steps and their ingredients first
+  const { data: steps } = await db.from('recipe_steps').select('id').eq('recipe_id', id);
+  if (steps?.length) {
+    await db.from('recipe_ingredients').delete().in('step_id', steps.map(s => s.id));
+  }
+  await db.from('recipe_ingredients').delete().eq('recipe_id', id);
+  await db.from('recipe_steps').delete().eq('recipe_id', id);
+  await db.from('recipes').delete().eq('id', id);
+  S.recipes = S.recipes.filter(r => r.id !== id);
+  renderRec();
 }
 function clearRecForm() {
   ['rec-id','rec-name','rec-portions','rec-handson','rec-days','rec-notes'].forEach(x => {
@@ -1083,30 +1230,31 @@ function displayAmt(amount, unit, factor, ingredient) {
   }
   let a = +amount * factor;
   let u = unit || '';
-  // Try cups-to-grams if ingredient has density and unit is volume
-  if (ingredient?.density && D.unitSys === 'metric') {
-    if (u === 'cup')  { a = a * 240 * +ingredient.density; u = 'g'; }
-    if (u === 'tbsp') { a = a * 15  * +ingredient.density; u = 'g'; }
-    if (u === 'tsp')  { a = a * 5   * +ingredient.density; u = 'g'; }
+  if (D.unitSys === 'volumetric') {
+    // Convert weight (g/kg) or volume (ml/liter) to cups/tbsp/tsp using density
+    const density = +(ingredient?.density || 1); // g/ml
+    let mlAmt = null;
+    if (u === 'g')     mlAmt = a / density;
+    if (u === 'kg')    mlAmt = (a * 1000) / density;
+    if (u === 'ml')    mlAmt = a;
+    if (u === 'liter') mlAmt = a * 1000;
+    if (mlAmt !== null) {
+      // Convert ml to cups chain
+      if (mlAmt >= 180)      { a = mlAmt / 240;  u = 'cup'; }
+      else if (mlAmt >= 10)  { a = mlAmt / 15;   u = 'tbsp'; }
+      else                   { a = mlAmt / 5;    u = 'tsp'; }
+      const r2 = simplify(a, u); a = r2.a; u = r2.u;
+    }
   }
   const r = simplify(a, u);
   a = r.a; u = r.u;
-  // System conversion
-  if (D.unitSys === 'imperial' && TO_IMP[u]) {
-    a = a * TO_IMP[u].f; u = TO_IMP[u].u;
-    const r2 = simplify(a, u); a = r2.a; u = r2.u;
-  }
-  if (D.unitSys === 'metric' && TO_MET[u]) {
-    a = a * TO_MET[u].f; u = TO_MET[u].u;
-    const r2 = simplify(a, u); a = r2.a; u = r2.u;
-  }
   return { amount: a, unit: u };
 }
 
 function setUnitSys(sys) {
   D.unitSys = sys;
-  document.getElementById('utab-metric').classList.toggle('active',   sys === 'metric');
-  document.getElementById('utab-imperial').classList.toggle('active', sys === 'imperial');
+  document.getElementById('utab-metric').classList.toggle('active',     sys === 'metric');
+  document.getElementById('utab-volumetric').classList.toggle('active', sys === 'volumetric');
   renderRecDetail();
 }
 
@@ -1319,11 +1467,26 @@ async function deleteRecIng(id) {
 async function loadPantry() {
   document.getElementById('pantry-ing-list').innerHTML  = '<div class="loading">Loading…</div>';
   document.getElementById('pantry-comp-list').innerHTML = '<div class="loading">Loading…</div>';
-  const [{ data: pi }, { data: pc }] = await Promise.all([
-    db.from('pantry_ingredients').select('*, ingredients(name,unit)').order('ingredients(name)'),
-    db.from('pantry_components').select('*, recipes(name,yield_unit)').order('recipes(name)'),
+  // Load pantry rows AND all ingredients/components so every item appears
+  const [{ data: pi }, { data: pc }, { data: allIngs }, { data: allComps }] = await Promise.all([
+    db.from('pantry_ingredients').select('*').order('ingredient_id'),
+    db.from('pantry_components').select('*').order('recipe_id'),
+    db.from('ingredients').select('id,name,unit').order('name'),
+    db.from('recipes').select('id,name,yield_unit').eq('type','component').order('name'),
   ]);
-  S.pantryIng = pi||[]; S.pantryComp = pc||[];
+  // Build merged list: every ingredient/component with its pantry row (or defaults)
+  const piMap = {}; (pi||[]).forEach(r => { piMap[r.ingredient_id] = r; });
+  const pcMap = {}; (pc||[]).forEach(r => { piMap[r.recipe_id] = r; pcMap[r.recipe_id] = r; });
+  // Re-use pcMap for components
+  const pcMap2 = {}; (pc||[]).forEach(r => { pcMap2[r.recipe_id] = r; });
+  S.pantryIng  = (allIngs||[]).map(ing => {
+    const row = piMap[ing.id] || { ingredient_id: ing.id, in_stock: 0, min_stock: 0 };
+    return { ...row, _ing: ing };
+  });
+  S.pantryComp = (allComps||[]).map(comp => {
+    const row = pcMap2[comp.id] || { recipe_id: comp.id, in_stock: 0, min_stock: 0 };
+    return { ...row, _comp: comp };
+  });
   renderPantryIng(); renderPantryComp();
 }
 function pantryTab(tab) {
@@ -1338,57 +1501,191 @@ function stockStatus(item) {
   if (item.min_stock && +item.in_stock <= +item.min_stock) return 'low';
   return 'ok';
 }
-function stockPct(item) {
-  if (!item.min_stock) return item.in_stock > 0 ? 75 : 0;
-  return Math.min(100, (+item.in_stock / (+item.min_stock * 2)) * 100);
-}
-function pantryCardHtml(item, nm, u, nudgeFn) {
-  const s = stockStatus(item);
-  return `<div class="card" style="cursor:default"><span class="dot dot-${s}"></span>
-    <div class="card-main">
-      <div class="card-name">${esc(nm)}</div>
-      <div class="card-meta">${item.in_stock} ${u} in stock · min ${item.min_stock||0} ${u}</div>
-    </div>
-    <div class="card-aside" style="gap:6px">
-      <div class="stock-bar"><div class="stock-fill ${s==='ok'?'':s}" style="width:${stockPct(item)}%"></div></div>
-      <div style="display:flex;gap:4px">
-        <button class="mini-btn" onclick="${nudgeFn}('${item.id}',${item.in_stock},-1)">−</button>
-        <button class="mini-btn mini-btn-green" onclick="${nudgeFn}('${item.id}',${item.in_stock},1)">+</button>
-      </div>
-    </div></div>`;
-}
 function renderPantryIng() {
-  const items = [...S.pantryIng].sort((a,b) => ({out:0,low:1,ok:2})[stockStatus(a)] - ({out:0,low:1,ok:2})[stockStatus(b)]);
-  const need  = items.filter(i => stockStatus(i) !== 'ok').length;
-  const attn  = document.getElementById('pantry-attention');
-  attn.textContent = need ? `${need} need attention` : 'All good';
-  attn.style.color = need ? 'var(--amber)' : 'var(--green)';
-  if (!items.length) { document.getElementById('pantry-ing-list').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No pantry entries yet.</p></div>`; return; }
-  document.getElementById('pantry-ing-list').innerHTML = items.map(item =>
-    pantryCardHtml(item, item.ingredients?.name||'?', item.unit||item.ingredients?.unit||'', 'nudgePantryIng')
-  ).join('');
+  const q = (document.getElementById('pantry-ing-search')?.value||'').toLowerCase();
+  let items = S.pantryIng;
+  if (q) items = items.filter(it => (it._ing?.name||'').toLowerCase().includes(q));
+  const sorted = [...items].sort((a,b) => (a._ing?.name||'').localeCompare(b._ing?.name||''));
+  const need = sorted.filter(i => stockStatus(i) !== 'ok').length;
+  const attn = document.getElementById('pantry-attention');
+  attn.textContent = need ? `${need} need attention` : sorted.length + ' items';
+  attn.style.color = need ? 'var(--amber)' : 'var(--text-3)';
+  if (!sorted.length) { document.getElementById('pantry-ing-list').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No ingredients found.</p></div>`; return; }
+  document.getElementById('pantry-ing-list').innerHTML = sorted.map(item => {
+    const s     = stockStatus(item);
+    const nm    = item._ing?.name || '?';
+    const u     = item._ing?.unit || '';
+    const stock = +(item.in_stock||0);
+    const min   = +(item.min_stock||0);
+    const diff  = stock - min;
+    const diffStr = min > 0 ? (diff >= 0 ? `<span style="color:var(--green)">+${fmtNum(diff)}</span>` : `<span style="color:var(--red)">${fmtNum(diff)}</span>`) : '—';
+    return `<div class="pantry-row" data-ing-ref="${item.ingredient_id}">
+      <div class="pr-name">${esc(nm)}</div>
+      <div class="pr-cell">
+        <div class="pr-label">Min</div>
+        <input class="pr-input" type="number" value="${min}" min="0" step="0.1"
+          oninput="liveUpdateSurplus('ing','${item.ingredient_id}','min',this.value)"
+          onchange="savePantryMin('ing','${item.ingredient_id}','${item.id||''}',this.value,'${item._ing?.id||''}')"
+          title="Minimum stock">
+        <span class="pr-unit">${u}</span>
+      </div>
+      <div class="pr-cell">
+        <div class="pr-label">Stock</div>
+        <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
+          oninput="liveUpdateSurplus('ing','${item.ingredient_id}','stock',this.value)"
+          onchange="savePantryStock('ing','${item.ingredient_id}','${item.id||''}',this.value)"
+          title="Current stock">
+        <span class="pr-unit">${u}</span>
+      </div>
+      <div class="pr-surplus" id="surplus-ing-${item.ingredient_id}">${diffStr}</div>
+      <button class="pantry-act-btn order" onclick="prefillOrderFromPantry('${item._ing?.id||''}','${esc(nm)}','${u}')">Order</button>
+    </div>`;
+  }).join('');
 }
 function renderPantryComp() {
-  const items = [...S.pantryComp].sort((a,b) => ({out:0,low:1,ok:2})[stockStatus(a)] - ({out:0,low:1,ok:2})[stockStatus(b)]);
-  const need  = items.filter(i => stockStatus(i) !== 'ok').length;
-  const attn  = document.getElementById('pantry-comp-attention');
-  if (attn) { attn.textContent = need ? `${need} need attention` : 'All good'; attn.style.color = need ? 'var(--amber)' : 'var(--green)'; }
-  if (!items.length) { document.getElementById('pantry-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components tracked yet.</p></div>`; return; }
-  document.getElementById('pantry-comp-list').innerHTML = items.map(item =>
-    pantryCardHtml(item, item.recipes?.name||'?', item.unit||item.recipes?.yield_unit||'', 'nudgePantryComp')
-  ).join('');
+  const q = (document.getElementById('pantry-comp-search')?.value||'').toLowerCase();
+  let items = S.pantryComp;
+  if (q) items = items.filter(it => (it._comp?.name||'').toLowerCase().includes(q));
+  const sorted = [...items].sort((a,b) => (a._comp?.name||'').localeCompare(b._comp?.name||''));
+  const need = sorted.filter(i => stockStatus(i) !== 'ok').length;
+  const attn = document.getElementById('pantry-comp-attention');
+  if (attn) { attn.textContent = need ? `${need} need attention` : sorted.length + ' items'; attn.style.color = need ? 'var(--amber)' : 'var(--text-3)'; }
+  if (!sorted.length) { document.getElementById('pantry-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components found.</p></div>`; return; }
+  document.getElementById('pantry-comp-list').innerHTML = sorted.map(item => {
+    const nm    = item._comp?.name || '?';
+    const u     = item._comp?.yield_unit || '';
+    const stock = +(item.in_stock||0);
+    const min   = +(item.min_stock||0);
+    const diff  = stock - min;
+    const diffStr = min > 0 ? (diff >= 0 ? `<span style="color:var(--green)">+${fmtNum(diff)}</span>` : `<span style="color:var(--red)">${fmtNum(diff)}</span>`) : '—';
+    return `<div class="pantry-row" data-comp-ref="${item.recipe_id}">
+      <div class="pr-name">${esc(nm)}</div>
+      <div class="pr-cell">
+        <div class="pr-label">Min</div>
+        <input class="pr-input" type="number" value="${min}" min="0" step="0.1"
+          oninput="liveUpdateSurplus('comp','${item.recipe_id}','min',this.value)"
+          onchange="savePantryMin('comp','${item.recipe_id}','${item.id||''}',this.value,'${item._comp?.id||''}')"
+          title="Minimum stock">
+        <span class="pr-unit">${u}</span>
+      </div>
+      <div class="pr-cell">
+        <div class="pr-label">Stock</div>
+        <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
+          oninput="liveUpdateSurplus('comp','${item.recipe_id}','stock',this.value)"
+          onchange="savePantryStock('comp','${item.recipe_id}','${item.id||''}',this.value)"
+          title="Current stock">
+        <span class="pr-unit">${u}</span>
+      </div>
+      <div class="pr-surplus" id="surplus-comp-${item.recipe_id}">${diffStr}</div>
+      <button class="pantry-act-btn prep" onclick="prefillPrepFromPantry('${esc(nm)}')">Prep</button>
+    </div>`;
+  }).join('');
 }
-async function nudgePantryIng(id, cur, d) {
+
+// Save in_stock directly from pantry row input
+// Live update surplus display without re-rendering the list
+function liveUpdateSurplus(type, refId, field, val) {
+  const num = parseFloat(val) || 0;
+  const arr = type === 'ing' ? S.pantryIng : S.pantryComp;
+  const key = type === 'ing' ? 'ingredient_id' : 'recipe_id';
+  const it  = arr.find(i => i[key] === refId);
+  if (!it) return;
+  // Update local state immediately (save happens on onchange)
+  if (field === 'min')   it.min_stock = num;
+  if (field === 'stock') it.in_stock  = num;
+  // Recalculate and update just the surplus cell
+  const stock = +(it.in_stock || 0);
+  const min   = +(it.min_stock || 0);
+  const diff  = stock - min;
+  const el    = document.getElementById(`surplus-${type}-${refId}`);
+  if (!el) return;
+  if (min > 0) {
+    el.innerHTML = diff >= 0
+      ? `<span style="color:var(--green)">+${fmtNum(diff)}</span>`
+      : `<span style="color:var(--red)">${fmtNum(diff)}</span>`;
+  } else {
+    el.innerHTML = '—';
+  }
+}
+
+async function savePantryStock(type, refId, rowId, val) {
+  const num   = parseFloat(val) || 0;
+  const table = type === 'ing' ? 'pantry_ingredients' : 'pantry_components';
+  const fk    = type === 'ing' ? 'ingredient_id' : 'recipe_id';
+  const ts    = { updated_at: new Date().toISOString() };
+  if (rowId) {
+    await db.from(table).update({ in_stock: num, ...ts }).eq('id', rowId);
+  } else {
+    const { data: nr } = await db.from(table).insert({ [fk]: refId, in_stock: num, min_stock: 0 }).select().single();
+    if (nr) {
+      if (type === 'ing') { const it = S.pantryIng.find(i => i.ingredient_id === refId); if (it) it.id = nr.id; }
+      else                { const it = S.pantryComp.find(i => i.recipe_id    === refId); if (it) it.id = nr.id; }
+    }
+  }
+  if (type === 'ing') { const it = S.pantryIng.find(i => i.ingredient_id === refId); if (it) it.in_stock = num; }
+  else                { const it = S.pantryComp.find(i => i.recipe_id    === refId); if (it) it.in_stock = num; }
+}
+
+// Save/update pantry min_stock inline
+async function savePantryMin(type, refId, rowId, val, itemId) {
+  const num = parseFloat(val) || 0;
+  const table = type === 'ing' ? 'pantry_ingredients' : 'pantry_components';
+  const fk    = type === 'ing' ? 'ingredient_id' : 'recipe_id';
+  if (rowId) {
+    await db.from(table).update({ min_stock: num }).eq('id', rowId);
+  } else {
+    // Row doesn't exist yet — create it
+    const { data: newRow } = await db.from(table).insert({ [fk]: itemId, in_stock: 0, min_stock: num }).select().single();
+    // Update local state with new id
+    if (newRow) {
+      if (type === 'ing') {
+        const it = S.pantryIng.find(i => i.ingredient_id === refId); if (it) it.id = newRow.id;
+      } else {
+        const it = S.pantryComp.find(i => i.recipe_id === refId); if (it) it.id = newRow.id;
+      }
+    }
+  }
+  // Update local state
+  if (type === 'ing') { const it = S.pantryIng.find(i => i.ingredient_id === refId); if (it) it.min_stock = num; }
+  else                 { const it = S.pantryComp.find(i => i.recipe_id    === refId); if (it) it.min_stock = num; }
+}
+
+async function nudgePantryIng(refId, cur, d, rowId) {
   const val = Math.max(0, +cur + d);
-  await db.from('pantry_ingredients').update({ in_stock: val, updated_at: new Date().toISOString() }).eq('id', id);
-  const it = S.pantryIng.find(i => i.id === id); if (it) it.in_stock = val;
+  const table = 'pantry_ingredients';
+  if (rowId) {
+    await db.from(table).update({ in_stock: val, updated_at: new Date().toISOString() }).eq('id', rowId);
+  } else {
+    const { data: newRow } = await db.from(table).insert({ ingredient_id: refId, in_stock: val, min_stock: 0 }).select().single();
+    if (newRow) { const it = S.pantryIng.find(i => i.ingredient_id === refId); if (it) it.id = newRow.id; }
+  }
+  const it = S.pantryIng.find(i => i.ingredient_id === refId); if (it) it.in_stock = val;
   renderPantryIng();
 }
-async function nudgePantryComp(id, cur, d) {
+async function nudgePantryComp(refId, cur, d, rowId) {
   const val = Math.max(0, +cur + d);
-  await db.from('pantry_components').update({ in_stock: val, updated_at: new Date().toISOString() }).eq('id', id);
-  const it = S.pantryComp.find(i => i.id === id); if (it) it.in_stock = val;
+  const table = 'pantry_components';
+  if (rowId) {
+    await db.from(table).update({ in_stock: val, updated_at: new Date().toISOString() }).eq('id', rowId);
+  } else {
+    const { data: newRow } = await db.from(table).insert({ recipe_id: refId, in_stock: val, min_stock: 0 }).select().single();
+    if (newRow) { const it = S.pantryComp.find(i => i.recipe_id === refId); if (it) it.id = newRow.id; }
+  }
+  const it = S.pantryComp.find(i => i.recipe_id === refId); if (it) it.in_stock = val;
   renderPantryComp();
+}
+
+function prefillOrderFromPantry(ingId, name, unit) {
+  document.getElementById('ord-name').value     = name;
+  document.getElementById('ord-unit').value     = unit || 'kg';
+  document.getElementById('ord-priority').value = 'asap';
+  showModal('m-order');
+}
+function prefillPrepFromPantry(name) {
+  document.getElementById('prep-title').value    = name;
+  document.getElementById('prep-date').value     = toDateStr(new Date());
+  document.getElementById('prep-priority').value = 'asap';
+  showModal('m-prep');
 }
 
 // ═══════════════════════════════════════════
@@ -1425,7 +1722,10 @@ function renderPrep() {
           ${t.recipes?.name?`<div class="task-sub">${esc(t.recipes.name)}</div>`:''}
           ${t.notes?`<div class="task-sub">${esc(t.notes)}</div>`:''}
         </div>
-        ${i<6?`<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}')">→</button>`:''}
+        <div style="display:flex;gap:4px;flex-shrink:0">
+          ${i<6?`<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}')">→</button>`:''}
+          <button class="del-btn" onclick="deleteTask('${t.id}')" title="Delete">×</button>
+        </div>
       </div>`;
     });
     html += `</div>`;
@@ -1437,6 +1737,11 @@ async function toggleTask(id, cur) {
   const next = cur==='done' ? 'pending' : 'done';
   await db.from('prep_list').update({ status: next }).eq('id', id);
   const t = S.prepTasks.find(x => x.id === id); if (t) t.status = next;
+  renderPrep();
+}
+async function deleteTask(id) {
+  await db.from('prep_list').delete().eq('id', id);
+  S.prepTasks = S.prepTasks.filter(t => t.id !== id);
   renderPrep();
 }
 async function moveTask(id, from) {
@@ -1456,6 +1761,7 @@ async function savePrepTask() {
   await db.from('prep_list').insert(payload);
   closeModal('m-prep');
   ['prep-title','prep-notes'].forEach(x => document.getElementById(x).value = '');
+  document.getElementById('prep-results').style.display = 'none';
   await loadPrep();
 }
 
@@ -1484,9 +1790,23 @@ function renderOrders() {
 }
 function renderOrderList(elId, orders) {
   if (!orders.length) { document.getElementById(elId).innerHTML = `<div class="empty"><div class="empty-icon">✓</div><p>List is clear.</p></div>`; return; }
-  document.getElementById(elId).innerHTML = orders.map(o => {
+  // Group by supplier from S.ingredients lookup
+  const withSupplier = orders.map(o => {
+    const ing = S.ingredients.find(i => i.name.toLowerCase() === o.ingredient_name.toLowerCase());
+    return { ...o, _supplier: ing?.supplier || '' };
+  });
+  // Sort by supplier then name
+  withSupplier.sort((a,b) => (a._supplier||'zzz').localeCompare(b._supplier||'zzz') || a.ingredient_name.localeCompare(b.ingredient_name));
+  let html = '';
+  let lastSupplier = null;
+  withSupplier.forEach(o => {
+    const sup = o._supplier;
+    if (sup !== lastSupplier) {
+      html += `<div class="order-supplier-label">${sup ? esc(sup) : 'No supplier'}</div>`;
+      lastSupplier = sup;
+    }
     const done = o.status === 'ordered';
-    return `<div class="order-card">
+    html += `<div class="order-card">
       <div class="order-row">
         <div class="task-check ${done?'done':''}" onclick="toggleOrder('${o.id}','${o.status}')"></div>
         <div class="order-name ${done?'done':''}">${esc(o.ingredient_name)}</div>
@@ -1495,15 +1815,22 @@ function renderOrderList(elId, orders) {
           <span class="qty-val">${o.amount}<span style="font-size:11px;color:var(--text-3);font-weight:400"> ${esc(o.unit||'')}</span></span>
           <button class="qty-btn" onclick="nudgeOrder('${o.id}',${o.amount},1)">+</button>
         </div>
+        <button class="del-btn" onclick="deleteOrder('${o.id}')" title="Delete">×</button>
       </div>
       ${o.notes?`<div class="order-note">📝 ${esc(o.notes)}</div>`:''}
     </div>`;
-  }).join('');
+  });
+  document.getElementById(elId).innerHTML = html;
 }
 async function toggleOrder(id, cur) {
   const next = cur==='ordered' ? 'pending' : 'ordered';
   await db.from('orders').update({ status: next }).eq('id', id);
   const o = S.orders.find(x => x.id === id); if (o) o.status = next;
+  renderOrders();
+}
+async function deleteOrder(id) {
+  await db.from('orders').delete().eq('id', id);
+  S.orders = S.orders.filter(o => o.id !== id);
   renderOrders();
 }
 async function nudgeOrder(id, cur, d) {
@@ -1515,7 +1842,54 @@ async function nudgeOrder(id, cur, d) {
 function prefillOrder(ing) {
   document.getElementById('ord-name').value = ing.name;
   document.getElementById('ord-unit').value = ing.unit || 'kg';
+  document.getElementById('ord-results').style.display = 'none';
   showModal('m-order');
+}
+
+// Search ingredients when typing in order modal
+function searchOrdIng() {
+  const q   = document.getElementById('ord-name').value.trim();
+  const res = document.getElementById('ord-results');
+  if (!q) { res.style.display = 'none'; return; }
+  const matches = S.ingredients.filter(i => i.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+  if (!matches.length) { res.style.display = 'none'; return; }
+  res.innerHTML = matches.map(i => `
+    <div class="sr-item" onclick="selectOrdIng('${i.id}')">
+      ${esc(i.name)}<div class="sr-meta">${i.category||''} · ${i.unit||''}${i.price_per_unit!=null?' · €'+i.price_per_unit:''}</div>
+    </div>`).join('');
+  res.style.display = 'block';
+}
+function selectOrdIng(id) {
+  const ing = S.ingredients.find(i => i.id === id); if (!ing) return;
+  document.getElementById('ord-name').value   = ing.name;
+  document.getElementById('ord-unit').value   = ing.unit || 'kg';
+  document.getElementById('ord-results').style.display = 'none';
+}
+
+// Search recipes/components when typing in prep modal
+function searchPrepRec() {
+  const q   = document.getElementById('prep-title').value.trim();
+  const res = document.getElementById('prep-results');
+  if (!q) { res.style.display = 'none'; return; }
+  const matches = S.recipes.filter(r => r.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+  if (!matches.length) { res.style.display = 'none'; return; }
+  res.innerHTML = matches.map(r => `
+    <div class="sr-item" onclick="selectPrepRec('${r.id}')">
+      ${esc(r.name)}<div class="sr-meta">${r.type==='component'?'Component':'Dish'} · ${r.category||''}</div>
+    </div>`).join('');
+  res.style.display = 'block';
+}
+function selectPrepRec(id) {
+  const r = S.recipes.find(x => x.id === id); if (!r) return;
+  document.getElementById('prep-title').value = r.name;
+  document.getElementById('prep-results').style.display = 'none';
+}
+function quickAddPrep(name) {
+  document.getElementById('prep-title').value    = name;
+  document.getElementById('prep-date').value     = toDateStr(new Date());
+  document.getElementById('prep-priority').value = 'normal';
+  document.getElementById('prep-notes').value    = '';
+  showModal('m-prep');
 }
 async function saveOrder() {
   const payload = {
@@ -1530,7 +1904,8 @@ async function saveOrder() {
   await db.from('orders').insert(payload);
   closeModal('m-order');
   ['ord-name','ord-amount','ord-notes'].forEach(x => document.getElementById(x).value = '');
-  if (S.section === 'orders') await loadOrders();
+  document.getElementById('ord-results').style.display = 'none';
+  await loadOrders();
 }
 
 // ═══════════════════════════════════════════
@@ -1554,9 +1929,28 @@ function moneyTab(tab) {
   document.getElementById('money-dishes-wrap').style.display = tab==='dishes'     ? '' : 'none';
   document.getElementById('money-comp-wrap').style.display   = tab==='components' ? '' : 'none';
 }
+// Convert amount from recipe unit to ingredient purchase unit for costing
+function toBaseUnit(amount, fromUnit, toUnit) {
+  // Normalise everything to kg (weight) or liter (volume) for pricing
+  if (!amount) return 0;
+  if (!fromUnit || !toUnit || fromUnit === toUnit) return +amount;
+  const toKg  = { kg:1, g:0.001 };
+  const toLtr = { liter:1, l:1, ml:0.001 };
+  const fk = toKg[fromUnit],  tk = toKg[toUnit];
+  if (fk !== undefined && tk !== undefined) return (+amount * fk) / tk;
+  const fl = toLtr[fromUnit], tl = toLtr[toUnit];
+  if (fl !== undefined && tl !== undefined) return (+amount * fl) / tl;
+  // Different families or unknown units — assume 1:1 (piece→piece, etc.)
+  return +amount;
+}
 function recipeCost(rid, recs, costs) {
   return costs.filter(c => c.recipe_id === rid).reduce((s, c) => {
-    if (c.ingredient_id) return s + (+c.amount * +(c.ingredients?.price_per_unit||0));
+    if (c.ingredient_id) {
+      const pricePerUnit = +(c.ingredients?.price_per_unit||0);
+      const ingUnit      = c.ingredients?.unit || c.unit;
+      const amtInBase    = toBaseUnit(c.amount, c.unit, ingUnit);
+      return s + (amtInBase * pricePerUnit);
+    }
     if (c.component_id) {
       const compTotal = recipeCost(c.component_id, recs, costs);
       const comp      = recs.find(r => r.id === c.component_id);
@@ -1652,8 +2046,117 @@ function drow(label, value) {
   </div>`;
 }
 
-document.addEventListener('DOMContentLoaded', () => { load('ingredients'); });
+document.addEventListener('DOMContentLoaded', () => {
+  // Check if already logged in this session
+  if (sessionStorage.getItem('kitchen_auth') === 'ok') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = '';
+    load('ingredients');
+  } else {
+    setTimeout(() => document.getElementById('login-input').focus(), 100);
+  }
+});
 
+function tryLogin() {
+  const val = document.getElementById('login-input').value.trim();
+  const field = document.getElementById('login-input');
+  const errEl = document.getElementById('login-error');
+  if (val.toLowerCase() === 'matas') {
+    sessionStorage.setItem('kitchen_auth', 'ok');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = '';
+    load('ingredients');
+  } else {
+    field.classList.add('error');
+    errEl.textContent = val ? 'Chef not found' : 'Enter your name to continue';
+    setTimeout(() => {
+      field.classList.remove('error');
+      field.value = '';
+    }, 600);
+  }
+}
+
+// ═══════════════════════════════════════════
+// SQL SCHEMA v3 — paste into Supabase SQL Editor
+// ═══════════════════════════════════════════
+/*
+create table ingredients (
+  id uuid primary key default gen_random_uuid(),
+  name text not null, category text, unit text default 'kg',
+  price_per_unit numeric, density numeric,
+  supplier text, supplier_contact text,
+  created_at timestamptz default now()
+);
+create table recipes (
+  id uuid primary key default gen_random_uuid(),
+  type text not null default 'dish', name text not null,
+  category text, portions integer, yield_unit text default 'portions',
+  hands_on_minutes integer, total_prep_days integer default 1,
+  notes text, created_at timestamptz default now()
+);
+create table recipe_steps (
+  id uuid primary key default gen_random_uuid(),
+  recipe_id uuid references recipes(id) on delete cascade,
+  day_number integer default 1, step_order integer default 0,
+  title text not null, highlight text, description text, duration_minutes integer
+);
+create table recipe_ingredients (
+  id uuid primary key default gen_random_uuid(),
+  recipe_id uuid references recipes(id) on delete cascade,
+  step_id uuid references recipe_steps(id) on delete set null,
+  ingredient_id uuid references ingredients(id) on delete cascade,
+  component_id uuid references recipes(id) on delete cascade,
+  amount numeric, unit text
+);
+create table pantry_ingredients (
+  id uuid primary key default gen_random_uuid(),
+  ingredient_id uuid references ingredients(id) on delete cascade,
+  in_stock numeric default 0, min_stock numeric default 0, unit text,
+  updated_at timestamptz default now()
+);
+create table pantry_components (
+  id uuid primary key default gen_random_uuid(),
+  recipe_id uuid references recipes(id) on delete cascade,
+  in_stock numeric default 0, min_stock numeric default 0, unit text,
+  updated_at timestamptz default now()
+);
+create table prep_list (
+  id uuid primary key default gen_random_uuid(),
+  recipe_id uuid references recipes(id), step_id uuid references recipe_steps(id),
+  title text not null, scheduled_date date not null,
+  priority text default 'normal', status text default 'pending',
+  notes text, created_at timestamptz default now()
+);
+create table orders (
+  id uuid primary key default gen_random_uuid(),
+  ingredient_id uuid references ingredients(id), ingredient_name text not null,
+  amount numeric default 1, unit text,
+  priority text default 'next_week', status text default 'pending',
+  notes text, created_at timestamptz default now()
+);
+alter table ingredients        enable row level security;
+alter table recipes            enable row level security;
+alter table recipe_steps       enable row level security;
+alter table recipe_ingredients enable row level security;
+alter table pantry_ingredients enable row level security;
+alter table pantry_components  enable row level security;
+alter table prep_list          enable row level security;
+alter table orders             enable row level security;
+create policy "open" on ingredients        for all using (true) with check (true);
+create policy "open" on recipes            for all using (true) with check (true);
+create policy "open" on recipe_steps       for all using (true) with check (true);
+create policy "open" on recipe_ingredients for all using (true) with check (true);
+create policy "open" on pantry_ingredients for all using (true) with check (true);
+create policy "open" on pantry_components  for all using (true) with check (true);
+create policy "open" on prep_list          for all using (true) with check (true);
+create policy "open" on orders             for all using (true) with check (true);
+
+-- Upgrading from v2? Run only these:
+-- alter table ingredients add column if not exists density numeric;
+-- alter table recipe_steps add column if not exists highlight text;
+-- alter table recipe_ingredients add column if not exists step_id uuid references recipe_steps(id) on delete set null;
+-- alter table recipe_ingredients add column if not exists component_id uuid references recipes(id) on delete cascade;
+*/
 
 </script>
 
