@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Kitchen OS</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
@@ -132,10 +132,31 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .task-check { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .task-check.done { background: var(--green); border-color: var(--green); }
 .task-check.done::after { content: ''; width: 4px; height: 8px; border-right: 2px solid white; border-bottom: 2px solid white; transform: rotate(45deg) translate(-1px,-1px); display: block; }
-.task-content { flex: 1; min-width: 0; }
+.task-content { flex: 1; min-width: 0; cursor: pointer; }
 .task-title { font-size: 14px; font-weight: 500; }
 .task-title.done { text-decoration: line-through; color: var(--text-3); }
 .task-sub { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+/* Step expansion */
+.task-expand { width: 22px; height: 22px; border: none; background: none; cursor: pointer; color: var(--text-3); font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform .2s; }
+.task-expand.open { transform: rotate(180deg); }
+.task-steps { display: none; margin: 0 13px 8px; border: 1px solid var(--border); border-radius: var(--r-sm); overflow: hidden; background: var(--bg); }
+.task-steps.open { display: block; }
+.step-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px solid var(--surface-2); }
+.step-row:last-child { border-bottom: none; }
+.step-row-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.step-row-check.done { background: var(--green); border-color: var(--green); }
+.step-row-check.done::after { content: ''; width: 3px; height: 7px; border-right: 2px solid white; border-bottom: 2px solid white; transform: rotate(45deg) translate(-1px,-1px); display: block; }
+.step-row-info { flex: 1; min-width: 0; }
+.step-row-title { font-size: 13px; font-weight: 500; }
+.step-row-title.done { text-decoration: line-through; color: var(--text-3); }
+.step-row-time { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+.progress-bar { height: 3px; background: var(--surface-2); border-radius: 2px; overflow: hidden; margin: 4px 0 2px; }
+.progress-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width .3s; }
+.progress-label { font-size: 11px; color: var(--text-3); }
+/* Day totals */
+.day-totals { font-size: 12px; color: var(--text-2); padding: 6px 2px 10px; display: flex; gap: 10px; flex-wrap: wrap; }
+.day-total-on  { color: var(--green); font-weight: 500; }
+.day-total-off { color: var(--text-3); }
 .order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 15px; margin-bottom: 7px; }
 .order-row { display: flex; align-items: center; gap: 8px; }
 .order-name { flex: 1; font-weight: 500; font-size: 14.5px; }
@@ -160,7 +181,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .setup-banner code { font-family: monospace; background: rgba(0,0,0,.07); padding: 1px 5px; border-radius: 3px; font-size: 12px; }
 
 /* MODAL */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,14,.5); z-index: 100; align-items: flex-end; backdrop-filter: blur(3px); }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(20,18,14,.55); z-index: 100; align-items: flex-end; }
 .overlay.open { display: flex; }
 .overlay.on-top { z-index: 110; }
 .modal { width: 100%; max-width: 600px; margin: 0 auto; background: var(--surface); border-radius: 16px 16px 0 0; padding: 0 20px calc(22px + var(--safe-b)); max-height: 92vh; overflow-y: auto; animation: up .22s ease-out; }
@@ -205,6 +226,9 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .rec-day-group { padding: 0 16px 4px; }
 .rec-day-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); padding: 16px 0 8px; display: flex; align-items: center; gap: 8px; }
 .rec-day-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.del-day-btn { background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--red); opacity: .6; padding: 2px 4px; border-radius: 4px; transition: opacity .15s; white-space: nowrap; }
+.del-day-btn:hover { opacity: 1; }
+.del-day-btn:active { background: var(--red-light); opacity: 1; }
 .step-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 8px; overflow: hidden; }
 .step-header { display: flex; align-items: center; padding: 11px 12px 9px; gap: 7px; }
 .step-num { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); flex-shrink: 0; }
@@ -241,15 +265,25 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .sr-meta { font-size: 11.5px; color: var(--text-3); margin-top: 1px; }
 .selected-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; background: var(--blue-light); border: 1px solid var(--blue); border-radius: 20px; font-size: 13px; color: var(--blue); font-weight: 500; margin-bottom: 10px; }
 /* Pantry cards */
+/* Allergen badges */
+.allergen-grid { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.allergen-chip { display: flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border); background: var(--surface-2); color: var(--text-2); transition: all .15s; user-select: none; }
+.allergen-chip.active { background: var(--red-light); border-color: var(--red); color: var(--red); }
+.allergen-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.allergen-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 20px; font-size: 10.5px; font-weight: 600; background: var(--red-light); color: var(--red); border: 1px solid rgba(158,61,47,.2); }
 /* Pantry row layout */
-.pantry-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 13px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.pr-name { font-weight: 500; font-size: 13.5px; flex: 1; min-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pantry-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 13px; display: flex; flex-direction: column; gap: 6px; }
+.pantry-row.low-stock  { border-left: 3px solid var(--amber); }
+.pantry-row.out-stock  { border-left: 3px solid var(--red); }
+.pr-top { display: flex; align-items: center; gap: 6px; }
+.pr-name { font-weight: 500; font-size: 13.5px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pr-bottom { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .pr-cell { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .pr-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--text-3); }
-.pr-input { width: 52px; padding: 4px 6px; border: 1px solid var(--border); border-radius: var(--r-xs); font-family: "DM Sans", sans-serif; font-size: 13px; color: var(--text); background: var(--bg); text-align: right; outline: none; transition: border-color .15s; }
+.pr-input { width: 50px; padding: 3px 5px; border: 1px solid var(--border); border-radius: var(--r-xs); font-family: "DM Sans", sans-serif; font-size: 13px; color: var(--text); background: var(--bg); text-align: right; outline: none; transition: border-color .15s; }
 .pr-input:focus { border-color: var(--green); }
 .pr-unit { font-size: 11px; color: var(--text-3); }
-.pr-surplus { font-size: 13px; font-weight: 600; min-width: 30px; text-align: center; flex-shrink: 0; }
+.pr-surplus { font-size: 12.5px; font-weight: 600; flex-shrink: 0; padding: 2px 7px; border-radius: 10px; background: var(--surface-2); }
 .pantry-act-btn { padding: 5px 9px; border-radius: var(--r-xs); border: 1px solid var(--border); background: var(--surface-2); font-family: "DM Sans", sans-serif; font-size: 11.5px; font-weight: 500; color: var(--text-2); cursor: pointer; white-space: nowrap; transition: all .15s; flex-shrink: 0; }
 .pantry-act-btn:active { background: var(--surface-3); }
 .pantry-act-btn.order { border-color: var(--amber); color: var(--amber); background: var(--amber-light); }
@@ -260,6 +294,26 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 /* Order supplier grouping */
 .order-supplier-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--text-3); padding: 12px 0 5px; display: flex; align-items: center; gap: 8px; }
 .order-supplier-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+/* Supplier confirm button */
+.supplier-confirm-btn { padding: 5px 11px; border-radius: var(--r-xs); border: 1px solid var(--green); background: var(--green-light); color: var(--green); font-family: "DM Sans", sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all .15s; margin-left: auto; }
+.supplier-confirm-btn:active { background: var(--green); color: white; }
+/* Nav badge */
+.nav-badge { position: absolute; top: 6px; right: 50%; transform: translateX(calc(50% + 8px)); background: var(--red); color: white; font-size: 9px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 4px; line-height: 1; pointer-events: none; }
+.nav-tab { position: relative; }
+/* Delivery confirm modal checklist */
+.delivery-item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--surface-2); cursor: pointer; }
+.delivery-item:last-child { border-bottom: none; }
+.delivery-item-check { width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all .15s; }
+.delivery-item-check.checked { background: var(--green); border-color: var(--green); }
+.delivery-item-check.checked::after { content: ''; width: 4px; height: 8px; border-right: 2px solid white; border-bottom: 2px solid white; transform: rotate(45deg) translate(-1px,-1px); display: block; }
+.delivery-item-info { flex: 1; }
+.delivery-item-name { font-weight: 500; font-size: 14px; }
+.delivery-item-meta { font-size: 12px; color: var(--text-2); margin-top: 1px; }
+/* Smart order button */
+.smart-order-btn { display: flex; align-items: center; gap: 6px; padding: 9px 14px; background: var(--amber-light); border: 1px solid var(--amber); border-radius: var(--r); color: var(--amber); font-family: "DM Sans", sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; }
+.smart-order-btn:active { background: var(--amber); color: white; }
+/* Export text area */
+.export-area { width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-sm); font-family: monospace; font-size: 12.5px; color: var(--text); resize: none; height: 220px; outline: none; }
 
 /* ── LOGIN SCREEN ───────────────────────── */
 #login-screen {
@@ -416,6 +470,16 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 
     <!-- ORDERS -->
     <section class="section" id="sec-orders">
+      <div style="display:flex;gap:8px;padding:12px 16px 4px">
+        <button class="smart-order-btn" onclick="smartOrder()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+          Smart Order
+        </button>
+        <button class="smart-order-btn" style="border-color:var(--blue);background:var(--blue-light);color:var(--blue);margin-left:auto" onclick="exportOrderList()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Export
+        </button>
+      </div>
       <div class="inner-tabs">
         <button class="inner-tab active" onclick="orderTab('asap')">ASAP</button>
         <button class="inner-tab" onclick="orderTab('next_week')">Next week</button>
@@ -478,6 +542,7 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
     </button>
     <button class="nav-tab" data-s="pantry" onclick="goTo('pantry')">
       <svg viewBox="0 0 24 24"><path d="M2 3h20v4H2zM4 7v14h16V7"/><path d="M9 12h6M9 16h6"/></svg>Pantry
+      <span class="nav-badge" id="pantry-badge" style="display:none"></span>
     </button>
     <button class="nav-tab" data-s="prep" onclick="goTo('prep')">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Prep
@@ -492,6 +557,34 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 </div>
 
 <!-- ══════════════ MODALS ══════════════ -->
+
+<!-- DELIVERY CONFIRM -->
+<div class="overlay" id="m-delivery">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="m-delivery-title">Confirm delivery</div>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:14px">Uncheck anything that didn't arrive — it will stay in your order list.</p>
+    <div id="delivery-checklist"></div>
+    <div class="btn-row" style="margin-top:16px">
+      <button class="btn btn-ghost" onclick="closeModal('m-delivery')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmDelivery()">Confirm received</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT ORDER LIST -->
+<div class="overlay" id="m-export">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Order list</div>
+    <p style="font-size:13px;color:var(--text-2);margin-bottom:12px">Copy and paste into email or message.</p>
+    <textarea class="export-area" id="export-text" readonly onclick="this.select()"></textarea>
+    <div class="btn-row" style="margin-top:10px">
+      <button class="btn btn-ghost" onclick="closeModal('m-export')">Close</button>
+      <button class="btn btn-primary" onclick="copyExport()">Copy to clipboard</button>
+    </div>
+  </div>
+</div>
 
 <!-- ADD / EDIT INGREDIENT -->
 <div class="overlay" id="m-ingredient">
@@ -519,8 +612,31 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
       <div class="field"><label>Price / unit (€)</label><input type="number" id="ing-price" placeholder="0.00" step="0.01" min="0"></div>
       <div class="field"><label>Density (g/ml)</label><input type="number" id="ing-density" placeholder="e.g. 1.0" step="0.01" min="0"></div>
     </div>
+    <div class="field-row">
+      <div class="field"><label>Min stock</label><input type="number" id="ing-min-stock" placeholder="0" min="0" step="0.1" title="Alert threshold — when stock drops to or below this"></div>
+      <div class="field"><label>Needed / week</label><input type="number" id="ing-needed-stock" placeholder="0" min="0" step="0.1" title="Target order quantity for smart order"></div>
+    </div>
     <div class="field"><label>Supplier</label><input type="text" id="ing-supplier" placeholder="Supplier name"></div>
     <div class="field"><label>Contact / notes</label><textarea id="ing-notes" placeholder="Phone, email, ordering details…"></textarea></div>
+    <div class="field">
+      <label>Allergens</label>
+      <div class="allergen-grid" id="ing-allergen-grid">
+        <div class="allergen-chip" id="al-gluten" onclick="toggleAllergen('Gluten')"><span class="allergen-dot"></span>Gluten</div>
+        <div class="allergen-chip" id="al-crustaceans" onclick="toggleAllergen('Crustaceans')"><span class="allergen-dot"></span>Crustaceans</div>
+        <div class="allergen-chip" id="al-eggs" onclick="toggleAllergen('Eggs')"><span class="allergen-dot"></span>Eggs</div>
+        <div class="allergen-chip" id="al-fish" onclick="toggleAllergen('Fish')"><span class="allergen-dot"></span>Fish</div>
+        <div class="allergen-chip" id="al-peanuts" onclick="toggleAllergen('Peanuts')"><span class="allergen-dot"></span>Peanuts</div>
+        <div class="allergen-chip" id="al-soya" onclick="toggleAllergen('Soya')"><span class="allergen-dot"></span>Soya</div>
+        <div class="allergen-chip" id="al-milk" onclick="toggleAllergen('Milk')"><span class="allergen-dot"></span>Milk</div>
+        <div class="allergen-chip" id="al-nuts" onclick="toggleAllergen('Nuts')"><span class="allergen-dot"></span>Nuts</div>
+        <div class="allergen-chip" id="al-celery" onclick="toggleAllergen('Celery')"><span class="allergen-dot"></span>Celery</div>
+        <div class="allergen-chip" id="al-mustard" onclick="toggleAllergen('Mustard')"><span class="allergen-dot"></span>Mustard</div>
+        <div class="allergen-chip" id="al-sesame" onclick="toggleAllergen('Sesame')"><span class="allergen-dot"></span>Sesame</div>
+        <div class="allergen-chip" id="al-sulphites" onclick="toggleAllergen('Sulphites')"><span class="allergen-dot"></span>Sulphites</div>
+        <div class="allergen-chip" id="al-lupin" onclick="toggleAllergen('Lupin')"><span class="allergen-dot"></span>Lupin</div>
+        <div class="allergen-chip" id="al-molluscs" onclick="toggleAllergen('Molluscs')"><span class="allergen-dot"></span>Molluscs</div>
+      </div>
+    </div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeModal('m-ingredient')">Cancel</button>
       <button class="btn btn-primary" onclick="saveIng()">Save</button>
@@ -605,7 +721,18 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
       <input type="text" id="prep-title" placeholder="Search recipes or type task…" oninput="searchPrepRec()" autocomplete="off">
       <div class="search-results" id="prep-results" style="display:none"></div>
     </div>
-    <div class="field"><label>Scheduled date</label><input type="date" id="prep-date"></div>
+    <div class="field">
+      <label>Scheduled date</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="date" id="prep-date" style="flex:1">
+        <span style="font-size:12px;color:var(--text-3);flex-shrink:0">or</span>
+        <div style="flex:1">
+          <input type="date" id="prep-ready-by" placeholder="Ready by…" title="Back-calculate start date from ready-by date"
+            onchange="calcPrepStartDate()">
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">Start date · or pick "Ready by" to auto-calculate</div>
+    </div>
     <div class="field"><label>Priority</label><select id="prep-priority"><option value="normal">Normal</option><option value="asap">ASAP</option></select></div>
     <div class="field"><label>Notes</label><input type="text" id="prep-notes" placeholder="Optional note…"></div>
     <div class="btn-row">
@@ -625,6 +752,10 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
     <input type="hidden" id="step-order-val" value="0">
     <div class="field"><label>Step title</label><input type="text" id="step-title-inp" placeholder="e.g. Autolyse, Lamination, Bake"></div>
     <div class="field"><label>Key info / highlight</label><input type="text" id="step-highlight-inp" placeholder="e.g. Bake at 210°C for 15 min"></div>
+    <div class="field-row">
+      <div class="field"><label>Hands-on (min)</label><input type="number" id="step-handson" placeholder="0" min="0"></div>
+      <div class="field"><label>Hands-off (min)</label><input type="number" id="step-handsoff" placeholder="0" min="0"></div>
+    </div>
     <div class="field"><label>Notes</label><textarea id="step-notes-inp" placeholder="Technique details, temperature notes…"></textarea></div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeModal('m-step')">Cancel</button>
@@ -728,7 +859,7 @@ const DISH_CATS      = ['Brunch','Cold snacks','Warm snacks','Hot dishes','Desse
 const S = {
   section: 'ingredients',
   ingredients: [], recipes: [], pantryIng: [], pantryComp: [],
-  orders: [], prepTasks: [],
+  orders: [], prepTasks: [], prepStepTimings: [], recipeAllergenMap: {},
   weekStart: monday(new Date()),
   ingQ: '', ingCat: 'all',
   recType: 'components', recQ: '', recCat: 'all',
@@ -870,7 +1001,9 @@ function ingDetail(id) {
       ${drow('Supplier', i.supplier||'—')}
       ${i.supplier_contact ? drow('Contact', i.supplier_contact) : ''}
     </div>
-    <button class="btn btn-ghost" onclick="editIng('${i.id}')">Edit ingredient</button>`;
+    ${i.allergens?.length ? `<div style="margin-bottom:12px"><div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text-3);margin-bottom:6px">Allergens</div><div style="display:flex;flex-wrap:wrap;gap:4px">${i.allergens.map(a=>`<span class="allergen-badge">${a}</span>`).join('')}</div></div>` : ''}
+    <button class="btn btn-ghost" onclick="editIng('${i.id}')">Edit ingredient</button>
+    <button class="btn btn-ghost" style="color:var(--red);border-color:var(--red);margin-top:6px" onclick="deleteIng('${i.id}','${esc(i.name)}')">Delete ingredient</button>`;
   document.getElementById('ing-order-btn').onclick = () => { closeModal('m-ing-detail'); prefillOrder(i); };
   showModal('m-ing-detail');
 }
@@ -885,10 +1018,15 @@ function editIng(id) {
   document.getElementById('ing-density').value        = i.density||'';
   document.getElementById('ing-supplier').value       = i.supplier||'';
   document.getElementById('ing-notes').value          = i.supplier_contact||'';
+  setAllergens(i.allergens || []);
+  // Pre-fill pantry min/needed from local pantry state
+  const pantryRow = S.pantryIng.find(p => p.ingredient_id === i.id);
+  document.getElementById('ing-min-stock').value    = pantryRow?.min_stock    || '';
+  document.getElementById('ing-needed-stock').value = pantryRow?.needed_stock || '';
   showModal('m-ingredient', true);
 }
 async function saveIng() {
-  const id = document.getElementById('ing-id').value;
+  let id = document.getElementById('ing-id').value;
   const payload = {
     name:             document.getElementById('ing-name').value.trim(),
     category:         document.getElementById('ing-cat').value||null,
@@ -897,31 +1035,93 @@ async function saveIng() {
     density:          parseFloat(document.getElementById('ing-density').value)||null,
     supplier:         document.getElementById('ing-supplier').value.trim()||null,
     supplier_contact: document.getElementById('ing-notes').value.trim()||null,
+    allergens:        _selectedAllergens.length ? _selectedAllergens : null,
   };
   if (!payload.name) return;
   if (id) {
     const { error } = await db.from('ingredients').update(payload).eq('id', id);
     if (error) { console.error('saveIng:', error); alert('Save failed: ' + error.message); return; }
   } else {
-    const { error } = await db.from('ingredients').insert(payload);
+    const { data: newIng, error } = await db.from('ingredients').insert(payload).select().single();
     if (error) { console.error('saveIng:', error); alert('Save failed: ' + error.message); return; }
+    if (newIng) id = newIng.id;
+  }
+  // Upsert pantry min/needed from ingredient form
+  const minVal    = parseFloat(document.getElementById('ing-min-stock').value)||0;
+  const neededVal = parseFloat(document.getElementById('ing-needed-stock').value)||0;
+  if (id && (minVal || neededVal)) {
+    const { data: existRow } = await db.from('pantry_ingredients').select('id').eq('ingredient_id', id).single();
+    if (existRow) {
+      await db.from('pantry_ingredients').update({ min_stock: minVal, needed_stock: neededVal }).eq('id', existRow.id);
+    } else {
+      await db.from('pantry_ingredients').insert({ ingredient_id: id, in_stock: 0, min_stock: minVal, needed_stock: neededVal });
+    }
   }
   closeModal('m-ingredient'); closeModal('m-ing-detail');
   clearIngForm(); await loadIng();
 }
+let _selectedAllergens = [];
+
+function toggleAllergen(name) {
+  const idx = _selectedAllergens.indexOf(name);
+  if (idx >= 0) _selectedAllergens.splice(idx, 1);
+  else           _selectedAllergens.push(name);
+  document.getElementById('al-' + name.toLowerCase())?.classList.toggle('active', _selectedAllergens.includes(name));
+}
+
+function setAllergens(arr) {
+  _selectedAllergens = arr ? [...arr] : [];
+  document.getElementById('al-gluten')?.classList.toggle('active', _selectedAllergens.includes('Gluten'));
+  document.getElementById('al-crustaceans')?.classList.toggle('active', _selectedAllergens.includes('Crustaceans'));
+  document.getElementById('al-eggs')?.classList.toggle('active', _selectedAllergens.includes('Eggs'));
+  document.getElementById('al-fish')?.classList.toggle('active', _selectedAllergens.includes('Fish'));
+  document.getElementById('al-peanuts')?.classList.toggle('active', _selectedAllergens.includes('Peanuts'));
+  document.getElementById('al-soya')?.classList.toggle('active', _selectedAllergens.includes('Soya'));
+  document.getElementById('al-milk')?.classList.toggle('active', _selectedAllergens.includes('Milk'));
+  document.getElementById('al-nuts')?.classList.toggle('active', _selectedAllergens.includes('Nuts'));
+  document.getElementById('al-celery')?.classList.toggle('active', _selectedAllergens.includes('Celery'));
+  document.getElementById('al-mustard')?.classList.toggle('active', _selectedAllergens.includes('Mustard'));
+  document.getElementById('al-sesame')?.classList.toggle('active', _selectedAllergens.includes('Sesame'));
+  document.getElementById('al-sulphites')?.classList.toggle('active', _selectedAllergens.includes('Sulphites'));
+  document.getElementById('al-lupin')?.classList.toggle('active', _selectedAllergens.includes('Lupin'));
+  document.getElementById('al-molluscs')?.classList.toggle('active', _selectedAllergens.includes('Molluscs'));
+}
+
 function clearIngForm() {
   document.getElementById('m-ing-title').textContent = 'New ingredient';
   ['ing-id','ing-name','ing-price','ing-density','ing-supplier','ing-notes'].forEach(x => document.getElementById(x).value = '');
   document.getElementById('ing-cat').value = ''; document.getElementById('ing-unit').value = 'kg';
+  document.getElementById('ing-min-stock').value = ''; document.getElementById('ing-needed-stock').value = '';
+  setAllergens([]);
+}
+
+async function deleteIng(id, name) {
+  if (!confirm(`Delete "${name}"? This will also remove it from any recipes and pantry entries.`)) return;
+  await db.from('recipe_ingredients').delete().eq('ingredient_id', id);
+  await db.from('pantry_ingredients').delete().eq('ingredient_id', id);
+  await db.from('ingredients').delete().eq('id', id);
+  S.ingredients = S.ingredients.filter(i => i.id !== id);
+  S.pantryIng   = S.pantryIng.filter(i => i.ingredient_id !== id);
+  closeModal('m-ing-detail');
+  renderIng();
 }
 
 // ═══════════════════════════════════════════
-// RECIPES — list
-// ═══════════════════════════════════════════
 async function loadRec() {
   document.getElementById('rec-list').innerHTML = '<div class="loading">Loading…</div>';
-  const { data } = await db.from('recipes').select('*').order('name');
-  S.recipes = data || [];
+  const [{ data: recs }, { data: ri }] = await Promise.all([
+    db.from('recipes').select('*').order('name'),
+    db.from('recipe_ingredients').select('recipe_id, ingredients(allergens)'),
+  ]);
+  S.recipes = recs || [];
+  // Build allergen map: recipeId → sorted allergen array
+  S.recipeAllergenMap = {};
+  (ri||[]).forEach(row => {
+    const als = row.ingredients?.allergens;
+    if (!als?.length) return;
+    if (!S.recipeAllergenMap[row.recipe_id]) S.recipeAllergenMap[row.recipe_id] = new Set();
+    als.forEach(a => S.recipeAllergenMap[row.recipe_id].add(a));
+  });
   renderRecChips(); renderRec();
 }
 function recTab(tab) {
@@ -955,12 +1155,13 @@ function renderRec() {
       <div class="card-main">
         <div class="card-name">${esc(r.name)}</div>
         <div class="card-meta">${r.portions?r.portions+' '+(r.yield_unit||'portions'):''}${r.hands_on_minutes?' · '+fmtTime(r.hands_on_minutes):''}${r.total_prep_days>1?' · '+r.total_prep_days+'-day prep':''}</div>
+        ${(()=>{const als=[...(S.recipeAllergenMap[r.id]||[])].sort();return als.length?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:3px">${als.map(a=>`<span class="allergen-badge">${a}</span>`).join('')}</div>`:''})()}
       </div>
       <div class="card-aside" style="align-items:flex-end;gap:5px">
         ${r.category?`<span class="badge ${type==='component'?'badge-blue':'badge-green'}">${esc(r.category)}</span>`:''}
         <div style="display:flex;gap:4px;margin-top:2px">
           <button class="pantry-act-btn prep"
-            onclick="event.stopPropagation();quickAddPrep('${esc(r.name)}')">+ Prep</button>
+            onclick="event.stopPropagation();quickAddPrep('${esc(r.name)}','${r.id}')">+ Prep</button>
           <button class="del-btn" style="width:24px;height:24px;font-size:14px"
             onclick="event.stopPropagation();deleteRec('${r.id}','${esc(r.name)}')">×</button>
         </div>
@@ -1057,7 +1258,7 @@ async function openRecDetail(id) {
     db.from('recipes').select('*').eq('id', id).single(),
     db.from('recipe_steps').select('*').eq('recipe_id', id).order('day_number').order('step_order'),
     db.from('recipe_ingredients')
-      .select('*, ingredients(id,name,unit,price_per_unit,density), comp_recipe:recipes!recipe_ingredients_component_id_fkey(id,name,type,yield_unit,portions)')
+      .select('*, ingredients(id,name,unit,price_per_unit,density,allergens), comp_recipe:recipes!recipe_ingredients_component_id_fkey(id,name,type,yield_unit,portions)')
       .eq('recipe_id', id),
   ]);
   if (recErr) { console.error('openRecDetail:', recErr); alert('Could not load recipe: ' + recErr.message); return; }
@@ -1085,6 +1286,16 @@ function closeRecDetail() {
   document.getElementById('main').scrollTop = 0;
 }
 
+function recipeAllergens() {
+  // Collect unique allergens from all ingredients used in this recipe's steps
+  const all = new Set();
+  D.ingredients.forEach(ri => {
+    const ing = ri.ingredients;
+    if (ing?.allergens?.length) ing.allergens.forEach(a => all.add(a));
+  });
+  return all.size ? [...all].sort() : null;
+}
+
 function renderRecInfoBlock() {
   const r = D.recipe; if (!r) return;
   document.getElementById('rec-info-block').innerHTML = `
@@ -1097,7 +1308,8 @@ function renderRecInfoBlock() {
       ${r.hands_on_minutes?`<span class="rec-meta-pill">${fmtTime(r.hands_on_minutes)} hands-on</span>`:''}
       ${r.total_prep_days>1?`<span class="rec-meta-pill">${r.total_prep_days}-day prep</span>`:''}
     </div>
-    ${r.notes?`<div class="rec-notes-text">${esc(r.notes)}</div>`:''}`;
+    ${r.notes?`<div class="rec-notes-text">${esc(r.notes)}</div>`:''}
+    ${recipeAllergens()?`<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:4px">${recipeAllergens().map(a=>`<span class="allergen-badge">${a}</span>`).join('')}</div>`:''}`;
 }
 
 function renderRecDetail() {
@@ -1109,7 +1321,11 @@ function renderRecDetail() {
   for (let day = 1; day <= maxDay; day++) {
     const daySteps = D.steps.filter(s => s.day_number === day).sort((a,b) => a.step_order - b.step_order);
     html += `<div class="rec-day-group">`;
-    html += multiDay ? `<div class="rec-day-label">Day ${day}</div>` : `<div style="height:8px"></div>`;
+    html += multiDay
+      ? `<div class="rec-day-label">Day ${day}
+          <button class="del-day-btn" onclick="confirmDeleteDay(${day})" title="Delete Day ${day}">× Delete day</button>
+        </div>`
+      : `<div style="height:8px"></div>`;
     daySteps.forEach((step, idx) => { html += renderStepCard(step, idx + 1); });
     html += `<button class="add-step-btn" onclick="openAddStep(${day})">+ Add step${multiDay?' to Day '+day:''}</button>`;
     html += `</div>`;
@@ -1157,6 +1373,11 @@ function renderStepCard(step, num) {
       </div>
       ${step.highlight ? `<div class="step-highlight"><span class="step-hi-icon">${hiIcon(step.highlight)}</span>${esc(step.highlight)}</div>` : ''}
       <div class="step-ings">${ingsHtml}</div>
+      ${(step.hands_on_minutes||step.hands_off_minutes) ? `
+        <div style="display:flex;gap:8px;padding:4px 12px 6px;flex-wrap:wrap">
+          ${step.hands_on_minutes ? `<span style="font-size:11.5px;color:var(--green);font-weight:500">⏱ ${fmtTime(step.hands_on_minutes)} hands-on</span>` : ''}
+          ${step.hands_off_minutes ? `<span style="font-size:11.5px;color:var(--text-3)">+ ${fmtTime(step.hands_off_minutes)} hands-off</span>` : ''}
+        </div>` : ''}
       ${step.description ? `<div class="step-notes">${esc(step.description)}</div>` : ''}
       <div class="step-add-row">
         <button class="step-add-btn"          onclick="openAddIngToStep('${step.id}')">+ Ingredient</button>
@@ -1265,7 +1486,7 @@ function openAddStep(dayNum) {
   document.getElementById('step-day-num').value        = dayNum;
   const ord = D.steps.filter(s => s.day_number === dayNum).length;
   document.getElementById('step-order-val').value      = ord;
-  ['step-title-inp','step-highlight-inp','step-notes-inp'].forEach(x => document.getElementById(x).value = '');
+  ['step-title-inp','step-highlight-inp','step-notes-inp','step-handson','step-handsoff'].forEach(x => document.getElementById(x).value = '');
   showModal('m-step');
 }
 function openEditStep(id) {
@@ -1277,6 +1498,8 @@ function openEditStep(id) {
   document.getElementById('step-title-inp').value      = s.title||'';
   document.getElementById('step-highlight-inp').value  = s.highlight||'';
   document.getElementById('step-notes-inp').value      = s.description||'';
+  document.getElementById('step-handson').value         = s.hands_on_minutes||'';
+  document.getElementById('step-handsoff').value        = s.hands_off_minutes||'';
   showModal('m-step');
 }
 async function saveStep() {
@@ -1286,8 +1509,10 @@ async function saveStep() {
     day_number:  parseInt(document.getElementById('step-day-num').value)||1,
     step_order:  parseInt(document.getElementById('step-order-val').value)||0,
     title:       document.getElementById('step-title-inp').value.trim(),
-    highlight:   document.getElementById('step-highlight-inp').value.trim()||null,
-    description: document.getElementById('step-notes-inp').value.trim()||null,
+    highlight:         document.getElementById('step-highlight-inp').value.trim()||null,
+    description:       document.getElementById('step-notes-inp').value.trim()||null,
+    hands_on_minutes:  parseInt(document.getElementById('step-handson').value)||null,
+    hands_off_minutes: parseInt(document.getElementById('step-handsoff').value)||null,
   };
   if (!payload.title) return;
   if (id) {
@@ -1312,6 +1537,37 @@ async function deleteStep(id) {
   D.ingredients = D.ingredients.filter(i => i.step_id !== id);
   renderRecDetail();
 }
+async function confirmDeleteDay(dayNum) {
+  const daySteps = D.steps.filter(s => s.day_number === dayNum);
+  const stepCount = daySteps.length;
+  const msg = stepCount
+    ? `Delete Day ${dayNum} and its ${stepCount} step${stepCount>1?'s':''}? This cannot be undone.`
+    : `Delete Day ${dayNum}? It has no steps yet.`;
+  if (!confirm(msg)) return;
+  // Delete all ingredients for steps on this day, then the steps themselves
+  for (const step of daySteps) {
+    await db.from('recipe_ingredients').delete().eq('step_id', step.id);
+  }
+  if (daySteps.length) {
+    await db.from('recipe_steps').delete().in('id', daySteps.map(s => s.id));
+  }
+  // Reduce total_prep_days by 1, renumber steps on days above this one
+  const stepsAbove = D.steps.filter(s => s.day_number > dayNum);
+  for (const step of stepsAbove) {
+    await db.from('recipe_steps').update({ day_number: step.day_number - 1 }).eq('id', step.id);
+    step.day_number -= 1;
+  }
+  const newDays = Math.max(1, (D.recipe.total_prep_days || 1) - 1);
+  await db.from('recipes').update({ total_prep_days: newDays }).eq('id', D.recipe.id);
+  D.recipe.total_prep_days = newDays;
+  const r = S.recipes.find(x => x.id === D.recipe.id); if (r) r.total_prep_days = newDays;
+  // Remove deleted steps and their ingredients from local state
+  const deletedIds = new Set(daySteps.map(s => s.id));
+  D.steps       = D.steps.filter(s => !deletedIds.has(s.id));
+  D.ingredients = D.ingredients.filter(i => !deletedIds.has(i.step_id));
+  renderRecDetail();
+}
+
 async function addRecDay() {
   if (!D.recipe) return;
   const n = (D.recipe.total_prep_days || 1) + 1;
@@ -1480,14 +1736,15 @@ async function loadPantry() {
   // Re-use pcMap for components
   const pcMap2 = {}; (pc||[]).forEach(r => { pcMap2[r.recipe_id] = r; });
   S.pantryIng  = (allIngs||[]).map(ing => {
-    const row = piMap[ing.id] || { ingredient_id: ing.id, in_stock: 0, min_stock: 0 };
+    const row = piMap[ing.id] || { ingredient_id: ing.id, in_stock: 0, min_stock: 0, needed_stock: 0 };
     return { ...row, _ing: ing };
   });
   S.pantryComp = (allComps||[]).map(comp => {
-    const row = pcMap2[comp.id] || { recipe_id: comp.id, in_stock: 0, min_stock: 0 };
+    const row = pcMap2[comp.id] || { recipe_id: comp.id, in_stock: 0, min_stock: 0, needed_stock: 0 };
     return { ...row, _comp: comp };
   });
   renderPantryIng(); renderPantryComp();
+  updatePantryBadge();
 }
 function pantryTab(tab) {
   S.pantryTabActive = tab;
@@ -1512,33 +1769,36 @@ function renderPantryIng() {
   attn.style.color = need ? 'var(--amber)' : 'var(--text-3)';
   if (!sorted.length) { document.getElementById('pantry-ing-list').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No ingredients found.</p></div>`; return; }
   document.getElementById('pantry-ing-list').innerHTML = sorted.map(item => {
-    const s     = stockStatus(item);
-    const nm    = item._ing?.name || '?';
-    const u     = item._ing?.unit || '';
-    const stock = +(item.in_stock||0);
-    const min   = +(item.min_stock||0);
-    const diff  = stock - min;
-    const diffStr = min > 0 ? (diff >= 0 ? `<span style="color:var(--green)">+${fmtNum(diff)}</span>` : `<span style="color:var(--red)">${fmtNum(diff)}</span>`) : '—';
-    return `<div class="pantry-row" data-ing-ref="${item.ingredient_id}">
-      <div class="pr-name">${esc(nm)}</div>
-      <div class="pr-cell">
-        <div class="pr-label">Min</div>
-        <input class="pr-input" type="number" value="${min}" min="0" step="0.1"
-          oninput="liveUpdateSurplus('ing','${item.ingredient_id}','min',this.value)"
-          onchange="savePantryMin('ing','${item.ingredient_id}','${item.id||''}',this.value,'${item._ing?.id||''}')"
-          title="Minimum stock">
-        <span class="pr-unit">${u}</span>
+    const s      = stockStatus(item);
+    const nm     = item._ing?.name || '?';
+    const u      = item._ing?.unit || '';
+    const stock  = +(item.in_stock||0);
+    const min    = +(item.min_stock||0);
+    const needed = +(item.needed_stock||0);
+    const diff   = stock - min;
+    const cls    = s==='out'?'out-stock':s==='low'?'low-stock':'';
+    const diffColor = diff >= 0 ? 'var(--green)' : 'var(--red)';
+    const diffStr = min > 0 ? `<span style="color:${diffColor};font-weight:600">${diff>=0?'+':''}${fmtNum(diff)} ${u}</span>` : '';
+    const minLabel    = min    > 0 ? `min ${fmtNum(min)} ${u}` : '';
+    const neededLabel = needed > 0 ? `need ${fmtNum(needed)} ${u}` : '';
+    const metaParts = [minLabel, neededLabel].filter(Boolean).join(' · ');
+    return `<div class="pantry-row ${cls}" data-ing-ref="${item.ingredient_id}">
+      <div class="pr-top">
+        <span class="dot dot-${s}"></span>
+        <div class="pr-name">${esc(nm)}</div>
+        <button class="pantry-act-btn order" style="padding:3px 8px;font-size:11px" onclick="prefillOrderFromPantry('${item._ing?.id||''}','${esc(nm)}','${u}')">Order</button>
       </div>
-      <div class="pr-cell">
-        <div class="pr-label">Stock</div>
-        <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
-          oninput="liveUpdateSurplus('ing','${item.ingredient_id}','stock',this.value)"
-          onchange="savePantryStock('ing','${item.ingredient_id}','${item.id||''}',this.value)"
-          title="Current stock">
-        <span class="pr-unit">${u}</span>
+      <div class="pr-bottom">
+        ${metaParts ? `<span style="font-size:11.5px;color:var(--text-3);flex:1">${metaParts}</span>` : '<span style="font-size:11.5px;color:var(--text-3);flex:1">No min set — edit ingredient to add</span>'}
+        <div class="pr-cell">
+          <div class="pr-label">In stock</div>
+          <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
+            oninput="liveUpdateSurplus('ing','${item.ingredient_id}','stock',this.value)"
+            onchange="savePantryStock('ing','${item.ingredient_id}','${item.id||''}',this.value)">
+          <span class="pr-unit">${u}</span>
+        </div>
+        ${diffStr ? `<div class="pr-surplus" id="surplus-ing-${item.ingredient_id}">${diffStr}</div>` : `<div class="pr-surplus" id="surplus-ing-${item.ingredient_id}"></div>`}
       </div>
-      <div class="pr-surplus" id="surplus-ing-${item.ingredient_id}">${diffStr}</div>
-      <button class="pantry-act-btn order" onclick="prefillOrderFromPantry('${item._ing?.id||''}','${esc(nm)}','${u}')">Order</button>
     </div>`;
   }).join('');
 }
@@ -1552,32 +1812,36 @@ function renderPantryComp() {
   if (attn) { attn.textContent = need ? `${need} need attention` : sorted.length + ' items'; attn.style.color = need ? 'var(--amber)' : 'var(--text-3)'; }
   if (!sorted.length) { document.getElementById('pantry-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components found.</p></div>`; return; }
   document.getElementById('pantry-comp-list').innerHTML = sorted.map(item => {
-    const nm    = item._comp?.name || '?';
-    const u     = item._comp?.yield_unit || '';
-    const stock = +(item.in_stock||0);
-    const min   = +(item.min_stock||0);
-    const diff  = stock - min;
-    const diffStr = min > 0 ? (diff >= 0 ? `<span style="color:var(--green)">+${fmtNum(diff)}</span>` : `<span style="color:var(--red)">${fmtNum(diff)}</span>`) : '—';
-    return `<div class="pantry-row" data-comp-ref="${item.recipe_id}">
-      <div class="pr-name">${esc(nm)}</div>
-      <div class="pr-cell">
-        <div class="pr-label">Min</div>
-        <input class="pr-input" type="number" value="${min}" min="0" step="0.1"
-          oninput="liveUpdateSurplus('comp','${item.recipe_id}','min',this.value)"
-          onchange="savePantryMin('comp','${item.recipe_id}','${item.id||''}',this.value,'${item._comp?.id||''}')"
-          title="Minimum stock">
-        <span class="pr-unit">${u}</span>
+    const s      = stockStatus(item);
+    const nm     = item._comp?.name || '?';
+    const u      = item._comp?.yield_unit || '';
+    const stock  = +(item.in_stock||0);
+    const min    = +(item.min_stock||0);
+    const needed = +(item.needed_stock||0);
+    const diff   = stock - min;
+    const cls    = s==='out'?'out-stock':s==='low'?'low-stock':'';
+    const diffColor = diff >= 0 ? 'var(--green)' : 'var(--red)';
+    const diffStr = min > 0 ? `<span style="color:${diffColor};font-weight:600">${diff>=0?'+':''}${fmtNum(diff)} ${u}</span>` : '';
+    const minLabel    = min    > 0 ? `min ${fmtNum(min)} ${u}` : '';
+    const neededLabel = needed > 0 ? `need ${fmtNum(needed)} ${u}` : '';
+    const metaParts = [minLabel, neededLabel].filter(Boolean).join(' · ');
+    return `<div class="pantry-row ${cls}" data-comp-ref="${item.recipe_id}">
+      <div class="pr-top">
+        <span class="dot dot-${s}"></span>
+        <div class="pr-name">${esc(nm)}</div>
+        <button class="pantry-act-btn prep" style="padding:3px 8px;font-size:11px" onclick="prefillPrepFromPantry('${esc(nm)}')">Prep</button>
       </div>
-      <div class="pr-cell">
-        <div class="pr-label">Stock</div>
-        <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
-          oninput="liveUpdateSurplus('comp','${item.recipe_id}','stock',this.value)"
-          onchange="savePantryStock('comp','${item.recipe_id}','${item.id||''}',this.value)"
-          title="Current stock">
-        <span class="pr-unit">${u}</span>
+      <div class="pr-bottom">
+        ${metaParts ? `<span style="font-size:11.5px;color:var(--text-3);flex:1">${metaParts}</span>` : '<span style="font-size:11.5px;color:var(--text-3);flex:1">No min set</span>'}
+        <div class="pr-cell">
+          <div class="pr-label">In stock</div>
+          <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
+            oninput="liveUpdateSurplus('comp','${item.recipe_id}','stock',this.value)"
+            onchange="savePantryStock('comp','${item.recipe_id}','${item.id||''}',this.value)">
+          <span class="pr-unit">${u}</span>
+        </div>
+        ${diffStr ? `<div class="pr-surplus" id="surplus-comp-${item.recipe_id}">${diffStr}</div>` : `<div class="pr-surplus" id="surplus-comp-${item.recipe_id}"></div>`}
       </div>
-      <div class="pr-surplus" id="surplus-comp-${item.recipe_id}">${diffStr}</div>
-      <button class="pantry-act-btn prep" onclick="prefillPrepFromPantry('${esc(nm)}')">Prep</button>
     </div>`;
   }).join('');
 }
@@ -1590,22 +1854,54 @@ function liveUpdateSurplus(type, refId, field, val) {
   const key = type === 'ing' ? 'ingredient_id' : 'recipe_id';
   const it  = arr.find(i => i[key] === refId);
   if (!it) return;
-  // Update local state immediately (save happens on onchange)
-  if (field === 'min')   it.min_stock = num;
-  if (field === 'stock') it.in_stock  = num;
-  // Recalculate and update just the surplus cell
+  // Update local state immediately
+  if (field === 'min')    it.min_stock    = num;
+  if (field === 'stock')  it.in_stock     = num;
+  if (field === 'needed') it.needed_stock = num;
+  // Recalculate surplus cell
   const stock = +(it.in_stock || 0);
   const min   = +(it.min_stock || 0);
   const diff  = stock - min;
-  const el    = document.getElementById(`surplus-${type}-${refId}`);
-  if (!el) return;
-  if (min > 0) {
-    el.innerHTML = diff >= 0
-      ? `<span style="color:var(--green)">+${fmtNum(diff)}</span>`
-      : `<span style="color:var(--red)">${fmtNum(diff)}</span>`;
-  } else {
-    el.innerHTML = '—';
+  const el    = document.getElementById('surplus-' + type + '-' + refId);
+  if (el) {
+    if (min > 0) {
+      el.innerHTML = diff >= 0
+        ? '<span style="color:var(--green)">+' + fmtNum(diff) + '</span>'
+        : '<span style="color:var(--red)">'    + fmtNum(diff) + '</span>';
+    } else {
+      el.innerHTML = '<span style="color:var(--text-3)">—</span>';
+    }
   }
+  // Update attention counter live
+  const attnId = type === 'ing' ? 'pantry-attention' : 'pantry-comp-attention';
+  const attnEl = document.getElementById(attnId);
+  if (attnEl) {
+    const need = arr.filter(i => {
+      const s = +(i.in_stock||0), m = +(i.min_stock||0);
+      return s <= 0 || (m > 0 && s <= m);
+    }).length;
+    attnEl.textContent = need ? need + ' need attention' : arr.length + ' items';
+    attnEl.style.color = need ? 'var(--amber)' : 'var(--text-3)';
+  }
+  // FIX: also update nav badge live
+  updatePantryBadge();
+}
+
+async function savePantryNeeded(type, refId, rowId, val) {
+  const num   = parseFloat(val) || 0;
+  const table = type === 'ing' ? 'pantry_ingredients' : 'pantry_components';
+  const fk    = type === 'ing' ? 'ingredient_id' : 'recipe_id';
+  if (rowId) {
+    await db.from(table).update({ needed_stock: num }).eq('id', rowId);
+  } else {
+    const { data: nr } = await db.from(table).insert({ [fk]: refId, in_stock: 0, min_stock: 0, needed_stock: num }).select().single();
+    if (nr) {
+      if (type === 'ing') { const it = S.pantryIng.find(i => i.ingredient_id === refId); if (it) it.id = nr.id; }
+      else                { const it = S.pantryComp.find(i => i.recipe_id    === refId); if (it) it.id = nr.id; }
+    }
+  }
+  if (type === 'ing') { const it = S.pantryIng.find(i => i.ingredient_id === refId); if (it) it.needed_stock = num; }
+  else                { const it = S.pantryComp.find(i => i.recipe_id    === refId); if (it) it.needed_stock = num; }
 }
 
 async function savePantryStock(type, refId, rowId, val) {
@@ -1684,7 +1980,9 @@ function prefillOrderFromPantry(ingId, name, unit) {
 function prefillPrepFromPantry(name) {
   document.getElementById('prep-title').value    = name;
   document.getElementById('prep-date').value     = toDateStr(new Date());
+  document.getElementById('prep-ready-by').value = '';
   document.getElementById('prep-priority').value = 'asap';
+  document.getElementById('prep-title').dataset.recId = '';
   showModal('m-prep');
 }
 
@@ -1695,49 +1993,200 @@ async function loadPrep() {
   document.getElementById('week-label').textContent = weekLabel(S.weekStart);
   document.getElementById('prep-days').innerHTML = '<div class="loading">Loading…</div>';
   const { start, end } = weekRange(S.weekStart);
-  const { data } = await db.from('prep_list').select('*, recipes(name)').gte('scheduled_date', start).lte('scheduled_date', end).order('scheduled_date');
+  const { data } = await db.from('prep_list').select('*, recipes(id,name,total_prep_days,hands_on_minutes)').gte('scheduled_date', start).lte('scheduled_date', end).order('scheduled_date');
   S.prepTasks = data || [];
+  // Load full step data for all recipes in this week
+  const recIds = [...new Set((data||[]).map(t => t.recipe_id).filter(Boolean))];
+  if (recIds.length) {
+    const { data: stepData } = await db.from('recipe_steps')
+      .select('id,recipe_id,day_number,step_order,title,hands_on_minutes,hands_off_minutes')
+      .in('recipe_id', recIds).order('day_number').order('step_order');
+    S.prepStepTimings = stepData || [];
+  } else { S.prepStepTimings = []; }
+  // Load step completion state from session storage (lightweight, no extra table needed)
   renderPrep();
 }
 function shiftWeek(dir) {
   const d = new Date(S.weekStart); d.setDate(d.getDate() + dir * 7); S.weekStart = d; loadPrep();
 }
+function prepTimeEstimate(recipeId) {
+  if (!recipeId) return '';
+  // Step-level timings (most accurate)
+  const steps = S.prepStepTimings.filter(s => s.recipe_id === recipeId);
+  let totalOn = 0, totalOff = 0;
+  if (steps.length) {
+    totalOn  = steps.reduce((s,st) => s + (st.hands_on_minutes||0), 0);
+    totalOff = steps.reduce((s,st) => s + (st.hands_off_minutes||0), 0);
+  }
+  // Fallback: recipe-level field (stored in the recipes join on prep tasks)
+  if (!totalOn && !totalOff) {
+    // Find ANY prep task that references this recipe to get the joined recipe data
+    const taskWithRec = S.prepTasks.find(t => t.recipe_id === recipeId && t.recipes);
+    totalOn = taskWithRec?.recipes?.hands_on_minutes || 0;
+  }
+  // Second fallback: look in S.recipes
+  if (!totalOn && !totalOff) {
+    const rec = S.recipes.find(r => r.id === recipeId);
+    totalOn = rec?.hands_on_minutes || 0;
+  }
+  if (!totalOn && !totalOff) return '';
+  const parts = [];
+  if (totalOn)  parts.push('<span style="color:var(--green)">'  + fmtTime(totalOn)  + ' hands-on</span>');
+  if (totalOff) parts.push('<span style="color:var(--text-3)">' + fmtTime(totalOff) + ' hands-off</span>');
+  return '<div class="task-sub" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:1px">⏱ ' + parts.join(' + ') + '</div>';
+}
+
+function getStepsDone(taskId) {
+  const raw = sessionStorage.getItem('steps_' + taskId);
+  return raw ? JSON.parse(raw) : {};
+}
+function setStepDone(taskId, stepId, done) {
+  const d = getStepsDone(taskId);
+  d[stepId] = done;
+  sessionStorage.setItem('steps_' + taskId, JSON.stringify(d));
+}
+
 function renderPrep() {
   const today = toDateStr(new Date());
   const DAYS  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   let html = '';
+  // Day totals accumulators per day
   for (let i = 0; i < 7; i++) {
     const d = new Date(S.weekStart); d.setDate(d.getDate() + i);
     const ds = toDateStr(d), isToday = ds === today;
     const tasks = S.prepTasks.filter(t => t.scheduled_date === ds);
     if (!tasks.length && !isToday) continue;
     html += `<div class="day-block"><div class="day-label ${isToday?'today':''}">${DAYS[i]}${isToday?' · Today':''}<span class="day-label-date">${fmtDate(d)}</span></div>`;
-    if (!tasks.length) { html += `<div style="padding:8px 0;font-size:13px;color:var(--text-3)">Nothing scheduled</div>`; }
-    else tasks.forEach(t => {
-      const done = t.status === 'done';
-      html += `<div class="task">
-        <div class="task-check ${done?'done':''}" onclick="toggleTask('${t.id}','${t.status}')"></div>
-        <div class="task-content">
-          <div class="task-title ${done?'done':''}">${esc(t.title)}</div>
-          ${t.recipes?.name?`<div class="task-sub">${esc(t.recipes.name)}</div>`:''}
-          ${t.notes?`<div class="task-sub">${esc(t.notes)}</div>`:''}
-        </div>
-        <div style="display:flex;gap:4px;flex-shrink:0">
-          ${i<6?`<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}')">→</button>`:''}
-          <button class="del-btn" onclick="deleteTask('${t.id}')" title="Delete">×</button>
-        </div>
-      </div>`;
-    });
+    if (!tasks.length) {
+      html += `<div style="padding:8px 0;font-size:13px;color:var(--text-3)">Nothing scheduled</div>`;
+    } else {
+      let dayTotalOn = 0, dayTotalOff = 0;
+      tasks.forEach(t => {
+        const done  = t.status === 'done';
+        const steps = S.prepStepTimings.filter(s => s.recipe_id === t.recipe_id);
+        const stepsDone = done ? Object.fromEntries(steps.map(s=>[s.id,true])) : getStepsDone(t.id);
+        const doneCount = steps.filter(s => stepsDone[s.id]).length;
+        const pct       = steps.length ? Math.round((doneCount / steps.length) * 100) : (done ? 100 : 0);
+
+        // Remaining time = steps not yet done
+        let remOn = 0, remOff = 0;
+        steps.forEach(s => {
+          if (!stepsDone[s.id]) {
+            remOn  += s.hands_on_minutes  || 0;
+            remOff += s.hands_off_minutes || 0;
+          }
+        });
+        // Fallback to recipe-level if no step timings
+        if (!steps.length) {
+          const recOn = t.recipes?.hands_on_minutes || S.recipes.find(r=>r.id===t.recipe_id)?.hands_on_minutes || 0;
+          remOn = done ? 0 : recOn;
+        }
+        dayTotalOn  += remOn;
+        dayTotalOff += remOff;
+
+        const timeLine = (remOn||remOff) && !done ? (() => {
+          const parts = [];
+          if (remOn)  parts.push('<span class="day-total-on">'  + fmtTime(remOn)  + ' hands-on</span>');
+          if (remOff) parts.push('<span class="day-total-off">' + fmtTime(remOff) + ' hands-off</span>');
+          return '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:2px">⏱ ' + parts.join(' + ') + '</div>';
+        })() : '';
+
+        const hasSteps  = steps.length > 0;
+        const expandId  = 'steps-' + t.id;
+
+        html += `<div class="task" style="flex-direction:column;align-items:stretch;padding:0;gap:0">
+          <div style="display:flex;align-items:center;gap:10px;padding:11px 13px">
+            <div class="task-check ${done?'done':''}" onclick="toggleTask('${t.id}','${t.status}')"></div>
+            <div class="task-content" onclick="${hasSteps?`toggleStepExpand('${t.id}')`:''}" style="${hasSteps?'':'cursor:default'}">
+              <div class="task-title ${done?'done':''}">${esc(t.title)}</div>
+              ${steps.length ? `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-label">${pct}% done${done?'':' · tap to expand'}</div>` : ''}
+              ${timeLine}
+              ${t.notes?`<div class="task-sub" style="margin-top:3px">${esc(t.notes)}</div>`:''}
+            </div>
+            <div style="display:flex;gap:4px;flex-shrink:0;align-items:center">
+              ${hasSteps?`<button class="task-expand" id="expand-btn-${t.id}" onclick="toggleStepExpand('${t.id}')">▾</button>`:''}
+              ${i<6?`<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}')">→</button>`:''}
+              <button class="del-btn" onclick="deleteTask('${t.id}')" title="Delete">×</button>
+            </div>
+          </div>
+          ${hasSteps ? `<div class="task-steps" id="${expandId}">
+            ${steps.map((s,idx) => {
+              const sDone = done || !!stepsDone[s.id];
+              const stepTime = [];
+              if (s.hands_on_minutes)  stepTime.push(fmtTime(s.hands_on_minutes)  + ' on');
+              if (s.hands_off_minutes) stepTime.push(fmtTime(s.hands_off_minutes) + ' off');
+              return `<div class="step-row">
+                <div class="step-row-check ${sDone?'done':''}" onclick="toggleStepDone('${t.id}','${s.id}',${sDone},'${t.status}')"></div>
+                <div class="step-row-info">
+                  <div class="step-row-title ${sDone?'done':''}">Step ${idx+1}: ${esc(s.title)}</div>
+                  ${stepTime.length?`<div class="step-row-time">⏱ ${stepTime.join(' · ')}</div>`:''}
+                </div>
+              </div>`;
+            }).join('')}
+          </div>` : ''}
+        </div>`;
+      });
+      // Day totals row
+      if (dayTotalOn || dayTotalOff) {
+        const parts = [];
+        if (dayTotalOn)  parts.push('<span class="day-total-on">' + fmtTime(dayTotalOn) + ' hands-on remaining</span>');
+        if (dayTotalOff) parts.push('<span class="day-total-off">' + fmtTime(dayTotalOff) + ' hands-off remaining</span>');
+        html += `<div class="day-totals">Total: ${parts.join(' · ')}</div>`;
+      }
+    }
     html += `</div>`;
   }
   if (!html) html = `<div class="empty"><div class="empty-icon">📅</div><p>No tasks this week.</p></div>`;
   document.getElementById('prep-days').innerHTML = html;
 }
+
+function toggleStepExpand(taskId) {
+  const stepsEl = document.getElementById('steps-' + taskId);
+  const btnEl   = document.getElementById('expand-btn-' + taskId);
+  if (!stepsEl) return;
+  const isOpen = stepsEl.classList.toggle('open');
+  if (btnEl) btnEl.classList.toggle('open', isOpen);
+}
+
+function toggleStepDone(taskId, stepId, currentDone, taskStatus) {
+  const nowDone = !currentDone;
+  setStepDone(taskId, stepId, nowDone);
+  // If all steps done, mark task as done too (optimistic)
+  const steps = S.prepStepTimings.filter(s => {
+    const t = S.prepTasks.find(x => x.id === taskId);
+    return t && s.recipe_id === t.recipe_id;
+  });
+  const doneMap = getStepsDone(taskId);
+  const allDone = steps.length > 0 && steps.every(s => doneMap[s.id]);
+  if (allDone && taskStatus !== 'done') {
+    toggleTask(taskId, 'pending');
+    return;
+  }
+  // If unchecking a step and task was done, set back to pending
+  if (!nowDone && taskStatus === 'done') {
+    toggleTask(taskId, 'done');
+    return;
+  }
+  renderPrep();
+}
 async function toggleTask(id, cur) {
   const next = cur==='done' ? 'pending' : 'done';
-  await db.from('prep_list').update({ status: next }).eq('id', id);
-  const t = S.prepTasks.find(x => x.id === id); if (t) t.status = next;
-  renderPrep();
+  const t = S.prepTasks.find(x => x.id === id);
+  if (t) { t.status = next; renderPrep(); }
+  const { error } = await db.from('prep_list').update({ status: next }).eq('id', id);
+  if (error && t) { t.status = cur; renderPrep(); }
+  // When marking done, auto-mark all steps complete in session
+  if (next === 'done' && t?.recipe_id) {
+    const steps = S.prepStepTimings.filter(s => s.recipe_id === t.recipe_id);
+    const doneMap = Object.fromEntries(steps.map(s => [s.id, true]));
+    sessionStorage.setItem('steps_' + id, JSON.stringify(doneMap));
+    renderPrep();
+  }
+  // When unmarking done, clear session step state
+  if (next === 'pending') {
+    sessionStorage.removeItem('steps_' + id);
+    renderPrep();
+  }
 }
 async function deleteTask(id) {
   await db.from('prep_list').delete().eq('id', id);
@@ -1750,17 +2199,21 @@ async function moveTask(id, from) {
   await loadPrep();
 }
 async function savePrepTask() {
+  const titleEl  = document.getElementById('prep-title');
+  const recipeId = titleEl.dataset.recId || null;
   const payload = {
-    title:          document.getElementById('prep-title').value.trim(),
+    title:          titleEl.value.trim(),
     scheduled_date: document.getElementById('prep-date').value,
     priority:       document.getElementById('prep-priority').value,
     notes:          document.getElementById('prep-notes').value.trim()||null,
     status:         'pending',
+    recipe_id:      recipeId || null,
   };
   if (!payload.title || !payload.scheduled_date) return;
   await db.from('prep_list').insert(payload);
   closeModal('m-prep');
   ['prep-title','prep-notes'].forEach(x => document.getElementById(x).value = '');
+  document.getElementById('prep-ready-by').value = '';
   document.getElementById('prep-results').style.display = 'none';
   await loadPrep();
 }
@@ -1797,36 +2250,45 @@ function renderOrderList(elId, orders) {
   });
   // Sort by supplier then name
   withSupplier.sort((a,b) => (a._supplier||'zzz').localeCompare(b._supplier||'zzz') || a.ingredient_name.localeCompare(b.ingredient_name));
-  let html = '';
-  let lastSupplier = null;
+  // Group into supplier buckets for confirm buttons
+  const supplierGroups = {};
   withSupplier.forEach(o => {
-    const sup = o._supplier;
-    if (sup !== lastSupplier) {
-      html += `<div class="order-supplier-label">${sup ? esc(sup) : 'No supplier'}</div>`;
-      lastSupplier = sup;
-    }
-    const done = o.status === 'ordered';
-    html += `<div class="order-card">
-      <div class="order-row">
-        <div class="task-check ${done?'done':''}" onclick="toggleOrder('${o.id}','${o.status}')"></div>
-        <div class="order-name ${done?'done':''}">${esc(o.ingredient_name)}</div>
-        <div class="qty-ctrl">
-          <button class="qty-btn" onclick="nudgeOrder('${o.id}',${o.amount},-1)">−</button>
-          <span class="qty-val">${o.amount}<span style="font-size:11px;color:var(--text-3);font-weight:400"> ${esc(o.unit||'')}</span></span>
-          <button class="qty-btn" onclick="nudgeOrder('${o.id}',${o.amount},1)">+</button>
-        </div>
-        <button class="del-btn" onclick="deleteOrder('${o.id}')" title="Delete">×</button>
-      </div>
-      ${o.notes?`<div class="order-note">📝 ${esc(o.notes)}</div>`:''}
+    const key = o._supplier || '';
+    if (!supplierGroups[key]) supplierGroups[key] = [];
+    supplierGroups[key].push(o);
+  });
+  let html = '';
+  Object.entries(supplierGroups).forEach(([sup, items]) => {
+    const ids = JSON.stringify(items.map(o => o.id));
+    html += `<div class="order-supplier-label">${sup ? esc(sup) : 'No supplier'}
+      <button class="supplier-confirm-btn" onclick="openDeliveryConfirm(${ids.replace(/"/g,"'")})">✓ Confirm delivery</button>
     </div>`;
+    items.forEach(o => {
+      const done = o.status === 'ordered';
+      html += `<div class="order-card">
+        <div class="order-row">
+          <div class="task-check ${done?'done':''}" onclick="toggleOrder('${o.id}','${o.status}')"></div>
+          <div class="order-name ${done?'done':''}">${esc(o.ingredient_name)}</div>
+          <div class="qty-ctrl">
+            <button class="qty-btn" onclick="nudgeOrder('${o.id}',${o.amount},-1)">−</button>
+            <span class="qty-val">${o.amount}<span style="font-size:11px;color:var(--text-3);font-weight:400"> ${esc(o.unit||'')}</span></span>
+            <button class="qty-btn" onclick="nudgeOrder('${o.id}',${o.amount},1)">+</button>
+          </div>
+          <button class="del-btn" onclick="deleteOrder('${o.id}')" title="Delete">×</button>
+        </div>
+        ${o.notes?`<div class="order-note">📝 ${esc(o.notes)}</div>`:''}
+      </div>`;
+    });
   });
   document.getElementById(elId).innerHTML = html;
 }
 async function toggleOrder(id, cur) {
+  // Optimistic: update local state immediately, then sync DB
   const next = cur==='ordered' ? 'pending' : 'ordered';
-  await db.from('orders').update({ status: next }).eq('id', id);
-  const o = S.orders.find(x => x.id === id); if (o) o.status = next;
-  renderOrders();
+  const o = S.orders.find(x => x.id === id);
+  if (o) { o.status = next; renderOrders(); }
+  const { error } = await db.from('orders').update({ status: next }).eq('id', id);
+  if (error && o) { o.status = cur; renderOrders(); } // revert on failure
 }
 async function deleteOrder(id) {
   await db.from('orders').delete().eq('id', id);
@@ -1835,10 +2297,153 @@ async function deleteOrder(id) {
 }
 async function nudgeOrder(id, cur, d) {
   const val = Math.max(0, +cur + d);
-  await db.from('orders').update({ amount: val }).eq('id', id);
-  const o = S.orders.find(x => x.id === id); if (o) o.amount = val;
-  renderOrders();
+  // Optimistic
+  const o = S.orders.find(x => x.id === id);
+  if (o) { o.amount = val; renderOrders(); }
+  const { error } = await db.from('orders').update({ amount: val }).eq('id', id);
+  if (error && o) { o.amount = cur; renderOrders(); }
 }
+// ─── SMART ORDER ───────────────────────────
+async function smartOrder() {
+  // Find all pantry ingredients with deficit (in_stock < min_stock)
+  const deficits = S.pantryIng.filter(it => {
+    const stock = +(it.in_stock||0), min = +(it.min_stock||0);
+    return min > 0 && stock < min;
+  });
+  if (!deficits.length) { alert('All ingredients are at or above minimum stock. Nothing to order!'); return; }
+  // Insert an order for each deficit
+  const toInsert = deficits.map(it => {
+    const target = +(it.needed_stock||0) > 0 ? +(it.needed_stock||0) : +(it.min_stock||0);
+    return {
+      ingredient_name: it._ing?.name || 'Unknown',
+      ingredient_id:   it._ing?.id || null,
+      amount:          Math.max(0, target - +(it.in_stock||0)),
+      unit:            it._ing?.unit || 'kg',
+      priority:        'asap',
+      status:          'pending',
+    };
+  });
+  const { data, error } = await db.from('orders').insert(toInsert).select();
+  if (error) { alert('Error creating orders: ' + error.message); return; }
+  if (data) S.orders.unshift(...data);
+  renderOrders();
+  // Switch to ASAP tab to show new orders
+  orderTab('asap');
+}
+
+// ─── DELIVERY CONFIRM ────────────────────────
+let _deliveryIds = [];
+let _deliveryChecked = {};
+
+function openDeliveryConfirm(ids) {
+  _deliveryIds = ids;
+  _deliveryChecked = {};
+  ids.forEach(id => { _deliveryChecked[id] = true; }); // all checked by default
+  const items = ids.map(id => S.orders.find(o => o.id === id)).filter(Boolean);
+  const supplier = S.ingredients.find(i => i.name.toLowerCase() === (items[0]?.ingredient_name||'').toLowerCase())?.supplier;
+  document.getElementById('m-delivery-title').textContent = supplier ? `Delivery from ${supplier}` : 'Confirm delivery';
+  renderDeliveryChecklist(items);
+  showModal('m-delivery');
+}
+
+function renderDeliveryChecklist(items) {
+  document.getElementById('delivery-checklist').innerHTML = items.map(o => `
+    <div class="delivery-item" onclick="toggleDeliveryItem('${o.id}')">
+      <div class="delivery-item-check ${_deliveryChecked[o.id]?'checked':''}" id="dcheck-${o.id}"></div>
+      <div class="delivery-item-info">
+        <div class="delivery-item-name">${esc(o.ingredient_name)}</div>
+        <div class="delivery-item-meta">${o.amount} ${o.unit||''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleDeliveryItem(id) {
+  _deliveryChecked[id] = !_deliveryChecked[id];
+  const el = document.getElementById(`dcheck-${id}`);
+  if (el) el.classList.toggle('checked', _deliveryChecked[id]);
+}
+
+async function confirmDelivery() {
+  const arrived  = _deliveryIds.filter(id => _deliveryChecked[id]);
+  const missing  = _deliveryIds.filter(id => !_deliveryChecked[id]);
+  // Update pantry stock for arrived items
+  for (const id of arrived) {
+    const o   = S.orders.find(x => x.id === id);
+    if (!o) continue;
+    // Find or create pantry row
+    const pantryRow = S.pantryIng.find(it => it._ing?.name?.toLowerCase() === o.ingredient_name.toLowerCase());
+    if (pantryRow) {
+      const newStock = +(pantryRow.in_stock||0) + +(o.amount||0);
+      const table    = 'pantry_ingredients';
+      const refId    = pantryRow.ingredient_id;
+      const rowId    = pantryRow.id;
+      if (rowId) {
+        await db.from(table).update({ in_stock: newStock, updated_at: new Date().toISOString() }).eq('id', rowId);
+      } else {
+        const { data: nr } = await db.from(table).insert({ ingredient_id: refId, in_stock: newStock, min_stock: +(pantryRow.min_stock||0) }).select().single();
+        if (nr) pantryRow.id = nr.id;
+      }
+      pantryRow.in_stock = newStock;
+    }
+    // Remove arrived order
+    await db.from('orders').delete().eq('id', id);
+  }
+  // Change missing items back to pending (keep in list)
+  for (const id of missing) {
+    const o = S.orders.find(x => x.id === id);
+    if (o) { o.status = 'pending'; await db.from('orders').update({ status: 'pending' }).eq('id', id); }
+  }
+  // Remove arrived from local state
+  S.orders = S.orders.filter(o => !arrived.includes(o.id));
+  closeModal('m-delivery');
+  renderOrders();
+  if (S.section === 'pantry') { renderPantryIng(); }
+  updatePantryBadge();
+}
+
+// ─── EXPORT ORDER LIST ───────────────────────
+function exportOrderList() {
+  const withSupplier = S.orders.map(o => {
+    const ing = S.ingredients.find(i => i.name.toLowerCase() === o.ingredient_name.toLowerCase());
+    return { ...o, _supplier: ing?.supplier || 'No supplier' };
+  });
+  withSupplier.sort((a,b) => a._supplier.localeCompare(b._supplier) || a.ingredient_name.localeCompare(b.ingredient_name));
+  const date = new Date().toLocaleDateString('en', {day:'numeric', month:'long', year:'numeric'});
+  let text = 'ORDER LIST — ' + date + '\n' + '='.repeat(40) + '\n';
+  let lastSup = null;
+  withSupplier.forEach(o => {
+    if (o._supplier !== lastSup) {
+      text += '\n' + o._supplier.toUpperCase() + '\n' + '-'.repeat(o._supplier.length) + '\n';
+      lastSup = o._supplier;
+    }
+    text += '• ' + o.ingredient_name + '  ' + o.amount + ' ' + (o.unit||'') + '\n';
+    if (o.notes) text += '  Note: ' + o.notes + '\n';
+  });
+  document.getElementById('export-text').value = text.trim();
+  showModal('m-export');
+}
+function copyExport() {
+  const ta = document.getElementById('export-text');
+  ta.select();
+  navigator.clipboard.writeText(ta.value).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy to clipboard'; }, 1800);
+  }).catch(() => { ta.select(); document.execCommand('copy'); });
+}
+
+// ─── LOW STOCK BADGE ─────────────────────────
+function updatePantryBadge() {
+  const need = S.pantryIng.filter(it => {
+    const s = +(it.in_stock||0), m = +(it.min_stock||0);
+    return s <= 0 || (m > 0 && s <= m);
+  }).length;
+  const el = document.getElementById('pantry-badge');
+  if (!el) return;
+  if (need > 0) { el.textContent = need; el.style.display = 'flex'; }
+  else { el.style.display = 'none'; }
+}
+
 function prefillOrder(ing) {
   document.getElementById('ord-name').value = ing.name;
   document.getElementById('ord-unit').value = ing.unit || 'kg';
@@ -1884,12 +2489,29 @@ function selectPrepRec(id) {
   document.getElementById('prep-title').value = r.name;
   document.getElementById('prep-results').style.display = 'none';
 }
-function quickAddPrep(name) {
+function quickAddPrep(name, recId) {
   document.getElementById('prep-title').value    = name;
   document.getElementById('prep-date').value     = toDateStr(new Date());
+  document.getElementById('prep-ready-by').value = '';
   document.getElementById('prep-priority').value = 'normal';
   document.getElementById('prep-notes').value    = '';
+  // Store recipe id for back-calculation
+  document.getElementById('prep-title').dataset.recId = recId || '';
   showModal('m-prep');
+}
+
+function calcPrepStartDate() {
+  const readyBy = document.getElementById('prep-ready-by').value;
+  if (!readyBy) return;
+  const recId = document.getElementById('prep-title').dataset.recId;
+  let prepDays = 1;
+  if (recId) {
+    const rec = S.recipes.find(r => r.id === recId);
+    prepDays = rec?.total_prep_days || 1;
+  }
+  const d = new Date(readyBy);
+  d.setDate(d.getDate() - (prepDays - 1));
+  document.getElementById('prep-date').value = toDateStr(d);
 }
 async function saveOrder() {
   const payload = {
@@ -1975,9 +2597,13 @@ function renderMoneyDishes(recs, costs) {
           <span class="money-lbl">Selling price</span>
           <input class="sell-input" type="number" id="sell-${r.id}" placeholder="€" step="0.5" oninput="calcMargin('${r.id}',${cpp.toFixed(4)})">
         </div>
-        <div class="money-row money-total" id="margin-${r.id}" style="display:none">
-          <span class="money-lbl">Profit / margin</span>
-          <span class="money-val" id="margin-val-${r.id}"></span>
+        <div id="margin-${r.id}" style="display:none;margin-top:6px;border-top:1px solid var(--border);padding-top:8px">
+          <div class="money-row"><span class="money-lbl" style="color:var(--text-3)">VAT 21%</span><span class="money-val" style="color:var(--text-3)" id="margin-vat-${r.id}"></span></div>
+          <div class="money-row"><span class="money-lbl" style="color:var(--text-3)">Price excl. VAT</span><span class="money-val" style="color:var(--text-3)" id="margin-exvat-${r.id}"></span></div>
+          <div class="money-row money-total" style="border-top:1px solid var(--border);margin-top:6px;padding-top:6px">
+            <span class="money-lbl">Profit excl. VAT</span>
+            <span class="money-val" id="margin-val-${r.id}"></span>
+          </div>
         </div>`
       : `<div class="money-row"><span class="money-lbl" style="color:var(--text-3)">Set portions on dish to see per-portion cost</span></div>`}
     </div>`;
@@ -1997,14 +2623,25 @@ function renderMoneyComps(recs, costs) {
   }).join('');
 }
 function calcMargin(rid, cpp) {
-  const sell = parseFloat(document.getElementById(`sell-${rid}`).value);
-  const mEl  = document.getElementById(`margin-${rid}`);
-  const vEl  = document.getElementById(`margin-val-${rid}`);
+  const sell  = parseFloat(document.getElementById('sell-' + rid).value);
+  const mEl   = document.getElementById('margin-'  + rid);
+  const vEl   = document.getElementById('margin-val-'   + rid);
+  const vatEl = document.getElementById('margin-vat-'   + rid);
+  const exEl  = document.getElementById('margin-exvat-' + rid);
   if (!sell) { mEl.style.display = 'none'; return; }
-  const profit = sell - cpp, margin = (profit / sell) * 100;
-  mEl.style.display = 'flex';
-  mEl.className     = `money-row money-total ${profit>=0?'money-profit':'money-loss'}`;
-  vEl.textContent   = `€${profit.toFixed(2)} (${margin.toFixed(0)}%)`;
+  const VAT_RATE  = 0.21;
+  const vatAmt    = sell * VAT_RATE;
+  const sellExVat = sell - vatAmt;
+  const profit    = sellExVat - cpp;
+  const margin    = (profit / sellExVat) * 100;
+  mEl.style.display = 'block';
+  if (vatEl)  vatEl.textContent  = '€' + vatAmt.toFixed(2);
+  if (exEl)   exEl.textContent   = '€' + sellExVat.toFixed(2);
+  if (vEl) {
+    vEl.textContent   = '€' + profit.toFixed(2) + ' (' + margin.toFixed(0) + '%)';
+    vEl.style.color   = profit >= 0 ? 'var(--green)' : 'var(--red)';
+    vEl.style.fontWeight = '600';
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -2047,15 +2684,40 @@ function drow(label, value) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Check if already logged in this session
   if (sessionStorage.getItem('kitchen_auth') === 'ok') {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = '';
     load('ingredients');
+    initRealtime();
   } else {
     setTimeout(() => document.getElementById('login-input').focus(), 100);
   }
 });
+
+// ─── SUPABASE REALTIME ───────────────────────
+function initRealtime() {
+  if (!configured) return;
+  // Orders: any change → reload orders if on that section
+  db.channel('orders-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
+      // Only refresh if the change came from another session (optimistic already handled local)
+      if (S.section === 'orders') loadOrders();
+    })
+    .subscribe();
+  // Prep list: any change → reload prep if on that section
+  db.channel('prep-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'prep_list' }, payload => {
+      if (S.section === 'prep') loadPrep();
+    })
+    .subscribe();
+  // Pantry: ingredient stock changes → update badge
+  db.channel('pantry-ing-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'pantry_ingredients' }, () => {
+      if (S.section === 'pantry') loadPantry();
+      else updatePantryBadge();
+    })
+    .subscribe();
+}
 
 function tryLogin() {
   const val = document.getElementById('login-input').value.trim();
@@ -2066,6 +2728,7 @@ function tryLogin() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = '';
     load('ingredients');
+    initRealtime();
   } else {
     field.classList.add('error');
     errEl.textContent = val ? 'Chef not found' : 'Enter your name to continue';
@@ -2150,6 +2813,15 @@ create policy "open" on pantry_ingredients for all using (true) with check (true
 create policy "open" on pantry_components  for all using (true) with check (true);
 create policy "open" on prep_list          for all using (true) with check (true);
 create policy "open" on orders             for all using (true) with check (true);
+
+-- Upgrading from v3? Run these for allergens + step timings + needed_stock:
+-- alter table pantry_ingredients add column if not exists needed_stock numeric default 0;
+-- alter table pantry_components  add column if not exists needed_stock numeric default 0;
+
+-- Upgrading from v3? Run these for allergens + step timings:
+-- alter table ingredients add column if not exists allergens text[];
+-- alter table recipe_steps add column if not exists hands_on_minutes integer;
+-- alter table recipe_steps add column if not exists hands_off_minutes integer;
 
 -- Upgrading from v2? Run only these:
 -- alter table ingredients add column if not exists density numeric;
