@@ -441,9 +441,15 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
         <button class="inner-tab" onclick="pantryTab('components')">Components</button>
       </div>
       <div id="pantry-ing-wrap">
-        <div class="search-wrap" style="padding-top:4px">
-          <span class="search-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
-          <input type="search" id="pantry-ing-search" placeholder="Search ingredients…" oninput="renderPantryIng()">
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 16px 0">
+          <div style="flex:1;position:relative">
+            <span class="search-icon" style="top:50%;transform:translateY(-50%)"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+            <input type="search" id="pantry-ing-search" placeholder="Search ingredients…" oninput="renderPantryIng()" style="width:100%;padding:9px 14px 9px 38px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);font-family:DM Sans,sans-serif;font-size:14px;color:var(--text);outline:none">
+          </div>
+          <button class="smart-order-btn" style="padding:8px 11px;font-size:12px;flex-shrink:0" onclick="smartOrder()" title="Order all deficit ingredients">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+            Smart Order
+          </button>
         </div>
         <div class="row-label"><span class="row-label-text">All ingredients</span><span class="row-label-count" id="pantry-attention"></span></div>
         <div class="list" id="pantry-ing-list"><div class="loading">Loading…</div></div>
@@ -793,15 +799,13 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
         <div class="field"><label>Density (g/ml)</label><input type="number" id="si-new-density" placeholder="e.g. 1.0" step="0.01" min="0"></div>
       </div>
     </div>
-    <div class="field-row">
+    <div class="field-row" style="align-items:flex-end">
       <div class="field"><label>Amount</label><input type="number" id="si-amount" placeholder="0" min="0" step="0.01"></div>
-      <div class="field"><label>Unit</label><select id="si-unit">
-        <option value="g">g</option><option value="kg">kg</option>
-        <option value="ml">ml</option><option value="liter">liter</option>
-        <option value="tsp">tsp</option><option value="tbsp">tbsp</option><option value="cup">cup</option>
-        <option value="piece">piece</option><option value="bunch">bunch</option>
-        <option value="pinch">pinch</option><option value="to taste">to taste</option>
-      </select></div>
+      <div class="field">
+        <label>Unit</label>
+        <input type="hidden" id="si-unit" value="g">
+        <div id="si-unit-label" style="padding:10px 13px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-sm);font-size:14px;color:var(--text-2);min-height:44px;display:flex;align-items:center">— select ingredient first</div>
+      </div>
     </div>
     <div class="btn-row">
       <button class="btn btn-ghost" onclick="closeModal('m-step-ing')">Cancel</button>
@@ -1589,6 +1593,9 @@ function openAddIngToStep(stepId) {
   document.getElementById('si-results').style.display  = 'none';
   document.getElementById('si-new-wrap').style.display = 'none';
   ['si-new-cat','si-new-price','si-new-density'].forEach(x => document.getElementById(x).value = '');
+  document.getElementById('si-unit').value = 'g';
+  const lbl = document.getElementById('si-unit-label');
+  if (lbl) lbl.textContent = '— select ingredient first';
   showModal('m-step-ing');
   setTimeout(() => document.getElementById('si-search').focus(), 320);
 }
@@ -1615,9 +1622,11 @@ function selectIngForStep(id) {
   document.getElementById('si-search').value  = ing.name;
   document.getElementById('si-results').style.display  = 'none';
   document.getElementById('si-new-wrap').style.display = 'none';
-  // Default to smaller unit for recipe use
-  const defaults = { kg:'g', liter:'ml', piece:'piece', bunch:'bunch', can:'can', pack:'pack', bottle:'bottle' };
-  document.getElementById('si-unit').value = defaults[ing.unit] || ing.unit || 'g';
+  // Lock unit to ingredient purchase unit
+  const u = ing.unit || 'g';
+  document.getElementById('si-unit').value = u;
+  const lbl = document.getElementById('si-unit-label');
+  if (lbl) lbl.textContent = u + (ing.price_per_unit ? '  ·  €' + ing.price_per_unit + '/' + u : '');
 }
 
 function selectNewIngForStep() {
@@ -2105,6 +2114,7 @@ function renderPrep() {
             </div>
             <div style="display:flex;gap:4px;flex-shrink:0;align-items:center">
               ${hasSteps?`<button class="task-expand" id="expand-btn-${t.id}" onclick="toggleStepExpand('${t.id}')">▾</button>`:''}
+              ${i>0?`<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTaskBack('${t.id}','${ds}')">←</button>`:''}
               ${i<6?`<button class="mini-btn" style="font-size:11px;width:auto;padding:0 8px" onclick="moveTask('${t.id}','${ds}')">→</button>`:''}
               <button class="del-btn" onclick="deleteTask('${t.id}')" title="Delete">×</button>
             </div>
@@ -2195,6 +2205,11 @@ async function deleteTask(id) {
 }
 async function moveTask(id, from) {
   const d = new Date(from); d.setDate(d.getDate() + 1);
+  await db.from('prep_list').update({ scheduled_date: toDateStr(d) }).eq('id', id);
+  await loadPrep();
+}
+async function moveTaskBack(id, from) {
+  const d = new Date(from); d.setDate(d.getDate() - 1);
   await db.from('prep_list').update({ scheduled_date: toDateStr(d) }).eq('id', id);
   await loadPrep();
 }
@@ -2595,7 +2610,9 @@ function renderMoneyDishes(recs, costs) {
         <div class="money-row"><span class="money-lbl">Cost per portion</span><span class="money-val">€${cpp.toFixed(2)}</span></div>
         <div class="money-row" style="margin-top:4px">
           <span class="money-lbl">Selling price</span>
-          <input class="sell-input" type="number" id="sell-${r.id}" placeholder="€" step="0.5" oninput="calcMargin('${r.id}',${cpp.toFixed(4)})">
+          <input class="sell-input" type="number" id="sell-${r.id}" placeholder="€" step="0.5"
+            value="${r.selling_price||''}"
+            oninput="saveSellingPrice('${r.id}',this.value);calcMargin('${r.id}',${cpp.toFixed(4)})">
         </div>
         <div id="margin-${r.id}" style="display:none;margin-top:6px;border-top:1px solid var(--border);padding-top:8px">
           <div class="money-row"><span class="money-lbl" style="color:var(--text-3)">VAT 21%</span><span class="money-val" style="color:var(--text-3)" id="margin-vat-${r.id}"></span></div>
@@ -2608,6 +2625,13 @@ function renderMoneyDishes(recs, costs) {
       : `<div class="money-row"><span class="money-lbl" style="color:var(--text-3)">Set portions on dish to see per-portion cost</span></div>`}
     </div>`;
   }).join('');
+  dishes.forEach(r => {
+    if (r.selling_price && r.portions) {
+      const total = recipeCost(r.id, recs, costs);
+      const cpp = total / r.portions;
+      calcMargin(r.id, cpp);
+    }
+  });
 }
 function renderMoneyComps(recs, costs) {
   const comps = recs.filter(r => r.type === 'component');
@@ -2621,6 +2645,16 @@ function renderMoneyComps(recs, costs) {
       ${cpy!=null ? `<div class="money-row"><span class="money-lbl">Cost per ${r.yield_unit||'portion'}</span><span class="money-val">€${cpy.toFixed(2)}</span></div>` : ''}
     </div>`;
   }).join('');
+}
+let _spTimer = {};
+function saveSellingPrice(rid, val) {
+  clearTimeout(_spTimer[rid]);
+  _spTimer[rid] = setTimeout(async () => {
+    const price = parseFloat(val) || null;
+    await db.from('recipes').update({ selling_price: price }).eq('id', rid);
+    const r = S.recipes.find(x => x.id === rid);
+    if (r) r.selling_price = price;
+  }, 800);
 }
 function calcMargin(rid, cpp) {
   const sell  = parseFloat(document.getElementById('sell-' + rid).value);
@@ -2813,6 +2847,9 @@ create policy "open" on pantry_ingredients for all using (true) with check (true
 create policy "open" on pantry_components  for all using (true) with check (true);
 create policy "open" on prep_list          for all using (true) with check (true);
 create policy "open" on orders             for all using (true) with check (true);
+
+-- Add selling_price to recipes:
+-- alter table recipes add column if not exists selling_price numeric;
 
 -- Upgrading from v3? Run these for allergens + step timings + needed_stock:
 -- alter table pantry_ingredients add column if not exists needed_stock numeric default 0;
