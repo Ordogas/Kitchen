@@ -271,6 +271,19 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 .allergen-chip.active { background: var(--red-light); border-color: var(--red); color: var(--red); }
 .allergen-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 .allergen-badge { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 20px; font-size: 10.5px; font-weight: 600; background: var(--red-light); color: var(--red); border: 1px solid rgba(158,61,47,.2); }
+/* Chef tab */
+.chef-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 15px; margin-bottom: 7px; }
+.chef-card-name { font-weight: 600; font-size: 15px; margin-bottom: 6px; display:flex; align-items:center; justify-content:space-between; }
+.chef-fav-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.chef-fav-chip { padding: 3px 9px; border-radius: 20px; font-size: 12px; background: var(--green-light); color: var(--green); font-weight: 500; }
+/* Scale badge in prep */
+.scale-badge { display:inline-flex; align-items:center; padding:2px 7px; border-radius:10px; font-size:11px; font-weight:700; background:var(--amber-light); color:var(--amber); border:1px solid rgba(168,114,42,.2); flex-shrink:0; }
+/* Chef label in prep */
+.chef-group-label { font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:var(--blue); padding:10px 0 5px; display:flex; align-items:center; gap:6px; }
+.chef-group-label::after { content:''; flex:1; height:1px; background:var(--blue-light); }
+/* Chef assign dropdown on task */
+.chef-select-inline { padding:3px 7px; border:1px solid var(--border); border-radius:var(--r-xs); font-family:"DM Sans",sans-serif; font-size:11.5px; color:var(--text-2); background:var(--surface-2); cursor:pointer; outline:none; }
+.chef-select-inline:focus { border-color:var(--blue); }
 /* Pantry row layout */
 .pantry-row { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 13px; display: flex; flex-direction: column; gap: 6px; }
 .pantry-row.low-stock  { border-left: 3px solid var(--amber); }
@@ -516,6 +529,15 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
       </div>
     </section>
 
+    <!-- CHEFS -->
+    <section class="section" id="sec-chefs">
+      <div class="row-label" style="padding-top:14px">
+        <span class="row-label-text">Kitchen team</span>
+        <span class="row-label-count" id="chef-count"></span>
+      </div>
+      <div style="padding:0 16px" id="chef-list"><div class="loading">Loading…</div></div>
+    </section>
+
     <!-- RECIPE DETAIL (full page, injected by JS) -->
     <div id="recipe-detail-view">
       <div class="scale-bar">
@@ -559,6 +581,9 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
     <button class="nav-tab" data-s="money" onclick="goTo('money')">
       <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Money
     </button>
+    <button class="nav-tab" data-s="chefs" onclick="goTo('chefs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Chefs
+    </button>
   </nav>
 </div>
 
@@ -592,6 +617,28 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
   </div>
 </div>
 
+<!-- ADD / EDIT CHEF -->
+<div class="overlay" id="m-chef">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="m-chef-title">New chef</div>
+    <input type="hidden" id="chef-id">
+    <div class="field"><label>Name</label><input type="text" id="chef-name" placeholder="e.g. Matas"></div>
+    <div class="field">
+      <label>Favourite recipes &amp; components</label>
+      <div style="position:relative;margin-bottom:8px">
+        <input type="text" id="chef-rec-search" placeholder="Search recipes / components…" oninput="searchChefRec()" autocomplete="off">
+        <div class="search-results" id="chef-rec-results" style="display:none"></div>
+      </div>
+      <div id="chef-fav-list" style="display:flex;flex-wrap:wrap;gap:5px;min-height:24px"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="closeModal('m-chef')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveChef()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- ADD / EDIT INGREDIENT -->
 <div class="overlay" id="m-ingredient">
   <div class="modal">
@@ -619,8 +666,12 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
       <div class="field"><label>Density (g/ml)</label><input type="number" id="ing-density" placeholder="e.g. 1.0" step="0.01" min="0"></div>
     </div>
     <div class="field-row">
-      <div class="field"><label>Min stock</label><input type="number" id="ing-min-stock" placeholder="0" min="0" step="0.1" title="Alert threshold — when stock drops to or below this"></div>
-      <div class="field"><label>Needed / week</label><input type="number" id="ing-needed-stock" placeholder="0" min="0" step="0.1" title="Target order quantity for smart order"></div>
+      <div class="field"><label>Absolute min</label><input type="number" id="ing-min-stock" placeholder="0" min="0" step="0.1" title="Red alert — below this you must order immediately"></div>
+      <div class="field"><label>Needed / week</label><input type="number" id="ing-needed-stock" placeholder="0" min="0" step="0.1" title="Manually set weekly target (overridden by prep calc)"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Pack size</label><input type="number" id="ing-pack-size" placeholder="e.g. 0.5" min="0" step="0.01" title="Size of one package in the ingredient unit (e.g. 0.5 kg per bag)"></div>
+      <div class="field"><label>Min order (packs)</label><input type="number" id="ing-pack-min" placeholder="e.g. 6" min="1" step="1" title="Minimum number of packs per order"></div>
     </div>
     <div class="field"><label>Supplier</label><input type="text" id="ing-supplier" placeholder="Supplier name"></div>
     <div class="field"><label>Contact / notes</label><textarea id="ing-notes" placeholder="Phone, email, ordering details…"></textarea></div>
@@ -738,6 +789,23 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
         </div>
       </div>
       <div style="font-size:11px;color:var(--text-3);margin-top:4px">Start date · or pick "Ready by" to auto-calculate</div>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Chef</label>
+        <select id="prep-chef-id">
+          <option value="">— unassigned —</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Scale</label>
+        <select id="prep-scale">
+          <option value="1">1×</option>
+          <option value="2">2×</option>
+          <option value="4">4×</option>
+          <option value="8">8×</option>
+        </select>
+      </div>
     </div>
     <div class="field"><label>Priority</label><select id="prep-priority"><option value="normal">Normal</option><option value="asap">ASAP</option></select></div>
     <div class="field"><label>Notes</label><input type="text" id="prep-notes" placeholder="Optional note…"></div>
@@ -863,7 +931,7 @@ const DISH_CATS      = ['Brunch','Cold snacks','Warm snacks','Hot dishes','Desse
 const S = {
   section: 'ingredients',
   ingredients: [], recipes: [], pantryIng: [], pantryComp: [],
-  orders: [], prepTasks: [], prepStepTimings: [], recipeAllergenMap: {},
+  orders: [], prepTasks: [], prepStepTimings: [], recipeAllergenMap: {}, chefs: [], chefRecipes: [], pantryNeededThis: {}, pantryNeededNext: {}, pantryWeekView: 'this',
   weekStart: monday(new Date()),
   ingQ: '', ingCat: 'all',
   recType: 'components', recQ: '', recCat: 'all',
@@ -877,8 +945,8 @@ const D = {
 };
 
 // ── NAVIGATION ───────────────────────────
-const titles = { ingredients:'Ingredients', recipes:'Recipes', pantry:'Pantry', prep:'Prep', orders:'Orders', money:'Costing' };
-const hasAdd  = { ingredients:true, recipes:true, pantry:false, prep:true, orders:true, money:false };
+const titles = { ingredients:'Ingredients', recipes:'Recipes', pantry:'Pantry', prep:'Prep', orders:'Orders', money:'Costing', chefs:'Chefs' };
+const hasAdd  = { ingredients:true, recipes:true, pantry:false, prep:true, orders:true, money:false, chefs:true };
 
 function goTo(name) {
   S.section = name;
@@ -897,6 +965,7 @@ function goTo(name) {
 
 async function openAdd() {
   if (S.section === 'recipes') { openRecModal(S.recType === 'components' ? 'component' : 'dish'); return; }
+  if (S.section === 'chefs') { openChefModal(); return; }
   // Ensure ingredients + recipes are loaded for search in order/prep modals
   if (!S.ingredients.length && configured) {
     const { data } = await db.from('ingredients').select('*').order('name');
@@ -946,6 +1015,7 @@ async function load(name) {
     if (name === 'prep')        await loadPrep();
     if (name === 'orders')      await loadOrders();
     if (name === 'money')       await loadMoney();
+    if (name === 'chefs')       await loadChefs();
   } catch(e) { console.error(e); }
 }
 function showSetup() {
@@ -953,6 +1023,137 @@ function showSetup() {
   ['ing-list','rec-list','pantry-ing-list','orders-asap-list','money-dishes-list'].forEach(id => {
     const el = document.getElementById(id); if (el) el.innerHTML = b;
   });
+}
+
+// ═══════════════════════════════════════════
+// CHEFS
+// ═══════════════════════════════════════════
+async function loadChefs() {
+  document.getElementById('chef-list').innerHTML = '<div class="loading">Loading…</div>';
+  const [{ data: chefs }, { data: cr }] = await Promise.all([
+    db.from('chefs').select('*').order('name'),
+    db.from('chef_recipes').select('chef_id, recipe_id, recipes(id,name,type)'),
+  ]);
+  S.chefs      = chefs || [];
+  S.chefRecipes = cr   || [];
+  // Populate chef selects in prep modal
+  populateChefSelect();
+  renderChefs();
+}
+function populateChefSelect() {
+  const sel = document.getElementById('prep-chef-id');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— unassigned —</option>' +
+    S.chefs.map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join('');
+  sel.value = cur;
+}
+function renderChefs() {
+  document.getElementById('chef-count').textContent = S.chefs.length;
+  if (!S.chefs.length) {
+    document.getElementById('chef-list').innerHTML = `<div class="empty"><div class="empty-icon">👨‍🍳</div><p>No chefs yet.<br>Tap + to add your first one.</p></div>`;
+    return;
+  }
+  document.getElementById('chef-list').innerHTML = S.chefs.map(c => {
+    const favs = S.chefRecipes.filter(cr => cr.chef_id === c.id);
+    return `<div class="chef-card">
+      <div class="chef-card-name">
+        ${esc(c.name)}
+        <div style="display:flex;gap:6px">
+          <button class="pantry-act-btn" onclick="editChef('${c.id}')">Edit</button>
+          <button class="del-btn" onclick="deleteChef('${c.id}','${esc(c.name)}')">×</button>
+        </div>
+      </div>
+      ${favs.length ? `<div class="chef-fav-list">${favs.map(cr=>`<span class="chef-fav-chip ${cr.recipes?.type==='component'?'':'badge-green'}">${esc(cr.recipes?.name||'')}</span>`).join('')}</div>` : '<span style="font-size:12px;color:var(--text-3)">No favourite recipes assigned</span>'}
+    </div>`;
+  }).join('');
+}
+
+// Chef add/edit modal
+let _chefFavs = []; // [{id, name, type}]
+function openChefModal() {
+  _chefFavs = [];
+  document.getElementById('m-chef-title').textContent = 'New chef';
+  document.getElementById('chef-id').value   = '';
+  document.getElementById('chef-name').value = '';
+  document.getElementById('chef-rec-search').value = '';
+  document.getElementById('chef-rec-results').style.display = 'none';
+  renderChefFavs();
+  showModal('m-chef');
+  setTimeout(() => document.getElementById('chef-name').focus(), 300);
+}
+function editChef(id) {
+  const c = S.chefs.find(x => x.id === id); if (!c) return;
+  _chefFavs = S.chefRecipes.filter(cr => cr.chef_id === id).map(cr => ({ id: cr.recipe_id, name: cr.recipes?.name||'', type: cr.recipes?.type||'' }));
+  document.getElementById('m-chef-title').textContent = 'Edit chef';
+  document.getElementById('chef-id').value   = c.id;
+  document.getElementById('chef-name').value = c.name;
+  document.getElementById('chef-rec-search').value = '';
+  document.getElementById('chef-rec-results').style.display = 'none';
+  renderChefFavs();
+  showModal('m-chef');
+}
+function searchChefRec() {
+  const q   = document.getElementById('chef-rec-search').value.trim();
+  const res = document.getElementById('chef-rec-results');
+  if (!q) { res.style.display = 'none'; return; }
+  const matches = S.recipes.filter(r => r.name.toLowerCase().includes(q.toLowerCase()) && !_chefFavs.find(f => f.id === r.id)).slice(0, 8);
+  if (!matches.length) { res.style.display = 'none'; return; }
+  res.innerHTML = matches.map(r => `<div class="sr-item" onclick="addChefFav('${r.id}','${esc(r.name)}','${r.type}')">
+    ${esc(r.name)}<div class="sr-meta">${r.type==='component'?'Component':'Dish'} · ${r.category||''}</div>
+  </div>`).join('');
+  res.style.display = 'block';
+}
+function addChefFav(id, name, type) {
+  if (_chefFavs.find(f => f.id === id)) return;
+  _chefFavs.push({ id, name, type });
+  document.getElementById('chef-rec-search').value = '';
+  document.getElementById('chef-rec-results').style.display = 'none';
+  renderChefFavs();
+}
+function removeChefFav(id) {
+  _chefFavs = _chefFavs.filter(f => f.id !== id);
+  renderChefFavs();
+}
+function renderChefFavs() {
+  document.getElementById('chef-fav-list').innerHTML = _chefFavs.map(f => `
+    <span class="chef-fav-chip" style="cursor:pointer;display:inline-flex;align-items:center;gap:4px" onclick="removeChefFav('${f.id}')">
+      ${esc(f.name)} <span style="opacity:.6">×</span>
+    </span>`).join('');
+}
+async function saveChef() {
+  const id   = document.getElementById('chef-id').value;
+  const name = document.getElementById('chef-name').value.trim();
+  if (!name) return;
+  let chefId = id;
+  if (id) {
+    await db.from('chefs').update({ name }).eq('id', id);
+    const c = S.chefs.find(x => x.id === id); if (c) c.name = name;
+  } else {
+    const { data } = await db.from('chefs').insert({ name }).select().single();
+    if (!data) return;
+    chefId = data.id;
+    S.chefs.push(data);
+  }
+  // Replace chef_recipes
+  await db.from('chef_recipes').delete().eq('chef_id', chefId);
+  if (_chefFavs.length) {
+    await db.from('chef_recipes').insert(_chefFavs.map(f => ({ chef_id: chefId, recipe_id: f.id })));
+  }
+  S.chefRecipes = S.chefRecipes.filter(cr => cr.chef_id !== chefId);
+  _chefFavs.forEach(f => S.chefRecipes.push({ chef_id: chefId, recipe_id: f.id, recipes: { id: f.id, name: f.name, type: f.type } }));
+  closeModal('m-chef');
+  populateChefSelect();
+  renderChefs();
+}
+async function deleteChef(id, name) {
+  if (!confirm('Delete chef "' + name + '"? Their prep assignments will become unassigned.')) return;
+  await db.from('chef_recipes').delete().eq('chef_id', id);
+  await db.from('chefs').delete().eq('id', id);
+  S.chefs = S.chefs.filter(c => c.id !== id);
+  S.chefRecipes = S.chefRecipes.filter(cr => cr.chef_id !== id);
+  populateChefSelect();
+  renderChefs();
 }
 
 // ═══════════════════════════════════════════
@@ -1027,6 +1228,10 @@ function editIng(id) {
   const pantryRow = S.pantryIng.find(p => p.ingredient_id === i.id);
   document.getElementById('ing-min-stock').value    = pantryRow?.min_stock    || '';
   document.getElementById('ing-needed-stock').value = pantryRow?.needed_stock || '';
+  document.getElementById('ing-pack-size').value    = i.absolute_min ? '' : (i.pack_size || '');
+  document.getElementById('ing-pack-min').value     = i.pack_min_qty || '';
+  // Use absolute_min from ingredient table (separate from pantry min_stock)
+  document.getElementById('ing-min-stock').value    = i.absolute_min || pantryRow?.min_stock || '';
   showModal('m-ingredient', true);
 }
 async function saveIng() {
@@ -1040,6 +1245,9 @@ async function saveIng() {
     supplier:         document.getElementById('ing-supplier').value.trim()||null,
     supplier_contact: document.getElementById('ing-notes').value.trim()||null,
     allergens:        _selectedAllergens.length ? _selectedAllergens : null,
+    absolute_min:     parseFloat(document.getElementById('ing-min-stock').value)||null,
+    pack_size:        parseFloat(document.getElementById('ing-pack-size').value)||null,
+    pack_min_qty:     parseInt(document.getElementById('ing-pack-min').value)||null,
   };
   if (!payload.name) return;
   if (id) {
@@ -1096,6 +1304,7 @@ function clearIngForm() {
   ['ing-id','ing-name','ing-price','ing-density','ing-supplier','ing-notes'].forEach(x => document.getElementById(x).value = '');
   document.getElementById('ing-cat').value = ''; document.getElementById('ing-unit').value = 'kg';
   document.getElementById('ing-min-stock').value = ''; document.getElementById('ing-needed-stock').value = '';
+  document.getElementById('ing-pack-size').value = ''; document.getElementById('ing-pack-min').value = '';
   setAllergens([]);
 }
 
@@ -1729,16 +1938,40 @@ async function deleteRecIng(id) {
 // ═══════════════════════════════════════════
 // PANTRY
 // ═══════════════════════════════════════════
+function computeWeeklyNeeds(prepTasks, recipeIngs) {
+  // Returns map: ingredient_id → total amount needed (in ingredient's purchase unit)
+  const needs = {};
+  prepTasks.forEach(t => {
+    const scale = +(t.scale||1);
+    const ris = recipeIngs.filter(ri => ri.recipe_id === t.recipe_id && ri.ingredient_id);
+    ris.forEach(ri => {
+      const ingUnit = ri.ingredients?.unit || ri.unit;
+      const amt     = toBaseUnit(ri.amount, ri.unit, ingUnit) * scale;
+      needs[ri.ingredient_id] = (needs[ri.ingredient_id]||0) + amt;
+    });
+  });
+  return needs;
+}
+
 async function loadPantry() {
   document.getElementById('pantry-ing-list').innerHTML  = '<div class="loading">Loading…</div>';
   document.getElementById('pantry-comp-list').innerHTML = '<div class="loading">Loading…</div>';
-  // Load pantry rows AND all ingredients/components so every item appears
-  const [{ data: pi }, { data: pc }, { data: allIngs }, { data: allComps }] = await Promise.all([
+  const thisWeek  = weekRange(S.weekStart);
+  const nextMon   = new Date(S.weekStart); nextMon.setDate(nextMon.getDate()+7);
+  const nextWeek  = weekRange(nextMon);
+  const [{ data: pi }, { data: pc }, { data: allIngs }, { data: allComps },
+         { data: thisPrep }, { data: nextPrep }, { data: riAll }] = await Promise.all([
     db.from('pantry_ingredients').select('*').order('ingredient_id'),
     db.from('pantry_components').select('*').order('recipe_id'),
-    db.from('ingredients').select('id,name,unit').order('name'),
+    db.from('ingredients').select('id,name,unit,absolute_min,pack_size,pack_min_qty').order('name'),
     db.from('recipes').select('id,name,yield_unit').eq('type','component').order('name'),
+    db.from('prep_list').select('recipe_id,scale').gte('scheduled_date',thisWeek.start).lte('scheduled_date',thisWeek.end).not('recipe_id','is',null),
+    db.from('prep_list').select('recipe_id,scale').gte('scheduled_date',nextWeek.start).lte('scheduled_date',nextWeek.end).not('recipe_id','is',null),
+    db.from('recipe_ingredients').select('recipe_id,ingredient_id,amount,unit,ingredients(unit,price_per_unit)'),
   ]);
+  // Compute ingredient needs per week from prep tasks × scale × recipe ingredients
+  S.pantryNeededThis = computeWeeklyNeeds(thisPrep||[], riAll||[]);
+  S.pantryNeededNext = computeWeeklyNeeds(nextPrep||[], riAll||[]);
   // Build merged list: every ingredient/component with its pantry row (or defaults)
   const piMap = {}; (pi||[]).forEach(r => { piMap[r.ingredient_id] = r; });
   const pcMap = {}; (pc||[]).forEach(r => { piMap[r.recipe_id] = r; pcMap[r.recipe_id] = r; });
@@ -1778,39 +2011,83 @@ function renderPantryIng() {
   attn.style.color = need ? 'var(--amber)' : 'var(--text-3)';
   if (!sorted.length) { document.getElementById('pantry-ing-list').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><p>No ingredients found.</p></div>`; return; }
   document.getElementById('pantry-ing-list').innerHTML = sorted.map(item => {
-    const s      = stockStatus(item);
-    const nm     = item._ing?.name || '?';
-    const u      = item._ing?.unit || '';
-    const stock  = +(item.in_stock||0);
-    const min    = +(item.min_stock||0);
-    const needed = +(item.needed_stock||0);
-    const diff   = stock - min;
+    const s          = stockStatus(item);
+    const nm         = item._ing?.name || '?';
+    const u          = item._ing?.unit || '';
+    const ingId      = item._ing?.id   || '';
+    const rowId      = item.id         || '';
+    const refId      = item.ingredient_id;
+    const stock      = +(item.in_stock||0);
+    const absMin     = +(item._ing?.absolute_min || item.min_stock || 0);
+    const packSize   = +(item._ing?.pack_size   || 0);
+    const packMinQty = +(item._ing?.pack_min_qty || 1);
+    const thisNeeded = +(S.pantryNeededThis[refId] || 0);
+    const nextNeeded = +(S.pantryNeededNext[refId] || 0);
+    // Recommended order: next week needs + abs min buffer − current stock
+    const rawToOrder = Math.max(0, thisNeeded + nextNeeded + absMin - stock);
+    let recLabel = '';
+    if (rawToOrder > 0) {
+      if (packSize > 0) {
+        const packs        = Math.ceil(rawToOrder / packSize);
+        const roundedPacks = Math.ceil(packs / packMinQty) * packMinQty;
+        const recQty       = roundedPacks * packSize;
+        recLabel = `${fmtNum(recQty)} ${u} (${roundedPacks} pack${roundedPacks>1?'s':''}${packMinQty>1?', min '+packMinQty:''})`;
+      } else {
+        recLabel = `${fmtNum(rawToOrder)} ${u}`;
+      }
+    }
     const cls    = s==='out'?'out-stock':s==='low'?'low-stock':'';
-    const diffColor = diff >= 0 ? 'var(--green)' : 'var(--red)';
-    const diffStr = min > 0 ? `<span style="color:${diffColor};font-weight:600">${diff>=0?'+':''}${fmtNum(diff)} ${u}</span>` : '';
-    const minLabel    = min    > 0 ? `min ${fmtNum(min)} ${u}` : '';
-    const neededLabel = needed > 0 ? `need ${fmtNum(needed)} ${u}` : '';
-    const metaParts = [minLabel, neededLabel].filter(Boolean).join(' · ');
-    return `<div class="pantry-row ${cls}" data-ing-ref="${item.ingredient_id}">
+    const diff   = stock - absMin;
+    const diffHtml = absMin > 0
+      ? (diff >= 0
+          ? `<span style="color:var(--green);font-weight:600">+${fmtNum(diff)} ${u}</span>`
+          : `<span style="color:var(--red);font-weight:600">${fmtNum(diff)} ${u}</span>`)
+      : '';
+    return `<div class="pantry-row ${cls}" data-ing-ref="${refId}">
       <div class="pr-top">
         <span class="dot dot-${s}"></span>
         <div class="pr-name">${esc(nm)}</div>
-        <button class="pantry-act-btn order" style="padding:3px 8px;font-size:11px" onclick="prefillOrderFromPantry('${item._ing?.id||''}','${esc(nm)}','${u}')">Order</button>
+        <button class="pantry-act-btn order" style="padding:3px 8px;font-size:11px"
+          onclick="prefillOrderFromPantry('${ingId}','${esc(nm)}','${u}')">Order</button>
       </div>
-      <div class="pr-bottom">
-        ${metaParts ? `<span style="font-size:11.5px;color:var(--text-3);flex:1">${metaParts}</span>` : '<span style="font-size:11.5px;color:var(--text-3);flex:1">No min set — edit ingredient to add</span>'}
-        <div class="pr-cell">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;padding-top:4px">
+        <div>
           <div class="pr-label">In stock</div>
-          <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
-            oninput="liveUpdateSurplus('ing','${item.ingredient_id}','stock',this.value)"
-            onchange="savePantryStock('ing','${item.ingredient_id}','${item.id||''}',this.value)">
-          <span class="pr-unit">${u}</span>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:2px">
+            <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
+              oninput="liveUpdateSurplus('ing','${refId}','stock',this.value)"
+              onchange="savePantryStock('ing','${refId}','${rowId}',this.value)">
+            <span class="pr-unit">${u}</span>
+            <span id="surplus-ing-${refId}">${diffHtml}</span>
+          </div>
         </div>
-        ${diffStr ? `<div class="pr-surplus" id="surplus-ing-${item.ingredient_id}">${diffStr}</div>` : `<div class="pr-surplus" id="surplus-ing-${item.ingredient_id}"></div>`}
+        <div>
+          <div class="pr-label">Abs. min</div>
+          <div style="font-size:13px;margin-top:2px;color:${absMin>0?'var(--text)':'var(--text-3)'}">
+            ${absMin>0 ? fmtNum(absMin)+' '+u : '—'}
+          </div>
+        </div>
+        <div>
+          <div class="pr-label">This week</div>
+          <div style="font-size:13px;margin-top:2px;color:${thisNeeded>0?'var(--text)':'var(--text-3)'}">
+            ${thisNeeded>0 ? fmtNum(thisNeeded)+' '+u : '—'}
+          </div>
+        </div>
+        <div>
+          <div class="pr-label">Next week</div>
+          <div style="font-size:13px;margin-top:2px;color:${nextNeeded>0?'var(--text)':'var(--text-3)'}">
+            ${nextNeeded>0 ? fmtNum(nextNeeded)+' '+u : '—'}
+          </div>
+        </div>
       </div>
+      ${recLabel ? `<div style="display:flex;align-items:center;gap:6px;margin-top:6px;padding-top:6px;border-top:1px solid var(--surface-2)">
+        <span class="pr-label">Order</span>
+        <span style="font-size:13px;color:var(--amber);font-weight:600">${recLabel}</span>
+      </div>` : ''}
     </div>`;
   }).join('');
 }
+
 function renderPantryComp() {
   const q = (document.getElementById('pantry-comp-search')?.value||'').toLowerCase();
   let items = S.pantryComp;
@@ -1821,39 +2098,46 @@ function renderPantryComp() {
   if (attn) { attn.textContent = need ? `${need} need attention` : sorted.length + ' items'; attn.style.color = need ? 'var(--amber)' : 'var(--text-3)'; }
   if (!sorted.length) { document.getElementById('pantry-comp-list').innerHTML = `<div class="empty"><div class="empty-icon">🫙</div><p>No components found.</p></div>`; return; }
   document.getElementById('pantry-comp-list').innerHTML = sorted.map(item => {
-    const s      = stockStatus(item);
-    const nm     = item._comp?.name || '?';
-    const u      = item._comp?.yield_unit || '';
-    const stock  = +(item.in_stock||0);
-    const min    = +(item.min_stock||0);
-    const needed = +(item.needed_stock||0);
-    const diff   = stock - min;
-    const cls    = s==='out'?'out-stock':s==='low'?'low-stock':'';
-    const diffColor = diff >= 0 ? 'var(--green)' : 'var(--red)';
-    const diffStr = min > 0 ? `<span style="color:${diffColor};font-weight:600">${diff>=0?'+':''}${fmtNum(diff)} ${u}</span>` : '';
-    const minLabel    = min    > 0 ? `min ${fmtNum(min)} ${u}` : '';
-    const neededLabel = needed > 0 ? `need ${fmtNum(needed)} ${u}` : '';
-    const metaParts = [minLabel, neededLabel].filter(Boolean).join(' · ');
-    return `<div class="pantry-row ${cls}" data-comp-ref="${item.recipe_id}">
+    const s     = stockStatus(item);
+    const nm    = item._comp?.name || '?';
+    const u     = item._comp?.yield_unit || '';
+    const refId = item.recipe_id;
+    const rowId = item.id || '';
+    const stock = +(item.in_stock||0);
+    const min   = +(item.min_stock||0);
+    const diff  = stock - min;
+    const cls   = s==='out'?'out-stock':s==='low'?'low-stock':'';
+    const diffHtml = min > 0
+      ? (diff >= 0
+          ? `<span style="color:var(--green);font-weight:600">+${fmtNum(diff)} ${u}</span>`
+          : `<span style="color:var(--red);font-weight:600">${fmtNum(diff)} ${u}</span>`)
+      : '';
+    return `<div class="pantry-row ${cls}" data-comp-ref="${refId}">
       <div class="pr-top">
         <span class="dot dot-${s}"></span>
         <div class="pr-name">${esc(nm)}</div>
         <button class="pantry-act-btn prep" style="padding:3px 8px;font-size:11px" onclick="prefillPrepFromPantry('${esc(nm)}')">Prep</button>
       </div>
-      <div class="pr-bottom">
-        ${metaParts ? `<span style="font-size:11.5px;color:var(--text-3);flex:1">${metaParts}</span>` : '<span style="font-size:11.5px;color:var(--text-3);flex:1">No min set</span>'}
-        <div class="pr-cell">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-top:4px">
+        <div class="pr-cell" style="flex-direction:column;align-items:flex-start;gap:1px">
           <div class="pr-label">In stock</div>
-          <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
-            oninput="liveUpdateSurplus('comp','${item.recipe_id}','stock',this.value)"
-            onchange="savePantryStock('comp','${item.recipe_id}','${item.id||''}',this.value)">
-          <span class="pr-unit">${u}</span>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+            <input class="pr-input" type="number" value="${stock}" min="0" step="0.1"
+              oninput="liveUpdateSurplus('comp','${refId}','stock',this.value)"
+              onchange="savePantryStock('comp','${refId}','${rowId}',this.value)">
+            <span class="pr-unit">${u}</span>
+          </div>
         </div>
-        ${diffStr ? `<div class="pr-surplus" id="surplus-comp-${item.recipe_id}">${diffStr}</div>` : `<div class="pr-surplus" id="surplus-comp-${item.recipe_id}"></div>`}
+        ${min > 0 ? `<div class="pr-cell" style="flex-direction:column;align-items:flex-start;gap:1px">
+          <div class="pr-label">Min</div>
+          <div style="font-size:13px;margin-top:2px">${fmtNum(min)} ${u}</div>
+        </div>` : ''}
+        <span id="surplus-comp-${refId}">${diffHtml}</span>
       </div>
     </div>`;
   }).join('');
 }
+
 
 // Save in_stock directly from pantry row input
 // Live update surplus display without re-rendering the list
@@ -2002,7 +2286,7 @@ async function loadPrep() {
   document.getElementById('week-label').textContent = weekLabel(S.weekStart);
   document.getElementById('prep-days').innerHTML = '<div class="loading">Loading…</div>';
   const { start, end } = weekRange(S.weekStart);
-  const { data } = await db.from('prep_list').select('*, recipes(id,name,total_prep_days,hands_on_minutes)').gte('scheduled_date', start).lte('scheduled_date', end).order('scheduled_date');
+  const { data } = await db.from('prep_list').select('*, recipes(id,name,total_prep_days,hands_on_minutes), chefs(id,name)').gte('scheduled_date', start).lte('scheduled_date', end).order('scheduled_date');
   S.prepTasks = data || [];
   // Load full step data for all recipes in this week
   const recIds = [...new Set((data||[]).map(t => t.recipe_id).filter(Boolean))];
@@ -2045,6 +2329,23 @@ function prepTimeEstimate(recipeId) {
   return '<div class="task-sub" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:1px">⏱ ' + parts.join(' + ') + '</div>';
 }
 
+async function reassignChef(taskId, chefId) {
+  const chefVal = chefId || null;
+  // Optimistic local update first
+  const t = S.prepTasks.find(x => x.id === taskId);
+  if (t) { t.chef_id = chefVal; t.chefs = chefVal ? S.chefs.find(c => c.id === chefVal) : null; }
+  // Save to DB (no await before local update to avoid flicker)
+  const { error } = await db.from('prep_list').update({ chef_id: chefVal }).eq('id', taskId);
+  if (error) {
+    // Revert on failure
+    if (t) { t.chef_id = t._prev_chef || null; }
+    alert('Could not save chef assignment: ' + error.message);
+  }
+  // Re-render ONLY the grouping labels (not full re-render which resets selects)
+  // Full re-render needed only if chef group headers need to change
+  renderPrep();
+}
+
 function getStepsDone(taskId) {
   const raw = sessionStorage.getItem('steps_' + taskId);
   return raw ? JSON.parse(raw) : {};
@@ -2055,11 +2356,16 @@ function setStepDone(taskId, stepId, done) {
   sessionStorage.setItem('steps_' + taskId, JSON.stringify(d));
 }
 
+function chefNameById(id) {
+  if (!id) return 'Unassigned';
+  const c = S.chefs.find(x => x.id === id);
+  return c ? c.name : 'Unassigned';
+}
+
 function renderPrep() {
   const today = toDateStr(new Date());
   const DAYS  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   let html = '';
-  // Day totals accumulators per day
   for (let i = 0; i < 7; i++) {
     const d = new Date(S.weekStart); d.setDate(d.getDate() + i);
     const ds = toDateStr(d), isToday = ds === today;
@@ -2069,8 +2375,24 @@ function renderPrep() {
     if (!tasks.length) {
       html += `<div style="padding:8px 0;font-size:13px;color:var(--text-3)">Nothing scheduled</div>`;
     } else {
-      let dayTotalOn = 0, dayTotalOff = 0;
+      // Group by chef
+      const chefGroups = {};
       tasks.forEach(t => {
+        const key = t.chef_id || '__none__';
+        if (!chefGroups[key]) chefGroups[key] = [];
+        chefGroups[key].push(t);
+      });
+      // Sort: named chefs alphabetically, unassigned last
+      const sortedGroups = Object.entries(chefGroups).sort(([a],[b]) => {
+        if (a === '__none__') return 1;
+        if (b === '__none__') return -1;
+        return chefNameById(a).localeCompare(chefNameById(b));
+      });
+      let dayTotalOn = 0, dayTotalOff = 0;
+      sortedGroups.forEach(([chefKey, chefTasks]) => {
+        const chefName = chefKey === '__none__' ? 'Unassigned' : chefNameById(chefKey);
+        html += `<div class="chef-group-label">${esc(chefName)}</div>`;
+        chefTasks.forEach(t => {
         const done  = t.status === 'done';
         const steps = S.prepStepTimings.filter(s => s.recipe_id === t.recipe_id);
         const stepsDone = done ? Object.fromEntries(steps.map(s=>[s.id,true])) : getStepsDone(t.id);
@@ -2107,7 +2429,16 @@ function renderPrep() {
           <div style="display:flex;align-items:center;gap:10px;padding:11px 13px">
             <div class="task-check ${done?'done':''}" onclick="toggleTask('${t.id}','${t.status}')"></div>
             <div class="task-content" onclick="${hasSteps?`toggleStepExpand('${t.id}')`:''}" style="${hasSteps?'':'cursor:default'}">
-              <div class="task-title ${done?'done':''}">${esc(t.title)}</div>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+                <div class="task-title ${done?'done':''}">${esc(t.title)}</div>
+                ${(t.scale&&t.scale>1)?`<span class="scale-badge">${t.scale}×</span>`:''}
+              </div>
+              <div style="margin-top:4px">
+                <select class="chef-select-inline" id="chef-sel-${t.id}" onchange="reassignChef('${t.id}',this.value)">
+                  <option value="">Unassigned</option>
+                  ${S.chefs.map(c=>`<option value="${c.id}" ${c.id===t.chef_id?'selected':''}>${esc(c.name)}</option>`).join('')}
+                </select>
+              </div>
               ${steps.length ? `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div><div class="progress-label">${pct}% done${done?'':' · tap to expand'}</div>` : ''}
               ${timeLine}
               ${t.notes?`<div class="task-sub" style="margin-top:3px">${esc(t.notes)}</div>`:''}
@@ -2135,7 +2466,8 @@ function renderPrep() {
             }).join('')}
           </div>` : ''}
         </div>`;
-      });
+        }); // end chefTasks.forEach
+      }); // end sortedGroups.forEach
       // Day totals row
       if (dayTotalOn || dayTotalOff) {
         const parts = [];
@@ -2216,6 +2548,14 @@ async function moveTaskBack(id, from) {
 async function savePrepTask() {
   const titleEl  = document.getElementById('prep-title');
   const recipeId = titleEl.dataset.recId || null;
+  const chefId   = document.getElementById('prep-chef-id').value || null;
+  const scale    = parseInt(document.getElementById('prep-scale').value) || 1;
+  // Auto-suggest chef from favorite if not manually set
+  let finalChefId = chefId;
+  if (!finalChefId && recipeId) {
+    const favChef = S.chefRecipes.find(cr => cr.recipe_id === recipeId);
+    if (favChef) finalChefId = favChef.chef_id;
+  }
   const payload = {
     title:          titleEl.value.trim(),
     scheduled_date: document.getElementById('prep-date').value,
@@ -2223,6 +2563,8 @@ async function savePrepTask() {
     notes:          document.getElementById('prep-notes').value.trim()||null,
     status:         'pending',
     recipe_id:      recipeId || null,
+    chef_id:        finalChefId,
+    scale:          scale,
   };
   if (!payload.title || !payload.scheduled_date) return;
   await db.from('prep_list').insert(payload);
@@ -2510,8 +2852,15 @@ function quickAddPrep(name, recId) {
   document.getElementById('prep-ready-by').value = '';
   document.getElementById('prep-priority').value = 'normal';
   document.getElementById('prep-notes').value    = '';
-  // Store recipe id for back-calculation
+  document.getElementById('prep-scale').value    = '1';
   document.getElementById('prep-title').dataset.recId = recId || '';
+  // Auto-select favorite chef for this recipe
+  if (recId) {
+    const favCr = S.chefRecipes.find(cr => cr.recipe_id === recId);
+    document.getElementById('prep-chef-id').value = favCr ? favCr.chef_id : '';
+  } else {
+    document.getElementById('prep-chef-id').value = '';
+  }
   showModal('m-prep');
 }
 
@@ -2723,6 +3072,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('app').style.display = '';
     load('ingredients');
     initRealtime();
+    // Pre-load chefs so prep modal can suggest them
+    db.from('chefs').select('*').order('name').then(({data}) => { if(data) S.chefs=data; populateChefSelect(); });
+    db.from('chef_recipes').select('chef_id,recipe_id,recipes(id,name,type)').then(({data}) => { if(data) S.chefRecipes=data; });
   } else {
     setTimeout(() => document.getElementById('login-input').focus(), 100);
   }
@@ -2763,6 +3115,9 @@ function tryLogin() {
     document.getElementById('app').style.display = '';
     load('ingredients');
     initRealtime();
+    // Pre-load chefs so prep modal can suggest them
+    db.from('chefs').select('*').order('name').then(({data}) => { if(data) S.chefs=data; populateChefSelect(); });
+    db.from('chef_recipes').select('chef_id,recipe_id,recipes(id,name,type)').then(({data}) => { if(data) S.chefRecipes=data; });
   } else {
     field.classList.add('error');
     errEl.textContent = val ? 'Chef not found' : 'Enter your name to continue';
@@ -2847,6 +3202,19 @@ create policy "open" on pantry_ingredients for all using (true) with check (true
 create policy "open" on pantry_components  for all using (true) with check (true);
 create policy "open" on prep_list          for all using (true) with check (true);
 create policy "open" on orders             for all using (true) with check (true);
+
+-- Chefs feature + ingredient packaging:
+-- create table chefs (id uuid primary key default gen_random_uuid(), name text not null, created_at timestamptz default now());
+-- create table chef_recipes (id uuid primary key default gen_random_uuid(), chef_id uuid references chefs(id) on delete cascade, recipe_id uuid references recipes(id) on delete cascade);
+-- alter table prep_list add column if not exists chef_id uuid references chefs(id);
+-- alter table prep_list add column if not exists scale integer default 1;
+-- alter table ingredients add column if not exists absolute_min numeric;
+-- alter table ingredients add column if not exists pack_size numeric;
+-- alter table ingredients add column if not exists pack_min_qty integer default 1;
+-- alter table chefs enable row level security;
+-- alter table chef_recipes enable row level security;
+-- create policy "open" on chefs for all using (true) with check (true);
+-- create policy "open" on chef_recipes for all using (true) with check (true);
 
 -- Add selling_price to recipes:
 -- alter table recipes add column if not exists selling_price numeric;
