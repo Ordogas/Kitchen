@@ -540,17 +540,14 @@ main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling
 
     <!-- RECIPE DETAIL (full page, injected by JS) -->
     <div id="recipe-detail-view">
-      <div class="scale-bar">
-        <div class="unit-toggle-sm">
-          <button class="utab active" id="utab-metric"      onclick="setUnitSys('metric')">Metric</button>
-          <button class="utab"        id="utab-volumetric" onclick="setUnitSys('volumetric')">Cups&amp;Spoons</button>
+      <div class="scale-bar" style="flex-direction:column;gap:7px;padding:8px 14px">
+        <div style="display:flex;align-items:center;gap:8px;width:100%">
+          <div class="unit-toggle-sm" style="flex-shrink:0">
+            <button class="utab active" id="utab-metric"      onclick="setUnitSys('metric')">Metric</button>
+            <button class="utab"        id="utab-volumetric" onclick="setUnitSys('volumetric')">Cups</button>
+          </div>
+          <div id="scale-multiplier-btns" style="display:flex;gap:5px;flex:1;overflow-x:auto"></div>
         </div>
-        <div class="scale-ctrl">
-          <button class="scale-btn" onclick="nudgeScale(-1)">−</button>
-          <span class="scale-display" id="scale-display">4 portions</span>
-          <button class="scale-btn" onclick="nudgeScale(1)">+</button>
-        </div>
-        <button class="scale-reset-btn" id="scale-reset-btn" onclick="resetScale()" style="display:none">Reset</button>
       </div>
       <div class="rec-info-block" id="rec-info-block"></div>
       <div id="rec-detail-days"></div>
@@ -1097,7 +1094,7 @@ function searchChefRec() {
   const q   = document.getElementById('chef-rec-search').value.trim();
   const res = document.getElementById('chef-rec-results');
   if (!q) { res.style.display = 'none'; return; }
-  const matches = S.recipes.filter(r => r.name.toLowerCase().includes(q.toLowerCase()) && !_chefFavs.find(f => f.id === r.id)).slice(0, 8);
+  const matches = S.recipes.filter(r => normSearch(r.name).includes(normSearch(q)) && !_chefFavs.find(f => f.id === r.id)).slice(0, 8);
   if (!matches.length) { res.style.display = 'none'; return; }
   res.innerHTML = matches.map(r => `<div class="sr-item" onclick="addChefFav('${r.id}','${esc(r.name)}','${r.type}')">
     ${esc(r.name)}<div class="sr-meta">${r.type==='component'?'Component':'Dish'} · ${r.category||''}</div>
@@ -1172,11 +1169,11 @@ function renderIngChips() {
   ).join('');
 }
 function setIngCat(c) { S.ingCat = c; renderIngChips(); renderIng(); }
-function filterIng()  { S.ingQ = document.getElementById('ing-search').value.toLowerCase(); renderIng(); }
+function filterIng()  { S.ingQ = document.getElementById('ing-search').value; renderIng(); }
 function renderIng() {
   let list = S.ingredients;
   if (S.ingCat !== 'all') list = list.filter(i => i.category === S.ingCat);
-  if (S.ingQ) list = list.filter(i => i.name.toLowerCase().includes(S.ingQ));
+  if (S.ingQ) { const nq = normSearch(S.ingQ); list = list.filter(i => normSearch(i.name).includes(nq) || normSearch(i.category).includes(nq)); }
   document.getElementById('ing-count').textContent = list.length;
   if (!list.length) {
     document.getElementById('ing-list').innerHTML = `<div class="empty"><div class="empty-icon">🌿</div><p>No ingredients yet.<br>Tap + to add your first one.</p></div>`;
@@ -1324,18 +1321,44 @@ async function loadRec() {
   document.getElementById('rec-list').innerHTML = '<div class="loading">Loading…</div>';
   const [{ data: recs }, { data: ri }] = await Promise.all([
     db.from('recipes').select('*').order('name'),
-    db.from('recipe_ingredients').select('recipe_id, ingredients(allergens)'),
+    db.from('recipe_ingredients').select('recipe_id, component_id, ingredients(allergens)'),
   ]);
   S.recipes = recs || [];
-  // Build allergen map: recipeId → sorted allergen array
-  S.recipeAllergenMap = {};
-  (ri||[]).forEach(row => {
+  S.recipeAllergenMap = buildAllergenMap(recs||[], ri||[]);
+  renderRecChips(); renderRec();
+}
+
+function buildAllergenMap(recs, ri) {
+  // Phase 1: collect direct ingredient allergens per recipe
+  const direct = {};
+  ri.forEach(row => {
     const als = row.ingredients?.allergens;
     if (!als?.length) return;
-    if (!S.recipeAllergenMap[row.recipe_id]) S.recipeAllergenMap[row.recipe_id] = new Set();
-    als.forEach(a => S.recipeAllergenMap[row.recipe_id].add(a));
+    if (!direct[row.recipe_id]) direct[row.recipe_id] = new Set();
+    als.forEach(a => direct[row.recipe_id].add(a));
   });
-  renderRecChips(); renderRec();
+  // Phase 2: build component links (recipe → list of component recipe_ids it uses)
+  const compLinks = {};
+  ri.forEach(row => {
+    if (!row.component_id) return;
+    if (!compLinks[row.recipe_id]) compLinks[row.recipe_id] = [];
+    compLinks[row.recipe_id].push(row.component_id);
+  });
+  // Phase 3: recursive resolution with cycle guard
+  const resolved = {};
+  function resolve(id, visiting = new Set()) {
+    if (resolved[id]) return resolved[id];
+    if (visiting.has(id)) return new Set(); // cycle guard
+    visiting.add(id);
+    const all = new Set(direct[id] || []);
+    (compLinks[id] || []).forEach(cid => {
+      resolve(cid, visiting).forEach(a => all.add(a));
+    });
+    resolved[id] = all;
+    return all;
+  }
+  recs.forEach(r => resolve(r.id));
+  return resolved;
 }
 function recTab(tab) {
   S.recType = tab; S.recCat = 'all';
@@ -1352,12 +1375,12 @@ function renderRecChips() {
   ).join('');
 }
 function setRecCat(c) { S.recCat = c; renderRecChips(); renderRec(); }
-function filterRec()  { S.recQ = document.getElementById('rec-search').value.toLowerCase(); renderRec(); }
+function filterRec()  { S.recQ = document.getElementById('rec-search').value; renderRec(); }
 function renderRec() {
   const type = S.recType==='components' ? 'component' : 'dish';
   let list = S.recipes.filter(r => r.type === type);
   if (S.recCat !== 'all') list = list.filter(r => r.category === S.recCat);
-  if (S.recQ) list = list.filter(r => r.name.toLowerCase().includes(S.recQ));
+  if (S.recQ) { const nq = normSearch(S.recQ); list = list.filter(r => normSearch(r.name).includes(nq) || normSearch(r.category).includes(nq)); }
   document.getElementById('rec-count').textContent = list.length;
   if (!list.length) {
     document.getElementById('rec-list').innerHTML = `<div class="empty"><div class="empty-icon">${type==='component'?'🫙':'🍽'}</div><p>No ${type}s yet.<br>Tap + to add your first one.</p></div>`;
@@ -1500,11 +1523,16 @@ function closeRecDetail() {
 }
 
 function recipeAllergens() {
-  // Collect unique allergens from all ingredients used in this recipe's steps
   const all = new Set();
+  // Direct ingredient allergens
   D.ingredients.forEach(ri => {
     const ing = ri.ingredients;
     if (ing?.allergens?.length) ing.allergens.forEach(a => all.add(a));
+    // Component allergens — look up in the global recipeAllergenMap
+    if (ri.component_id) {
+      const compAls = S.recipeAllergenMap[ri.component_id];
+      if (compAls) compAls.forEach(a => all.add(a));
+    }
   });
   return all.size ? [...all].sort() : null;
 }
@@ -1629,12 +1657,30 @@ function resetScale() {
   updateScaleBar(); renderRecDetail();
 }
 function updateScaleBar() {
-  const factor   = getScaleFactor();
-  const isScaled = Math.abs(factor - 1) > 0.001;
-  const el = document.getElementById('scale-display');
-  el.textContent = fmtNum(D.scaledPortions) + ' ' + (D.recipe?.yield_unit||'portions');
-  el.className   = 'scale-display' + (isScaled ? ' scaled' : '');
-  document.getElementById('scale-reset-btn').style.display = isScaled ? '' : 'none';
+  const base = D.recipe?.portions || 1;
+  const unit = D.recipe?.yield_unit || 'portions';
+  const cur  = D.scaledPortions;
+  const mults = [1, 2, 4, 8];
+  const container = document.getElementById('scale-multiplier-btns');
+  if (!container) return;
+  container.innerHTML = mults.map(m => {
+    const qty    = base * m;
+    const active = Math.abs(cur - qty) < 0.001;
+    return `<button onclick="setScale(${qty})" style="
+      flex-shrink:0; padding:4px 10px; border-radius:var(--r-xs);
+      border:1.5px solid ${active?'var(--green)':'var(--border)'};
+      background:${active?'var(--green-light)':'var(--surface)'};
+      color:${active?'var(--green)':'var(--text-2)'};
+      font-family:'DM Sans',sans-serif; font-size:12px; font-weight:${active?'700':'500'};
+      cursor:pointer; white-space:nowrap; transition:all .15s">
+      ${m}× <span style="opacity:.7;font-size:11px">${fmtNum(qty)} ${unit}</span>
+    </button>`;
+  }).join('');
+}
+function setScale(qty) {
+  if (!D.recipe) return;
+  D.scaledPortions = qty;
+  updateScaleBar(); renderRecDetail();
 }
 
 // ── UNIT CONVERSION ──────────────────────
@@ -1646,11 +1692,11 @@ function simplify(a, u) {
   if (u==='tsp')  { if (a >= 48) return simplify(a/48, 'cup'); if (a >= 3) return simplify(a/3, 'tbsp'); }
   if (u==='tbsp') { if (a >= 16) return { a: a/16, u: 'cup' }; if (a < 1 && a > 0) return { a: a*3, u: 'tsp' }; }
   if (u==='cup')  { if (a < 0.0625 && a > 0) return { a: a*16, u: 'tbsp' }; }
-  // Metric scale
-  if (u==='g'    && a >= 1000)            return { a: a/1000,  u: 'kg' };
-  if (u==='kg'   && a > 0 && a < 0.01)   return { a: a*1000,  u: 'g' };
-  if (u==='ml'   && a >= 1000)            return { a: a/1000,  u: 'liter' };
-  if (u==='liter'&& a > 0 && a < 0.1)    return { a: a*1000,  u: 'ml' };
+  // Metric — stay in the smaller unit until ≥500 to keep numbers readable
+  if (u==='g'    && a >= 500)            return { a: a/1000,  u: 'kg' };
+  if (u==='kg'   && a > 0 && a < 0.5)   return { a: a*1000,  u: 'g' };
+  if (u==='ml'   && a >= 500)            return { a: a/1000,  u: 'liter' };
+  if (u==='liter'&& a > 0 && a < 0.5)   return { a: a*1000,  u: 'ml' };
   // Imperial scale
   if (u==='oz'   && a >= 16)              return { a: a/16,    u: 'lb' };
   if (u==='lb'   && a > 0 && a < 0.0625) return { a: a*16,    u: 'oz' };
@@ -1814,7 +1860,7 @@ function searchIngForStep() {
   const qLo = q.toLowerCase();
   const res = document.getElementById('si-results');
   if (!q) { res.style.display = 'none'; return; }
-  const matches = S.ingredients.filter(i => i.name.toLowerCase().includes(qLo)).slice(0, 8);
+  const matches = S.ingredients.filter(i => normSearch(i.name).includes(normSearch(q))).slice(0, 8);
   let html = matches.map(i => `
     <div class="sr-item" onclick="selectIngForStep('${i.id}')">
       ${esc(i.name)}<div class="sr-meta">${i.category||''} · ${i.unit||''}${i.price_per_unit!=null?' · €'+i.price_per_unit:''}</div>
@@ -2003,7 +2049,7 @@ function stockStatus(item) {
 function renderPantryIng() {
   const q = (document.getElementById('pantry-ing-search')?.value||'').toLowerCase();
   let items = S.pantryIng;
-  if (q) items = items.filter(it => (it._ing?.name||'').toLowerCase().includes(q));
+  if (q) { const nq = normSearch(q); items = items.filter(it => normSearch(it._ing?.name).includes(nq)); }
   const sorted = [...items].sort((a,b) => (a._ing?.name||'').localeCompare(b._ing?.name||''));
   const need = sorted.filter(i => stockStatus(i) !== 'ok').length;
   const attn = document.getElementById('pantry-attention');
@@ -2091,7 +2137,7 @@ function renderPantryIng() {
 function renderPantryComp() {
   const q = (document.getElementById('pantry-comp-search')?.value||'').toLowerCase();
   let items = S.pantryComp;
-  if (q) items = items.filter(it => (it._comp?.name||'').toLowerCase().includes(q));
+  if (q) { const nq = normSearch(q); items = items.filter(it => normSearch(it._comp?.name).includes(nq)); }
   const sorted = [...items].sort((a,b) => (a._comp?.name||'').localeCompare(b._comp?.name||''));
   const need = sorted.filter(i => stockStatus(i) !== 'ok').length;
   const attn = document.getElementById('pantry-comp-attention');
@@ -2813,7 +2859,7 @@ function searchOrdIng() {
   const q   = document.getElementById('ord-name').value.trim();
   const res = document.getElementById('ord-results');
   if (!q) { res.style.display = 'none'; return; }
-  const matches = S.ingredients.filter(i => i.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+  const matches = S.ingredients.filter(i => normSearch(i.name).includes(normSearch(q))).slice(0, 8);
   if (!matches.length) { res.style.display = 'none'; return; }
   res.innerHTML = matches.map(i => `
     <div class="sr-item" onclick="selectOrdIng('${i.id}')">
@@ -2833,7 +2879,7 @@ function searchPrepRec() {
   const q   = document.getElementById('prep-title').value.trim();
   const res = document.getElementById('prep-results');
   if (!q) { res.style.display = 'none'; return; }
-  const matches = S.recipes.filter(r => r.name.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+  const matches = S.recipes.filter(r => normSearch(r.name).includes(normSearch(q))).slice(0, 8);
   if (!matches.length) { res.style.display = 'none'; return; }
   res.innerHTML = matches.map(r => `
     <div class="sr-item" onclick="selectPrepRec('${r.id}')">
@@ -3052,10 +3098,20 @@ function fmtNum(n) {
   const num = +n;
   if (!isFinite(num)) return '';
   if (num === 0) return '0';
-  if (num < 0.1) return parseFloat(num.toFixed(2)).toString();
-  if (num < 10)  return parseFloat(num.toFixed(1)).toString();
+  // Use enough decimals to be meaningful, but strip trailing zeros
+  if (num < 1)    return parseFloat(num.toFixed(2)).toString();  // 0.07, 0.25
+  if (num < 10)   return parseFloat(num.toFixed(1)).toString();  // 1.5, 7.0→7
+  if (num < 1000) return parseFloat(num.toFixed(0)).toString();  // 14, 140, 500
   return Math.round(num).toString();
 }
+function latinise(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/[ąÄ…]/g,'a').replace(/[čČ]/g,'c').replace(/[ęĘ]/g,'e')
+    .replace(/[ėĖ]/g,'e').replace(/[įĮ]/g,'i').replace(/[šŠ]/g,'s')
+    .replace(/[ųŲ]/g,'u').replace(/[ūŪ]/g,'u').replace(/[žŽ]/g,'z');
+}
+function normSearch(s) { return latinise(String(s||'').toLowerCase()); }
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
